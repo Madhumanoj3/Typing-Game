@@ -1,0 +1,82 @@
+package db;
+
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
+import model.Subscription;
+import org.bson.Document;
+
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+
+/**
+ * Data access for the {@code subscriptions} collection.
+ */
+public class SubscriptionDAO {
+
+    private static SubscriptionDAO instance;
+    private final MongoCollection<Document> col;
+
+    private SubscriptionDAO() {
+        col = MongoDBManager.getInstance().getDatabase().getCollection("subscriptions");
+    }
+
+    public static SubscriptionDAO getInstance() {
+        if (instance == null) instance = new SubscriptionDAO();
+        return instance;
+    }
+
+    // ── Write ─────────────────────────────────────────────────────────────
+
+    public void save(Subscription sub) {
+        Document doc = new Document()
+                .append("username",  sub.getUsername())
+                .append("plan",      sub.getPlan())
+                .append("status",    sub.getStatus())
+                .append("startDate", toDate(sub.getStartDate()))
+                .append("endDate",   sub.getEndDate() != null ? toDate(sub.getEndDate()) : null);
+        col.insertOne(doc);
+        sub.setId(doc.getObjectId("_id"));
+    }
+
+    // ── Read ──────────────────────────────────────────────────────────────
+
+    /** Returns the most recent subscription record for a user, or null if none. */
+    public Subscription getLatest(String username) {
+        Document d = col.find(Filters.eq("username", username))
+                        .sort(Sorts.descending("startDate"))
+                        .first();
+        return d == null ? null : toSub(d);
+    }
+
+    /** Returns true if the user currently has an active premium subscription. */
+    public boolean isPremium(String username) {
+        Subscription sub = getLatest(username);
+        return sub != null && sub.isActive() && !"FREE".equals(sub.getPlan());
+    }
+
+    // ── Mappers ───────────────────────────────────────────────────────────
+
+    private Subscription toSub(Document d) {
+        Subscription s = new Subscription();
+        s.setId(d.getObjectId("_id"));
+        s.setUsername(d.getString("username"));
+        s.setPlan(d.getString("plan"));
+        s.setStatus(d.getString("status"));
+        s.setStartDate(toLocal(d.getDate("startDate")));
+        Date end = d.getDate("endDate");
+        s.setEndDate(end != null ? toLocal(end) : null);
+        return s;
+    }
+
+    private Date toDate(LocalDateTime ldt) {
+        if (ldt == null) return null;
+        return Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    private LocalDateTime toLocal(Date d) {
+        if (d == null) return null;
+        return d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+}
