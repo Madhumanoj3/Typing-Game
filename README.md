@@ -60,7 +60,7 @@ project-folder/
 
 2. Open in IDE
 
-  Open project in VS Code / IntelliJ / Eclipse
+  Open project in VS Code / Antigravity
 
 3. Setup MongoDB
 
