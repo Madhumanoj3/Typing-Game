@@ -16,7 +16,7 @@ import java.util.List;
 public class GamificationService {
 
     // ── Result record returned after processing a game ────────────────────
-    public record GamificationResult(int xpGained, List<Achievement> newAchievements) {}
+    public record GamificationResult(int xpGained, int coinsGained, List<Achievement> newAchievements) {}
 
     // ── Daily challenge progress snapshot ────────────────────────────────
     public record DailyChallengeProgress(int gamesPlayed, double maxWpm, int charsTyped) {
@@ -108,6 +108,20 @@ public class GamificationService {
 
         int xpGained = calculateXP(result.getWpm(), result.getAccuracy());
 
+        // Coin rewards: Normal/Timer modes only, accuracy > 80%
+        int coinsGained = 0;
+        String gameMode = result.getGameMode();
+        if (("Normal".equals(gameMode) || "Timer".equals(gameMode)) && result.getAccuracy() > 80) {
+            coinsGained = switch (result.getDifficulty()) {
+                case "Easy"   -> 2;
+                case "Medium" -> 3;
+                case "Hard"   -> 5;
+                default       -> 0;
+            };
+            if (result.getAccuracy() >= 100.0) coinsGained *= 2;
+        }
+        stats.setCoins(stats.getCoins() + coinsGained);
+
         // Reset daily challenge counters when the calendar day rolls over
         LocalDate today = LocalDate.now();
         if (!today.equals(stats.getChallengeDate())) {
@@ -142,14 +156,15 @@ public class GamificationService {
                 "Daily Champion", "Completed all daily challenges today");
             if (bonus != null) {
                 newAchievements.add(bonus);
-                stats.setXp(stats.getXp() + 20);  // ~20% of a level as bonus
+                stats.setXp(stats.getXp() + 20);
                 stats.setCoins(stats.getCoins() + 10);
                 xpGained += 20;
+                coinsGained += 10;
                 statsDAO.save(stats);
             }
         }
 
-        return new GamificationResult(xpGained, newAchievements);
+        return new GamificationResult(xpGained, coinsGained, newAchievements);
     }
 
     // ── Lesson achievements (called from LessonViewScreen) ───────────────

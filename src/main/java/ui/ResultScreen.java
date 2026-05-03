@@ -18,15 +18,22 @@ public class ResultScreen {
 
     private final GameResult        result;
     private final int               xpGained;
+    private final int               coinsGained;
     private final List<Achievement> newAchievements;
 
     public ResultScreen(GameResult result) {
-        this(result, 0, Collections.emptyList());
+        this(result, 0, 0, Collections.emptyList());
     }
 
     public ResultScreen(GameResult result, int xpGained, List<Achievement> newAchievements) {
+        this(result, xpGained, 0, newAchievements);
+    }
+
+    public ResultScreen(GameResult result, int xpGained, int coinsGained,
+                        List<Achievement> newAchievements) {
         this.result          = result;
         this.xpGained        = xpGained;
+        this.coinsGained     = coinsGained;
         this.newAchievements = newAchievements != null ? newAchievements : Collections.emptyList();
     }
 
@@ -53,6 +60,10 @@ public class ResultScreen {
         card.setStyle("-fx-background-color: #1a1a2e; -fx-background-radius: 20; -fx-padding: 44;");
         card.setAlignment(Pos.CENTER);
 
+        // ── Star rating ───────────────────────────────────────────────────
+        Label stars = new Label(getStarRating());
+        stars.setStyle("-fx-font-size: 32px;");
+
         // ── Trophy / icon ─────────────────────────────────────────────────
         Label trophy = new Label(getTrophy());
         trophy.setStyle("-fx-font-size: 60px;");
@@ -74,7 +85,26 @@ public class ResultScreen {
         addStatCell(grid, 0, 1, "Errors",   String.valueOf(result.getErrorCount()),          "stat-number-orange");
         addStatCell(grid, 1, 1, "Words",    String.valueOf(result.getWordsTyped()),           "stat-number-cyan");
 
-        card.getChildren().addAll(trophy, title, subtitle, grid);
+        card.getChildren().addAll(stars, trophy, title, subtitle, grid);
+
+        // ── Coins earned banner ───────────────────────────────────────────
+        if (coinsGained > 0) {
+            HBox coinsBanner = new HBox(10);
+            coinsBanner.setAlignment(Pos.CENTER);
+            coinsBanner.setStyle(
+                "-fx-background-color: rgba(245,158,11,0.15);" +
+                "-fx-background-radius: 12;" +
+                "-fx-padding: 10 24 10 24;");
+            Label coinIcon  = new Label("🪙");
+            coinIcon.setStyle("-fx-font-size: 18px;");
+            Label coinLabel = new Label("+" + coinsGained + " coins earned!");
+            coinLabel.setStyle(
+                "-fx-text-fill: #fbbf24;" +
+                "-fx-font-size: 15px;" +
+                "-fx-font-weight: bold;");
+            coinsBanner.getChildren().addAll(coinIcon, coinLabel);
+            card.getChildren().add(coinsBanner);
+        }
 
         // ── XP earned banner ──────────────────────────────────────────────
         if (xpGained > 0) {
@@ -169,6 +199,18 @@ public class ResultScreen {
         lbl.getStyleClass().add("label-muted");
         cell.getChildren().addAll(val, lbl);
         grid.add(cell, col, row);
+    }
+
+    private String getStarRating() {
+        double wpm = result.getWpm();
+        double acc = result.getAccuracy();
+        int stars;
+        if      (wpm >= 80 && acc >= 95) stars = 5;
+        else if (wpm >= 60 && acc >= 90) stars = 4;
+        else if (wpm >= 40 && acc >= 80) stars = 3;
+        else if (wpm >= 20 && acc >= 70) stars = 2;
+        else                             stars = 1;
+        return "⭐".repeat(stars) + "☆".repeat(5 - stars);
     }
 
     private String getTrophy() {

@@ -1,6 +1,7 @@
 package ui;
 
 import db.MongoDBManager;
+import game.ThemeManager;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -52,11 +53,16 @@ public class MainUI extends Application {
     }
 
     public static void showResult(GameResult result) {
-        showResult(result, 0, Collections.emptyList());
+        showResult(result, 0, 0, Collections.emptyList());
     }
 
     public static void showResult(GameResult result, int xpGained, List<Achievement> newAchievements) {
-        ResultScreen res = new ResultScreen(result, xpGained, newAchievements);
+        showResult(result, xpGained, 0, newAchievements);
+    }
+
+    public static void showResult(GameResult result, int xpGained, int coinsGained,
+                                  List<Achievement> newAchievements) {
+        ResultScreen res = new ResultScreen(result, xpGained, coinsGained, newAchievements);
         setScene(res.buildScene());
     }
 
@@ -85,9 +91,20 @@ public class MainUI extends Application {
         setScene(ach.buildScene());
     }
 
+    public static void showThemeStore() {
+        ThemeStoreScreen store = new ThemeStoreScreen();
+        setScene(store.buildScene());
+    }
+
+    public static void showFontStore() {
+        FontStoreScreen store = new FontStoreScreen();
+        setScene(store.buildScene());
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────
 
     private static void setScene(Scene scene) {
+        ThemeManager.applyTheme(scene);
         primaryStage.setScene(scene);
     }
 

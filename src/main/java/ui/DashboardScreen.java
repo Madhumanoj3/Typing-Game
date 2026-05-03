@@ -46,32 +46,36 @@ public class DashboardScreen {
         brand.setStyle("-fx-text-fill: #a78bfa; -fx-font-size: 18px;" +
                        "-fx-font-weight: bold; -fx-padding: 0 0 24 0;");
 
-        Button homeBtn  = sidebarBtn("🏠  Home",        true);
-        Button lbBtn    = sidebarBtn("🏆  Leaderboard",  false);
-        Button statsBtn = sidebarBtn("📊  Statistics",   false);
-        Button trainBtn = sidebarBtn("📖  Training",     false);
-        Button achBtn   = sidebarBtn("🏅  Achievements", false);
+        Button homeBtn   = sidebarBtn("🏠  Home",         true);
+        Button lbBtn     = sidebarBtn("🏆  Leaderboard",  false);
+        Button statsBtn  = sidebarBtn("📊  Statistics",   false);
+        Button trainBtn  = sidebarBtn("📖  Training",     false);
+        Button achBtn    = sidebarBtn("🏅  Achievements", false);
+        Button themeBtn  = sidebarBtn("🎨  Theme Store",  false);
+        Button fontBtn   = sidebarBtn("✍  Font Store",   false);
 
         homeBtn.setOnAction(e -> {
-            setActive(homeBtn, lbBtn, statsBtn, trainBtn, achBtn);
+            setActive(homeBtn, lbBtn, statsBtn, trainBtn, achBtn, themeBtn, fontBtn);
             showModeSelector();
         });
         lbBtn.setOnAction(e -> {
-            setActive(lbBtn, homeBtn, statsBtn, trainBtn, achBtn);
+            setActive(lbBtn, homeBtn, statsBtn, trainBtn, achBtn, themeBtn, fontBtn);
             showLeaderboard();
         });
         statsBtn.setOnAction(e -> {
-            setActive(statsBtn, homeBtn, lbBtn, trainBtn, achBtn);
+            setActive(statsBtn, homeBtn, lbBtn, trainBtn, achBtn, themeBtn, fontBtn);
             showStats();
         });
         trainBtn.setOnAction(e -> {
-            setActive(trainBtn, homeBtn, lbBtn, statsBtn, achBtn);
+            setActive(trainBtn, homeBtn, lbBtn, statsBtn, achBtn, themeBtn, fontBtn);
             showTraining();
         });
         achBtn.setOnAction(e -> {
-            setActive(achBtn, homeBtn, lbBtn, statsBtn, trainBtn);
+            setActive(achBtn, homeBtn, lbBtn, statsBtn, trainBtn, themeBtn, fontBtn);
             showAchievements();
         });
+        themeBtn.setOnAction(e -> MainUI.showThemeStore());
+        fontBtn.setOnAction(e -> MainUI.showFontStore());
 
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
@@ -80,7 +84,7 @@ public class DashboardScreen {
         VBox userBox = buildUserBox();
 
         sidebar.getChildren().addAll(brand, homeBtn, lbBtn, statsBtn, trainBtn, achBtn,
-                spacer, userBox);
+                themeBtn, fontBtn, spacer, userBox);
         return sidebar;
     }
 
@@ -237,7 +241,7 @@ public class DashboardScreen {
         title.setStyle("-fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: bold;");
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        Label bonusTag = new Label("Bonus: +50 XP + 10 coins");
+        Label bonusTag = new Label("Bonus: +20 XP + 10 coins");
         bonusTag.setStyle(
             "-fx-background-color: rgba(245,158,11,0.2);" +
             "-fx-text-fill: #fbbf24;" +

@@ -3,7 +3,8 @@
     "allow": [
       "Bash(Get-ChildItem -Path \"e:\\\\Documents\\\\4th sem\\\\Typing - Copy\" -Recurse -Force)",
       "Bash(Select-Object FullName, PSIsContainer)",
-      "Bash(Format-Table -AutoSize)"
+      "Bash(Format-Table -AutoSize)",
+      "PowerShell(New-Item -ItemType Directory -Path \"e:\\\\Documents\\\\4th sem\\\\Typing - Copy\\\\src\\\\main\\\\resources\\\\sounds\" -Force)"
     ]
   }
 }

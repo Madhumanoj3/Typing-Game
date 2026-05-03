@@ -1,6 +1,7 @@
 package ui;
 
 import db.MongoDBManager;
+import game.SoundManager;
 import game.TimerEngine;
 import game.TypingEngine;
 import game.WordBank;
@@ -47,7 +48,9 @@ public class GameScreen {
     private ProgressBar progressBar;
 
     // ── State ─────────────────────────────────────────────────────────────
-    private boolean gameOver = false;
+    private boolean gameOver   = false;
+    private int     prevErrors = 0;
+    private int     prevWords  = 0;
 
     public GameScreen(String mode, String difficulty, int timerSeconds) {
         this.mode         = mode;
@@ -265,6 +268,14 @@ public class GameScreen {
         // Update engine
         typing.update(typed);
 
+        // Sound feedback
+        int curErrors = typing.getErrors();
+        int curWords  = typing.getWordsTyped();
+        if (curErrors > prevErrors)      SoundManager.getInstance().playWrong();
+        else if (curWords > prevWords)   SoundManager.getInstance().playCorrect();
+        prevErrors = curErrors;
+        prevWords  = curWords;
+
         // Re-render passage with color coding
         renderPassage(typed);
 
@@ -302,6 +313,7 @@ public class GameScreen {
 
         if (timer != null) timer.stop();
         typing.finish();
+        SoundManager.getInstance().playFinish();
 
         GameResult result = new GameResult(
                 SessionManager.getInstance().getUsername(),
@@ -327,24 +339,27 @@ public class GameScreen {
         }
 
         // Gamification applies only to Normal and Timer modes
-        int xpGained = 0;
+        int xpGained    = 0;
+        int coinsGained = 0;
         List<Achievement> newAchievements = Collections.emptyList();
         if (!"Practice".equals(mode)) {
             try {
                 GamificationResult gr = GamificationService.getInstance()
                         .processGameResult(SessionManager.getInstance().getUsername(), result);
                 xpGained        = gr.xpGained();
+                coinsGained     = gr.coinsGained();
                 newAchievements = gr.newAchievements();
             } catch (Exception ex) {
                 System.err.println("Gamification failed: " + ex.getMessage());
             }
         }
 
-        final int finalXp  = xpGained;
+        final int finalXp     = xpGained;
+        final int finalCoins  = coinsGained;
         final List<Achievement> finalAch = newAchievements;
 
         PauseTransition pause = new PauseTransition(Duration.millis(300));
-        pause.setOnFinished(e -> MainUI.showResult(result, finalXp, finalAch));
+        pause.setOnFinished(e -> MainUI.showResult(result, finalXp, finalCoins, finalAch));
         pause.play();
     }
 

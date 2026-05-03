@@ -2,6 +2,7 @@ package ui;
 
 import db.MongoDBManager;
 import javafx.geometry.*;
+import service.StoreService;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -261,6 +262,7 @@ public class LoginScreen {
             loginMessage.setText("Invalid email or password.");
         } else {
             SessionManager.getInstance().login(user);
+            StoreService.getInstance().loadUserPreferences(user.getUsername());
             MainUI.showDashboard();
         }
     }
@@ -322,6 +324,7 @@ public class LoginScreen {
             setRegError("Registration failed. Please try again.");
         } else {
             SessionManager.getInstance().login(newUser);
+            StoreService.getInstance().loadUserPreferences(newUser.getUsername());
             MainUI.showDashboard();
         }
     }
