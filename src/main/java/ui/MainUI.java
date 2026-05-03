@@ -4,8 +4,12 @@ import db.MongoDBManager;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import model.Achievement;
 import model.GameResult;
 import model.Lesson;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * JavaFX Application entry point.
@@ -48,7 +52,11 @@ public class MainUI extends Application {
     }
 
     public static void showResult(GameResult result) {
-        ResultScreen res = new ResultScreen(result);
+        showResult(result, 0, Collections.emptyList());
+    }
+
+    public static void showResult(GameResult result, int xpGained, List<Achievement> newAchievements) {
+        ResultScreen res = new ResultScreen(result, xpGained, newAchievements);
         setScene(res.buildScene());
     }
 
@@ -70,6 +78,11 @@ public class MainUI extends Application {
     public static void showSubscription() {
         SubscriptionScreen sub = new SubscriptionScreen();
         setScene(sub.buildScene());
+    }
+
+    public static void showAchievements() {
+        AchievementsScreen ach = new AchievementsScreen();
+        setScene(ach.buildScene());
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────

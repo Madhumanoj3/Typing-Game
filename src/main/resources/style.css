@@ -493,3 +493,81 @@
     -fx-background-color: linear-gradient(to right, #b45309, #92400e);
     -fx-effect: dropshadow(gaussian, rgba(217,119,6,0.5), 15, 0, 0, 0);
 }
+
+/* ── XP PROGRESS BAR ── */
+.progress-bar-xp > .track {
+    -fx-background-color: #1e293b;
+    -fx-background-radius: 4;
+    -fx-pref-height: 7;
+}
+.progress-bar-xp > .bar {
+    -fx-background-color: linear-gradient(to right, #a78bfa, #7c3aed);
+    -fx-background-radius: 4;
+    -fx-pref-height: 7;
+}
+
+/* ── STAT NUMBER GOLD (XP / coins) ── */
+.stat-number-gold {
+    -fx-text-fill: #fbbf24;
+    -fx-font-size: 34px;
+    -fx-font-weight: bold;
+}
+
+/* ── STREAK BADGE ── */
+.badge-streak {
+    -fx-background-color: rgba(251,191,36,0.18);
+    -fx-text-fill: #fbbf24;
+    -fx-background-radius: 10;
+    -fx-padding: 3 10 3 10;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+/* ── LEVEL BADGE ── */
+.badge-level {
+    -fx-background-color: rgba(124,58,237,0.22);
+    -fx-text-fill: #a78bfa;
+    -fx-background-radius: 10;
+    -fx-padding: 3 10 3 10;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+/* ── ACHIEVEMENT CARD ── */
+.achievement-card {
+    -fx-background-color: #1a1a2e;
+    -fx-background-radius: 16;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.25), 16, 0, 0, 4);
+}
+.achievement-card-locked {
+    -fx-background-color: #141422;
+    -fx-background-radius: 16;
+    -fx-padding: 20;
+    -fx-opacity: 0.55;
+}
+
+/* ── DAILY CHALLENGE CARD ── */
+.daily-challenge-card {
+    -fx-background-color: #1a1a2e;
+    -fx-background-radius: 16;
+    -fx-padding: 22 24 22 24;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 12, 0, 0, 4);
+}
+
+/* ── XP BANNER (on result screen) ── */
+.xp-banner {
+    -fx-background-color: rgba(124,58,237,0.18);
+    -fx-background-radius: 12;
+    -fx-padding: 12 24 12 24;
+}
+
+/* ── ACHIEVEMENT UNLOCK CARD (on result screen) ── */
+.achievement-unlock-card {
+    -fx-background-color: rgba(16,185,129,0.08);
+    -fx-background-radius: 12;
+    -fx-padding: 14 18 14 18;
+    -fx-border-color: rgba(16,185,129,0.25);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}

@@ -12,8 +12,14 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
 import javafx.util.Duration;
+import model.Achievement;
 import model.GameResult;
+import service.GamificationService;
+import service.GamificationService.GamificationResult;
 import util.SessionManager;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * The core typing game screen.
@@ -308,7 +314,7 @@ public class GameScreen {
                 typing.getWordsTyped()
         );
 
-        // Persist result for all modes (including Practice)
+        // Persist game result and update user stats
         try {
             MongoDBManager.getInstance().saveResult(result);
             MongoDBManager.getInstance().updateUserStats(
@@ -317,13 +323,28 @@ public class GameScreen {
                     result.getAccuracy()
             );
         } catch (Exception ex) {
-            // DB unavailable — continue to result screen anyway
             System.err.println("DB save failed: " + ex.getMessage());
         }
 
-        // Brief delay then show result screen
+        // Gamification applies only to Normal and Timer modes
+        int xpGained = 0;
+        List<Achievement> newAchievements = Collections.emptyList();
+        if (!"Practice".equals(mode)) {
+            try {
+                GamificationResult gr = GamificationService.getInstance()
+                        .processGameResult(SessionManager.getInstance().getUsername(), result);
+                xpGained        = gr.xpGained();
+                newAchievements = gr.newAchievements();
+            } catch (Exception ex) {
+                System.err.println("Gamification failed: " + ex.getMessage());
+            }
+        }
+
+        final int finalXp  = xpGained;
+        final List<Achievement> finalAch = newAchievements;
+
         PauseTransition pause = new PauseTransition(Duration.millis(300));
-        pause.setOnFinished(e -> MainUI.showResult(result));
+        pause.setOnFinished(e -> MainUI.showResult(result, finalXp, finalAch));
         pause.play();
     }
 

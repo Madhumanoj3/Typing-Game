@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.*;
 import javafx.util.Duration;
 import model.Lesson;
+import service.GamificationService;
 import service.TrainingService;
 import util.SessionManager;
 
@@ -284,6 +285,8 @@ public class LessonViewScreen {
 
         try {
             trainingService.recordAttempt(username, lesson, wpm, accuracy);
+            int completed = trainingService.countCompleted(username);
+            GamificationService.getInstance().checkLessonAchievements(username, completed);
         } catch (Exception ex) {
             System.err.println("Training progress save failed: " + ex.getMessage());
         }
