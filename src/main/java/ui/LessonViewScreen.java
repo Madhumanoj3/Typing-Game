@@ -5,6 +5,7 @@ import javafx.animation.PauseTransition;
 import javafx.geometry.*;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.*;
@@ -51,7 +52,14 @@ public class LessonViewScreen {
         root = new StackPane();
         VBox layout = new VBox(0);
         layout.setStyle("-fx-background-color: #0f0f1a;");
-        layout.getChildren().addAll(buildHeader(), buildBody());
+
+        ScrollPane scroll = new ScrollPane(buildBody());
+        scroll.getStyleClass().add("scroll-dark");
+        scroll.setFitToWidth(true);
+        scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        VBox.setVgrow(scroll, Priority.ALWAYS);
+
+        layout.getChildren().addAll(buildHeader(), scroll);
         root.getChildren().add(layout);
 
         Scene scene = new Scene(root, 1200, 750);
@@ -97,6 +105,18 @@ public class LessonViewScreen {
         VBox body = new VBox(20);
         body.setStyle("-fx-padding: 24 80 32 80;");
         VBox.setVgrow(body, Priority.ALWAYS);
+
+        // Keyboard guide image
+        var kbResource = getClass().getResource("/keyboard_guide.png");
+        if (kbResource != null) {
+            ImageView kbView = new ImageView(new Image(kbResource.toExternalForm()));
+            kbView.setFitWidth(880);
+            kbView.setPreserveRatio(true);
+            kbView.setSmooth(true);
+            HBox imgBox = new HBox(kbView);
+            imgBox.setAlignment(Pos.CENTER);
+            body.getChildren().add(imgBox);
+        }
 
         // Finger hint card
         HBox hintCard = buildFingerHintCard();

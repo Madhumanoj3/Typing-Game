@@ -55,45 +55,43 @@ public class TypingEngine {
             started     = true;
         }
 
-        // Count errors by comparing chars position by position
-        int len       = Math.min(typed.length(), targetText.length());
-        int errors    = 0;
-        for (int i = 0; i < len; i++) {
-            if (typed.charAt(i) != targetText.charAt(i)) {
-                errors++;
-            }
-        }
-        // Extra characters beyond target also count as errors
-        if (typed.length() > targetText.length()) {
-            errors += typed.length() - targetText.length();
-        }
-        errorCount = errors;
+        int len = Math.min(typed.length(), targetText.length());
 
-        // Words typed = correctly completed words (split by space)
+        // Count positionally correct characters
+        int matched = 0;
+        for (int i = 0; i < len; i++) {
+            if (typed.charAt(i) == targetText.charAt(i)) matched++;
+        }
+
+        // Errors = positional mismatches + extra chars beyond target length
+        int mismatches = len - matched;
+        int extras     = Math.max(0, typed.length() - targetText.length());
+        errorCount     = mismatches + extras;
+
+        // Accuracy = correctly placed chars / total typed chars × 100
+        int totalTyped  = typed.length();
+        currentAccuracy = totalTyped > 0
+                ? Math.max(0, (double) matched / totalTyped * 100)
+                : 100.0;
+
+        // WPM = (correct chars / 5) / elapsed minutes  — character-based, smooth
+        double elapsedMin = elapsedMinutes();
+        currentWpm = (elapsedMin > 0 && matched > 0)
+                ? (matched / 5.0) / elapsedMin
+                : 0;
+
+        // Words = correctly completed whole words (for Words stat and result screen)
         String[] targetWords = targetText.split("\\s+");
         String[] typedWords  = typed.split("\\s+", -1);
-
-        int correct = 0;
+        int correctWords = 0;
         for (int i = 0; i < Math.min(typedWords.length - 1, targetWords.length); i++) {
-            if (typedWords[i].equals(targetWords[i])) correct++;
+            if (typedWords[i].equals(targetWords[i])) correctWords++;
         }
-        // If user has typed the last word and it matches, count it too
         if (typedWords.length == targetWords.length &&
-            typedWords[typedWords.length - 1].equals(targetWords[targetWords.length - 1])) {
-            correct++;
+                typedWords[typedWords.length - 1].equals(targetWords[targetWords.length - 1])) {
+            correctWords++;
         }
-        wordsTyped = correct;
-
-        // WPM = (correct words / elapsed minutes)
-        double elapsedMin = elapsedMinutes();
-        currentWpm = elapsedMin > 0 ? correct / elapsedMin : 0;
-
-        // Accuracy = correct chars / total chars typed * 100
-        int totalTyped   = typed.length();
-        int correctChars = totalTyped - errors;
-        currentAccuracy  = totalTyped > 0
-                ? Math.max(0, (double) correctChars / totalTyped * 100)
-                : 100.0;
+        wordsTyped = correctWords;
     }
 
     /** Call when the game ends to get final WPM using elapsed time. */

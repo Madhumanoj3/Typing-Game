@@ -187,6 +187,19 @@ public class MongoDBManager {
         return list;
     }
 
+    /** Returns the top {@code limit} scores for a specific game mode, ordered by WPM desc. */
+    public List<GameResult> getLeaderboardByMode(int limit, String mode) {
+        List<GameResult> list = new ArrayList<>();
+        FindIterable<Document> it = results
+                .find(Filters.eq("gameMode", mode))
+                .sort(Sorts.descending("wpm"))
+                .limit(limit);
+        for (Document doc : it) {
+            list.add(documentToResult(doc));
+        }
+        return list;
+    }
+
     // ── Mappers ───────────────────────────────────────────────────────────
 
     private User documentToUser(Document doc) {

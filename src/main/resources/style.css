@@ -87,15 +87,18 @@
 }
 
 .typing-input {
-    -fx-background-color: #16213e;
-    -fx-text-fill: white;
-    -fx-prompt-text-fill: #475569;
+    -fx-background-color: #000000;
+    -fx-text-fill: #e2e8f0;
+    -fx-prompt-text-fill: #64748b;
     -fx-border-color: #334155;
     -fx-border-radius: 10;
     -fx-background-radius: 10;
     -fx-padding: 16;
     -fx-font-size: 16px;
     -fx-font-family: "Consolas", "Courier New", monospace;
+}
+.typing-input .content {
+    -fx-background-color: #000000;
 }
 .typing-input:focused {
     -fx-border-color: #06b6d4;

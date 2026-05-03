@@ -36,6 +36,7 @@ public class GameScreen {
     private Label       wpmLabel;
     private Label       accLabel;
     private Label       errorLabel;
+    private Label       wordsLabel;
     private Label       timerLabel;
     private ProgressBar progressBar;
 
@@ -135,6 +136,7 @@ public class GameScreen {
         wpmLabel   = (Label) wpmCard.getChildren().get(0);
         accLabel   = (Label) accCard.getChildren().get(0);
         errorLabel = (Label) errCard.getChildren().get(0);
+        wordsLabel = (Label) wordsCard.getChildren().get(0);
 
         HBox statsRow = new HBox(16);
         statsRow.setAlignment(Pos.CENTER_LEFT);
@@ -193,7 +195,7 @@ public class GameScreen {
 
         // ── Hint label ────────────────────────────────────────────────────
         Label hint = new Label("🎯  Tip: Type the passage above exactly. Timer starts when you type your first character.");
-        hint.setStyle("-fx-text-fill: #475569; -fx-font-size: 12px;");
+        hint.setStyle("-fx-text-fill: #a78bfa; -fx-font-size: 12px; -fx-font-weight: bold;");
 
         body.getChildren().addAll(statsRow, progressBar, passageScroll, inputArea, hint, controls);
         return body;
@@ -238,7 +240,7 @@ public class GameScreen {
                 t.setFill(Color.web("#06b6d4"));          // cursor   → cyan
                 t.setUnderline(true);
             } else {
-                t.setFill(Color.web("#475569"));          // upcoming → grey
+                t.setFill(Color.web("#94a3b8"));          // upcoming → bleak light grey
             }
             passageFlow.getChildren().add(t);
         }
@@ -264,6 +266,7 @@ public class GameScreen {
         wpmLabel.setText(String.format("%.0f", typing.getWpm()));
         accLabel.setText(String.format("%.0f%%", typing.getAccuracy()));
         errorLabel.setText(String.valueOf(typing.getErrors()));
+        wordsLabel.setText(String.valueOf(typing.getWordsTyped()));
         progressBar.setProgress(typing.getProgress(typed));
 
         // Finish condition for Practice and Normal modes

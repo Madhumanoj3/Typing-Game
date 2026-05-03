@@ -12,7 +12,8 @@ import util.SessionManager;
 import java.util.List;
 
 /**
- * Leaderboard screen — shows top 20 scores from all players.
+ * Leaderboard screen — shows top 20 scores separately for Normal and Timer modes.
+ * Practice and Training sessions are excluded.
  */
 public class LeaderboardScreen {
 
@@ -32,41 +33,74 @@ public class LeaderboardScreen {
         scroll.getStyleClass().add("scroll-dark");
         scroll.setFitToWidth(true);
 
-        VBox content = new VBox(20);
+        VBox content = new VBox(32);
         content.setStyle("-fx-padding: 36 40 36 40;");
 
         Label title = new Label("🏆  Global Leaderboard");
         title.getStyleClass().add("label-title");
 
-        Label sub = new Label("Top 20 results across all players");
+        Label sub = new Label("Top 20 results for Normal and Timer modes across all players");
         sub.getStyleClass().add("label-muted");
 
-        VBox rankList = new VBox(10);
-
-        List<GameResult> top = MongoDBManager.getInstance().getLeaderboard(20);
         String me = SessionManager.getInstance().getUsername();
 
-        if (top.isEmpty()) {
-            Label empty = new Label("No results yet. Play a game to appear here!");
-            empty.getStyleClass().add("label-body");
-            rankList.getChildren().add(empty);
-        } else {
-            for (int i = 0; i < top.size(); i++) {
-                rankList.getChildren().add(buildRankRow(i + 1, top.get(i), me));
-            }
-        }
+        // ── Normal Mode Section ───────────────────────────────────────────
+        VBox normalSection = buildModeSection("Normal Mode", "🎯", "#a78bfa", "Normal", me);
 
-        content.getChildren().addAll(title, sub, gap(8), rankList);
+        // ── Timer Mode Section ────────────────────────────────────────────
+        VBox timerSection = buildModeSection("Timer Mode", "⏱", "#fbbf24", "Timer", me);
+
+        content.getChildren().addAll(title, sub, gap(4), normalSection, timerSection);
         scroll.setContent(content);
         return scroll;
     }
 
-    private HBox buildRankRow(int rank, GameResult result, String me) {
+    private VBox buildModeSection(String sectionTitle, String icon, String accentColor,
+                                  String mode, String me) {
+        VBox section = new VBox(10);
+        section.setStyle(
+            "-fx-background-color: #1a1a2e;" +
+            "-fx-background-radius: 16;" +
+            "-fx-padding: 24;");
+
+        // Section header
+        HBox header = new HBox(10);
+        header.setAlignment(Pos.CENTER_LEFT);
+        Label iconLabel = new Label(icon);
+        iconLabel.setStyle("-fx-font-size: 20px;");
+        Label sectionLabel = new Label(sectionTitle);
+        sectionLabel.setStyle(
+            "-fx-text-fill: " + accentColor + ";" +
+            "-fx-font-size: 18px;" +
+            "-fx-font-weight: bold;");
+        header.getChildren().addAll(iconLabel, sectionLabel);
+
+        Separator sep = new Separator();
+        sep.setStyle("-fx-background-color: #1e293b;");
+
+        VBox rankList = new VBox(6);
+
+        List<GameResult> top = MongoDBManager.getInstance().getLeaderboardByMode(20, mode);
+
+        if (top.isEmpty()) {
+            Label empty = new Label("No " + mode + " results yet. Play a game to appear here!");
+            empty.getStyleClass().add("label-body");
+            rankList.getChildren().add(empty);
+        } else {
+            for (int i = 0; i < top.size(); i++) {
+                rankList.getChildren().add(buildRankRow(i + 1, top.get(i), me, accentColor));
+            }
+        }
+
+        section.getChildren().addAll(header, sep, rankList);
+        return section;
+    }
+
+    private HBox buildRankRow(int rank, GameResult result, String me, String accentColor) {
         HBox row = new HBox(16);
         row.setAlignment(Pos.CENTER_LEFT);
-        row.setStyle("-fx-padding: 14 20 14 20;");
+        row.setStyle("-fx-padding: 10 12 10 12;");
 
-        // Rank badge
         String rankStyle = switch (rank) {
             case 1 -> "rank-gold";
             case 2 -> "rank-silver";
@@ -76,26 +110,38 @@ public class LeaderboardScreen {
         row.getStyleClass().add(rankStyle);
 
         Label rankLabel = new Label(rankEmoji(rank) + "  #" + rank);
-        rankLabel.setStyle("-fx-text-fill: " + rankColor(rank) + "; -fx-font-size: 15px; -fx-font-weight: bold; -fx-min-width: 70;");
+        rankLabel.setStyle(
+            "-fx-text-fill: " + rankColor(rank) + ";" +
+            "-fx-font-size: 15px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-min-width: 70;");
 
         Label userLabel = new Label(result.getUsername());
-        userLabel.setStyle("-fx-text-fill: " + (result.getUsername().equals(me) ? "#a78bfa" : "white") +
-                "; -fx-font-size: 14px; -fx-font-weight: bold; -fx-min-width: 160;");
+        userLabel.setStyle(
+            "-fx-text-fill: " + (result.getUsername().equals(me) ? accentColor : "white") + ";" +
+            "-fx-font-size: 14px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-min-width: 160;");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         Label wpmLabel = new Label(String.format("%.0f WPM", result.getWpm()));
-        wpmLabel.setStyle("-fx-text-fill: #06b6d4; -fx-font-size: 15px; -fx-font-weight: bold; -fx-min-width: 100; -fx-alignment: center-right;");
+        wpmLabel.setStyle(
+            "-fx-text-fill: #06b6d4;" +
+            "-fx-font-size: 15px;" +
+            "-fx-font-weight: bold;" +
+            "-fx-min-width: 100;" +
+            "-fx-alignment: center-right;");
 
         Label accLabel = new Label(String.format("%.0f%% acc", result.getAccuracy()));
         accLabel.setStyle("-fx-text-fill: #10b981; -fx-font-size: 13px; -fx-min-width: 90;");
 
-        Label modeLabel = new Label(result.getGameMode() + " / " + result.getDifficulty());
-        modeLabel.getStyleClass().add("label-muted");
-        modeLabel.setStyle(modeLabel.getStyle() + "-fx-min-width: 110;");
+        Label diffLabel = new Label(result.getDifficulty());
+        diffLabel.getStyleClass().add("label-muted");
+        diffLabel.setStyle(diffLabel.getStyle() + "-fx-min-width: 80;");
 
-        row.getChildren().addAll(rankLabel, userLabel, spacer, wpmLabel, accLabel, modeLabel);
+        row.getChildren().addAll(rankLabel, userLabel, spacer, wpmLabel, accLabel, diffLabel);
         return row;
     }
 

@@ -336,8 +336,10 @@ public class LoginScreen {
             regMessage.setText("");
             ScrollPane sp = new ScrollPane(registerForm);
             sp.setFitToWidth(true);
-            sp.setPrefHeight(500);
-            sp.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+            sp.setPrefHeight(560);
+            sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            sp.getStyleClass().add("scroll-dark");
+            sp.setStyle("-fx-background: #1a1a2e; -fx-background-color: #1a1a2e;");
             formContainer.getChildren().add(sp);
         }
     }
