@@ -12,7 +12,6 @@ import model.AchievementDefinition;
 import model.UserStats;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Admin Gamification Panel - Manage achievement definitions, XP rules, and view user stats.
@@ -242,7 +241,7 @@ public class AdminGamificationPanel {
         dialog.showAndWait().ifPresent(def -> {
             AchievementDefDAO.getInstance().save(def);
             loadAchievements();
-            showAlert("Success", "Achievement created.");
+            AdminDialogs.showSuccess("Achievement Created", "New achievement has been saved successfully.");
         });
     }
 
@@ -250,7 +249,7 @@ public class AdminGamificationPanel {
 
     private void showEditAchievementDialog() {
         AchievementDefinition selected = achievementTable.getSelectionModel().getSelectedItem();
-        if (selected == null) { showAlert("No Selection", "Select an achievement to edit."); return; }
+        if (selected == null) { AdminDialogs.showInfo("No Selection", "Select an achievement to edit."); return; }
 
         Dialog<AchievementDefinition> dialog = new Dialog<>();
         dialog.setTitle("Edit Achievement");
@@ -268,7 +267,7 @@ public class AdminGamificationPanel {
         dialog.showAndWait().ifPresent(def -> {
             AchievementDefDAO.getInstance().update(def);
             loadAchievements();
-            showAlert("Success", "Achievement updated.");
+            AdminDialogs.showSuccess("Achievement Updated", "Changes have been saved successfully.");
         });
     }
 
@@ -276,19 +275,18 @@ public class AdminGamificationPanel {
 
     private void deleteAchievement() {
         AchievementDefinition selected = achievementTable.getSelectionModel().getSelectedItem();
-        if (selected == null) { showAlert("No Selection", "Select an achievement to delete."); return; }
+        if (selected == null) { AdminDialogs.showInfo("No Selection", "Select an achievement to delete."); return; }
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirm Deletion");
-        confirm.setHeaderText("Delete achievement: " + selected.getTitle() + "?");
-
-        confirm.showAndWait().ifPresent(bt -> {
-            if (bt == ButtonType.OK) {
-                AchievementDefDAO.getInstance().delete(selected.getId());
-                loadAchievements();
-                showAlert("Success", "Achievement deleted.");
-            }
-        });
+        boolean confirmed = AdminDialogs.showConfirm(
+                "Delete Achievement",
+                "Are you sure you want to delete this achievement?",
+                "🏅 " + selected.getTitle(),
+                "Delete", true);
+        if (confirmed) {
+            AchievementDefDAO.getInstance().delete(selected.getId());
+            loadAchievements();
+            AdminDialogs.showSuccess("Deleted", "Achievement has been removed.");
+        }
     }
 
     // ── Achievement Form ──────────────────────────────────────────────────
@@ -369,8 +367,4 @@ public class AdminGamificationPanel {
         return f;
     }
 
-    private void showAlert(String t, String m) {
-        Alert a = new Alert(Alert.AlertType.INFORMATION);
-        a.setTitle(t); a.setHeaderText(null); a.setContentText(m); a.showAndWait();
-    }
 }

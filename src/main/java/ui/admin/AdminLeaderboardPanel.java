@@ -11,7 +11,6 @@ import model.GameResult;
 import model.UserStats;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Admin Leaderboard Panel - View rankings by WPM/XP, remove invalid scores.
@@ -242,60 +241,48 @@ public class AdminLeaderboardPanel {
 
     private void removeScore() {
         if (!"WPM".equals(currentTab)) {
-            showAlert("Info", "Score removal is only available on the WPM leaderboard.");
+            AdminDialogs.showInfo("WPM Only", "Score removal is only available on the WPM leaderboard.");
             return;
         }
         GameResult selected = wpmTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            showAlert("No Selection", "Select a score to remove.");
+            AdminDialogs.showInfo("No Selection", "Select a score to remove.");
             return;
         }
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Remove Score");
-        confirm.setHeaderText("Remove this score?");
-        confirm.setContentText(String.format("User: %s | WPM: %.1f | Mode: %s",
-                selected.getUsername(), selected.getWpm(), selected.getGameMode()));
-
-        Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        boolean confirmed = AdminDialogs.showConfirm(
+                "Remove Score",
+                "Remove this score from the leaderboard?",
+                String.format("👤 %s  |  ⚡ %.1f WPM  |  🎮 %s",
+                        selected.getUsername(), selected.getWpm(), selected.getGameMode()),
+                "Remove", true);
+        if (confirmed) {
             MongoDBManager.getInstance().deleteGameResult(selected.getId());
             loadWpmLeaderboard();
-            showAlert("Success", "Score removed from leaderboard.");
+            AdminDialogs.showSuccess("Score Removed", "The score has been removed from the leaderboard.");
         }
     }
 
     // ── Reset Rankings ────────────────────────────────────────────────────
 
     private void resetRankings() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("⚠️ Reset All Rankings");
-        confirm.setHeaderText("Are you absolutely sure?");
-        confirm.setContentText("This will DELETE ALL game results from the database.\nThis action cannot be undone!");
-
-        Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            // Double confirmation
-            Alert confirm2 = new Alert(Alert.AlertType.CONFIRMATION);
-            confirm2.setTitle("Final Confirmation");
-            confirm2.setHeaderText("Last chance — this will erase ALL scores!");
-            Optional<ButtonType> result2 = confirm2.showAndWait();
-            if (result2.isPresent() && result2.get() == ButtonType.OK) {
+        boolean first = AdminDialogs.showConfirm(
+                "Reset All Rankings",
+                "Are you absolutely sure you want to reset all rankings?",
+                "⚠️ This will DELETE ALL game results from the database. This action cannot be undone!",
+                "Yes, Reset", true);
+        if (first) {
+            boolean second = AdminDialogs.showConfirm(
+                    "Final Confirmation",
+                    "Last chance — this will permanently erase ALL scores!",
+                    "There is no way to recover this data after deletion.",
+                    "Erase Everything", true);
+            if (second) {
                 MongoDBManager.getInstance().deleteAllGameResults();
                 loadWpmLeaderboard();
                 loadXpLeaderboard();
-                showAlert("Done", "All game results have been cleared.");
+                AdminDialogs.showSuccess("Rankings Reset", "All game results have been cleared from the database.");
             }
         }
-    }
-
-    // ── Helpers ───────────────────────────────────────────────────────────
-
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }

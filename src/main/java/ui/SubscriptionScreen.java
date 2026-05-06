@@ -5,9 +5,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import model.Subscription;
+import service.BillPdfService;
 import service.PaymentService;
 import util.SessionManager;
 
+import java.nio.file.Path;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -20,6 +22,7 @@ public class SubscriptionScreen {
     private final String username = SessionManager.getInstance().getUsername();
 
     private String selectedPlan = PaymentService.PLAN_MONTHLY;
+    private String selectedPaymentMethod = PaymentService.METHOD_CARD;
     private Label statusLabel;
 
     // ── Scene factory ─────────────────────────────────────────────────────
@@ -161,7 +164,14 @@ public class SubscriptionScreen {
         backBtn.getStyleClass().add("btn-primary");
         backBtn.setOnAction(e -> MainUI.showDashboard());
 
-        section.getChildren().addAll(icon, title, plan, expiry, perks, backBtn);
+        Button downloadBillBtn = new Button("⬇ Download Bill PDF");
+        downloadBillBtn.getStyleClass().add("btn-success");
+        downloadBillBtn.setOnAction(e -> downloadBill(sub));
+
+        HBox actions = new HBox(12, downloadBillBtn, backBtn);
+        actions.setAlignment(Pos.CENTER);
+
+        section.getChildren().addAll(icon, title, plan, expiry, perks, actions);
         return section;
     }
 
@@ -313,6 +323,8 @@ public class SubscriptionScreen {
         TextField cardNumber = styledField("Card Number (16 digits)", false);
         TextField expiry = styledField("MM/YY", false);
         TextField cvv = styledField("CVV", false);
+        TextField upiId = styledField("UPI ID (name@bank)", false);
+        TextField upiPin = styledField("UPI PIN", true);
 
         // Auto-format card number with spaces
         cardNumber.textProperty().addListener((obs, old, val) -> {
@@ -333,6 +345,40 @@ public class SubscriptionScreen {
             }
         });
 
+        ToggleGroup paymentGroup = new ToggleGroup();
+        RadioButton cardOption = paymentOption("Card", PaymentService.METHOD_CARD, paymentGroup);
+        RadioButton upiOption = paymentOption("UPI", PaymentService.METHOD_UPI, paymentGroup);
+        cardOption.setSelected(true);
+
+        HBox paymentOptions = new HBox(12, cardOption, upiOption);
+        paymentOptions.setAlignment(Pos.CENTER_LEFT);
+
+        VBox cardFields = new VBox(16,
+                fieldGroup("Cardholder Name", cardHolder),
+                fieldGroup("Card Number", cardNumber),
+                new HBox(16,
+                        fieldGroup("Expiry Date", expiry),
+                        fieldGroup("CVV", cvv)));
+
+        VBox upiFields = new VBox(16,
+                fieldGroup("UPI ID", upiId),
+                fieldGroup("UPI PIN", upiPin));
+        upiFields.setVisible(false);
+        upiFields.setManaged(false);
+
+        paymentGroup.selectedToggleProperty().addListener((obs, old, toggle) -> {
+            if (toggle == null) return;
+            selectedPaymentMethod = (String) toggle.getUserData();
+            boolean upiSelected = PaymentService.METHOD_UPI.equals(selectedPaymentMethod);
+            cardFields.setVisible(!upiSelected);
+            cardFields.setManaged(!upiSelected);
+            upiFields.setVisible(upiSelected);
+            upiFields.setManaged(upiSelected);
+            simNote.setText(upiSelected
+                    ? "🔒  Simulated UPI payment — enter a valid UPI ID and PIN"
+                    : "🔒  Simulated payment — enter any 16-digit card number");
+        });
+
         statusLabel = new Label();
         statusLabel.setWrapText(true);
         statusLabel.setMaxWidth(460);
@@ -342,22 +388,24 @@ public class SubscriptionScreen {
         payBtn.setMaxWidth(Double.MAX_VALUE);
         payBtn.setOnAction(e -> {
             payBtn.setText("Pay " + PaymentService.getDisplayPrice(selectedPlan) + "  →");
-            handlePayment(cardHolder.getText(), cardNumber.getText(),
-                    expiry.getText(), cvv.getText(), payBtn);
+            if (PaymentService.METHOD_UPI.equals(selectedPaymentMethod)) {
+                handleUpiPayment(upiId.getText(), upiPin.getText(), payBtn);
+            } else {
+                handleCardPayment(cardHolder.getText(), cardNumber.getText(),
+                        expiry.getText(), cvv.getText(), payBtn);
+            }
         });
 
         form.getChildren().addAll(
                 formTitle, simNote, verifyNote,
-                fieldGroup("Cardholder Name", cardHolder),
-                fieldGroup("Card Number", cardNumber),
-                new HBox(16,
-                        fieldGroup("Expiry Date", expiry),
-                        fieldGroup("CVV", cvv)),
+                fieldGroup("Payment Type", paymentOptions),
+                cardFields,
+                upiFields,
                 statusLabel, payBtn);
         return form;
     }
 
-    private void handlePayment(String holder, String cardNum, String expiry,
+    private void handleCardPayment(String holder, String cardNum, String expiry,
             String cvv, Button payBtn) {
         String error = paymentService.validate(holder, cardNum, expiry, cvv);
         if (error != null) {
@@ -366,6 +414,23 @@ public class SubscriptionScreen {
             return;
         }
 
+        String detail = holder.trim() + " • " + maskCard(cardNum);
+        submitPayment(PaymentService.METHOD_CARD, detail, payBtn);
+    }
+
+    private void handleUpiPayment(String upiId, String pin, Button payBtn) {
+        String error = paymentService.validateUpi(upiId, pin);
+        if (error != null) {
+            AppDialogs.showError("Invalid UPI ID", error);
+            statusLabel.getStyleClass().setAll("label-error");
+            statusLabel.setText("⚠  " + error);
+            return;
+        }
+
+        submitPayment(PaymentService.METHOD_UPI, upiId.trim().toLowerCase(), payBtn);
+    }
+
+    private void submitPayment(String method, String paymentDetail, Button payBtn) {
         statusLabel.getStyleClass().setAll("label-muted");
         statusLabel.setText("Processing payment…");
         payBtn.setDisable(true);
@@ -374,7 +439,7 @@ public class SubscriptionScreen {
                 javafx.util.Duration.millis(900));
         pt.setOnFinished(ev -> {
             try {
-                paymentService.processPayment(username, selectedPlan);
+                paymentService.processPayment(username, selectedPlan, method, paymentDetail);
                 statusLabel.getStyleClass().setAll("label-success");
                 statusLabel.setText("✅  Payment submitted! Awaiting admin verification. You will be notified once approved.");
                 javafx.animation.PauseTransition wait = new javafx.animation.PauseTransition(
@@ -390,14 +455,37 @@ public class SubscriptionScreen {
         pt.play();
     }
 
+    private void downloadBill(Subscription sub) {
+        try {
+            Path target = BillPdfService.getInstance().copyBillToDownloads(sub);
+            AppDialogs.showSuccess("Bill Downloaded", "Your premium bill PDF was saved to:\n" + target);
+        } catch (Exception ex) {
+            AppDialogs.showError("Download Failed", "Could not create the bill PDF.\n" + ex.getMessage());
+        }
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────
 
     private TextField styledField(String prompt, boolean isPassword) {
-        TextField tf = new TextField();
+        TextField tf = isPassword ? new PasswordField() : new TextField();
         tf.setPromptText(prompt);
         tf.getStyleClass().add("field-dark");
         tf.setMaxWidth(Double.MAX_VALUE);
         return tf;
+    }
+
+    private RadioButton paymentOption(String label, String method, ToggleGroup group) {
+        RadioButton rb = new RadioButton(label);
+        rb.setToggleGroup(group);
+        rb.setUserData(method);
+        rb.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 13px; -fx-font-weight: bold;");
+        return rb;
+    }
+
+    private String maskCard(String cardNum) {
+        String digits = cardNum.replaceAll("[^0-9]", "");
+        String last4 = digits.length() >= 4 ? digits.substring(digits.length() - 4) : "0000";
+        return "Card ending " + last4;
     }
 
     private VBox fieldGroup(String label, javafx.scene.Node field) {

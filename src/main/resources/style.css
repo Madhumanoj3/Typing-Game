@@ -9,81 +9,102 @@
 
 /* ── BUTTONS ── */
 .btn-primary {
-    -fx-background-color: linear-gradient(to right, #7c3aed, #6d28d9);
+    -fx-background-color: linear-gradient(to bottom right, #8b5cf6, #6d28d9);
     -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-padding: 12 28 12 28;
-    -fx-background-radius: 8;
+    -fx-background-radius: 10;
     -fx-cursor: hand;
     -fx-border-color: transparent;
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.35), 10, 0, 0, 3);
 }
 .btn-primary:hover {
-    -fx-background-color: linear-gradient(to right, #6d28d9, #5b21b6);
-    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.5), 15, 0, 0, 0);
+    -fx-background-color: linear-gradient(to bottom right, #7c3aed, #5b21b6);
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.65), 18, 0.1, 0, 4);
+}
+.btn-primary:pressed {
+    -fx-background-color: linear-gradient(to bottom right, #6d28d9, #4c1d95);
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.4), 8, 0, 0, 1);
 }
 
 .btn-secondary {
     -fx-background-color: transparent;
-    -fx-text-fill: #7c3aed;
+    -fx-text-fill: #a78bfa;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-padding: 12 28 12 28;
-    -fx-background-radius: 8;
+    -fx-padding: 11 27 11 27;
+    -fx-background-radius: 10;
     -fx-cursor: hand;
     -fx-border-color: #7c3aed;
-    -fx-border-radius: 8;
+    -fx-border-radius: 10;
     -fx-border-width: 1.5;
 }
 .btn-secondary:hover {
-    -fx-background-color: rgba(124,58,237,0.1);
+    -fx-background-color: rgba(124,58,237,0.15);
+    -fx-border-color: #a78bfa;
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.3), 10, 0, 0, 0);
 }
 
 .btn-danger {
-    -fx-background-color: linear-gradient(to right, #ef4444, #dc2626);
+    -fx-background-color: linear-gradient(to bottom right, #f87171, #dc2626);
     -fx-text-fill: white;
     -fx-font-size: 13px;
+    -fx-font-weight: bold;
     -fx-padding: 10 22 10 22;
-    -fx-background-radius: 8;
+    -fx-background-radius: 10;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.35), 8, 0, 0, 2);
+}
+.btn-danger:hover {
+    -fx-background-color: linear-gradient(to bottom right, #ef4444, #b91c1c);
+    -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.6), 14, 0.1, 0, 3);
 }
 
 .btn-success {
-    -fx-background-color: linear-gradient(to right, #10b981, #059669);
+    -fx-background-color: linear-gradient(to bottom right, #34d399, #059669);
     -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-padding: 12 28 12 28;
-    -fx-background-radius: 8;
+    -fx-background-radius: 10;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.35), 8, 0, 0, 2);
+}
+.btn-success:hover {
+    -fx-background-color: linear-gradient(to bottom right, #10b981, #047857);
+    -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.6), 14, 0.1, 0, 3);
 }
 
 .btn-icon {
-    -fx-background-color: rgba(124,58,237,0.15);
-    -fx-text-fill: #7c3aed;
+    -fx-background-color: rgba(124,58,237,0.18);
+    -fx-text-fill: #a78bfa;
     -fx-font-size: 13px;
     -fx-padding: 8 16 8 16;
     -fx-background-radius: 20;
     -fx-cursor: hand;
 }
 .btn-icon:hover {
-    -fx-background-color: rgba(124,58,237,0.3);
+    -fx-background-color: rgba(124,58,237,0.35);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.4), 8, 0, 0, 0);
 }
 
 /* ── TEXT FIELDS ── */
 .field-dark {
-    -fx-background-color: #16213e;
-    -fx-text-fill: white;
-    -fx-prompt-text-fill: #475569;
-    -fx-border-color: #334155;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
+    -fx-background-color: #0f1629;
+    -fx-text-fill: #e2e8f0;
+    -fx-prompt-text-fill: #3d4f6e;
+    -fx-border-color: #1e3055;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
     -fx-padding: 13 16 13 16;
     -fx-font-size: 14px;
 }
 .field-dark:focused {
     -fx-border-color: #7c3aed;
-    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.3), 10, 0, 0, 0);
+    -fx-background-color: #111b35;
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.4), 12, 0, 0, 0);
 }
 
 .typing-input {
@@ -150,21 +171,28 @@
 
 /* ── CARDS ── */
 .card {
-    -fx-background-color: #1a1a2e;
-    -fx-background-radius: 14;
+    -fx-background-color: #12122b;
+    -fx-background-radius: 16;
     -fx-padding: 24;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 20, 0, 0, 6);
+    -fx-border-color: rgba(255,255,255,0.05);
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.6), 24, 0, 0, 8);
 }
 .card-hover {
-    -fx-background-color: #1a1a2e;
-    -fx-background-radius: 14;
+    -fx-background-color: #12122b;
+    -fx-background-radius: 16;
     -fx-padding: 24;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 15, 0, 0, 5);
+    -fx-border-color: rgba(255,255,255,0.05);
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 18, 0, 0, 6);
 }
 .card-hover:hover {
-    -fx-background-color: #1e2942;
-    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.35), 22, 0, 0, 5);
+    -fx-background-color: #161630;
+    -fx-border-color: rgba(124,58,237,0.35);
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.45), 26, 0.05, 0, 6);
 }
 
 /* ── STAT CARDS ── */
@@ -191,48 +219,53 @@
 
 /* ── SIDEBAR ── */
 .sidebar {
-    -fx-background-color: #12122a;
-    -fx-padding: 24 16 24 16;
+    -fx-background-color: #0d0d20;
+    -fx-padding: 24 14 24 14;
     -fx-pref-width: 230;
-    -fx-border-color: transparent #1e293b transparent transparent;
+    -fx-border-color: transparent rgba(255,255,255,0.06) transparent transparent;
     -fx-border-width: 0 1 0 0;
 }
 .sidebar-btn {
     -fx-background-color: transparent;
-    -fx-text-fill: #94a3b8;
+    -fx-text-fill: #64748b;
     -fx-alignment: center-left;
     -fx-padding: 13 18 13 18;
     -fx-font-size: 14px;
     -fx-cursor: hand;
-    -fx-background-radius: 10;
-    -fx-pref-width: 198;
+    -fx-background-radius: 12;
+    -fx-pref-width: 202;
     -fx-graphic-text-gap: 12;
 }
 .sidebar-btn:hover {
-    -fx-background-color: rgba(124,58,237,0.15);
-    -fx-text-fill: white;
+    -fx-background-color: rgba(124,58,237,0.12);
+    -fx-text-fill: #cbd5e1;
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.15), 8, 0, 0, 0);
 }
 .sidebar-btn-active {
-    -fx-background-color: rgba(124,58,237,0.25);
-    -fx-text-fill: #a78bfa;
+    -fx-background-color: linear-gradient(to right, rgba(124,58,237,0.28), rgba(109,40,217,0.18));
+    -fx-text-fill: #c4b5fd;
     -fx-font-weight: bold;
     -fx-alignment: center-left;
     -fx-padding: 13 18 13 18;
     -fx-font-size: 14px;
-    -fx-background-radius: 10;
-    -fx-pref-width: 198;
+    -fx-background-radius: 12;
+    -fx-pref-width: 202;
+    -fx-border-color: rgba(167,139,250,0.3);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
 }
 
 /* ── PROGRESS BAR ── */
 .progress-bar-custom > .track {
-    -fx-background-color: #1e293b;
-    -fx-background-radius: 4;
-    -fx-pref-height: 8;
+    -fx-background-color: rgba(30,41,59,0.8);
+    -fx-background-radius: 5;
+    -fx-pref-height: 9;
 }
 .progress-bar-custom > .bar {
-    -fx-background-color: linear-gradient(to right, #7c3aed, #06b6d4);
-    -fx-background-radius: 4;
-    -fx-pref-height: 8;
+    -fx-background-color: linear-gradient(to right, #8b5cf6, #06b6d4);
+    -fx-background-radius: 5;
+    -fx-pref-height: 9;
+    -fx-effect: dropshadow(gaussian, rgba(139,92,246,0.5), 6, 0, 0, 0);
 }
 
 /* ── TABLE VIEW ── */
@@ -315,19 +348,23 @@
 
 /* ── GAME MODE CARDS ── */
 .mode-card {
-    -fx-background-color: #1a1a2e;
-    -fx-background-radius: 18;
+    -fx-background-color: #12122b;
+    -fx-background-radius: 20;
     -fx-padding: 36 30 36 30;
     -fx-cursor: hand;
     -fx-pref-width: 300;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 16, 0, 0, 6);
+    -fx-border-color: rgba(255,255,255,0.05);
+    -fx-border-radius: 20;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 18, 0, 0, 7);
 }
 .mode-card:hover {
-    -fx-background-color: #1e2a46;
-    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.45), 24, 0, 0, 6);
+    -fx-background-color: #18183a;
+    -fx-border-color: rgba(124,58,237,0.5);
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.55), 28, 0.08, 0, 7);
 }
 .mode-icon {
-    -fx-font-size: 40px;
+    -fx-font-size: 44px;
 }
 
 /* ── BADGE ── */
@@ -381,10 +418,11 @@
 
 /* ── HEADER BAR ── */
 .header-bar {
-    -fx-background-color: #12122a;
+    -fx-background-color: #0d0d20;
     -fx-padding: 14 28 14 28;
-    -fx-border-color: transparent transparent #1e293b transparent;
+    -fx-border-color: transparent transparent rgba(255,255,255,0.06) transparent;
     -fx-border-width: 0 0 1 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0, 0, 4);
 }
 
 /* ── PASSWORD STRENGTH ── */
@@ -393,22 +431,11 @@
 .strength-strong { -fx-background-color: #10b981; -fx-background-radius: 4; }
 
 /* ── TRAINING MODULE ── */
-.lesson-card {
-    -fx-background-color: #1a1a2e;
-    -fx-background-radius: 16;
-    -fx-padding: 20;
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 12, 0, 0, 4);
-}
-.lesson-card:hover {
-    -fx-background-color: #1e2942;
-    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.35), 20, 0, 0, 4);
-}
 .lesson-card-locked {
-    -fx-background-color: #1a1a2e;
-    -fx-background-radius: 16;
+    -fx-background-color: #0e0e1e;
+    -fx-background-radius: 18;
     -fx-padding: 20;
-    -fx-opacity: 0.7;
+    -fx-opacity: 0.55;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 3);
 }
 .badge-free {
@@ -451,27 +478,6 @@
     -fx-font-size: 11px;
     -fx-font-weight: bold;
 }
-.plan-card {
-    -fx-background-color: #1a1a2e;
-    -fx-background-radius: 20;
-    -fx-padding: 32 28 32 28;
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 16, 0, 0, 6);
-}
-.plan-card:hover {
-    -fx-background-color: #1e2942;
-    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.35), 22, 0, 0, 6);
-}
-.plan-card-selected {
-    -fx-background-color: #1e2942;
-    -fx-background-radius: 20;
-    -fx-padding: 32 28 32 28;
-    -fx-cursor: hand;
-    -fx-border-color: #7c3aed;
-    -fx-border-radius: 20;
-    -fx-border-width: 2;
-    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.45), 22, 0, 0, 6);
-}
 .finger-hint-card {
     -fx-background-color: rgba(6,182,212,0.08);
     -fx-background-radius: 12;
@@ -494,17 +500,6 @@
     -fx-effect: dropshadow(gaussian, rgba(217,119,6,0.5), 15, 0, 0, 0);
 }
 
-/* ── XP PROGRESS BAR ── */
-.progress-bar-xp > .track {
-    -fx-background-color: #1e293b;
-    -fx-background-radius: 4;
-    -fx-pref-height: 7;
-}
-.progress-bar-xp > .bar {
-    -fx-background-color: linear-gradient(to right, #a78bfa, #7c3aed);
-    -fx-background-radius: 4;
-    -fx-pref-height: 7;
-}
 
 /* ── STAT NUMBER GOLD (XP / coins) ── */
 .stat-number-gold {
@@ -533,19 +528,6 @@
     -fx-font-weight: bold;
 }
 
-/* ── ACHIEVEMENT CARD ── */
-.achievement-card {
-    -fx-background-color: #1a1a2e;
-    -fx-background-radius: 16;
-    -fx-padding: 20;
-    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.25), 16, 0, 0, 4);
-}
-.achievement-card-locked {
-    -fx-background-color: #141422;
-    -fx-background-radius: 16;
-    -fx-padding: 20;
-    -fx-opacity: 0.55;
-}
 
 /* ── DAILY CHALLENGE CARD ── */
 .daily-challenge-card {
@@ -692,17 +674,17 @@
 
 /* ── ADMIN-SPECIFIC ── */
 .admin-card {
-    -fx-background-color: #111128;
-    -fx-background-radius: 16;
+    -fx-background-color: #0e0e24;
+    -fx-background-radius: 18;
     -fx-padding: 20 24 20 24;
-    -fx-border-color: rgba(124,58,237,0.2);
-    -fx-border-radius: 16;
+    -fx-border-color: rgba(124,58,237,0.22);
+    -fx-border-radius: 18;
     -fx-border-width: 1;
-    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.15), 16, 0, 0, 5);
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.18), 18, 0, 0, 6);
 }
 .admin-card:hover {
-    -fx-border-color: rgba(124,58,237,0.45);
-    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.3), 22, 0, 0, 5);
+    -fx-border-color: rgba(167,139,250,0.55);
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.4), 26, 0.05, 0, 6);
 }
 .admin-metric-purple  { -fx-border-color: rgba(124,58,237,0.4); }
 .admin-metric-green   { -fx-border-color: rgba(52,211,153,0.4); }
@@ -741,44 +723,150 @@
 
 /* ── DIALOG DARK THEME ── */
 .dialog-pane {
-    -fx-background-color: #1a1a2e;
-    -fx-border-color: #334155;
-    -fx-border-radius: 12;
-    -fx-background-radius: 12;
+    -fx-background-color: #0e0e22;
+    -fx-border-color: rgba(124,58,237,0.25);
+    -fx-border-radius: 16;
+    -fx-background-radius: 16;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.7), 30, 0, 0, 10);
 }
 .dialog-pane .header-panel {
-    -fx-background-color: #12122a;
-    -fx-padding: 16;
+    -fx-background-color: #0a0a1a;
+    -fx-padding: 18;
+    -fx-background-radius: 16 16 0 0;
 }
 .dialog-pane .header-panel .label {
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-font-size: 14px;
+    -fx-font-size: 15px;
 }
 .dialog-pane .content.label {
-    -fx-text-fill: #cbd5e1;
+    -fx-text-fill: #94a3b8;
     -fx-font-size: 13px;
+    -fx-line-spacing: 3;
 }
 .dialog-pane .button-bar .button {
-    -fx-background-color: #16213e;
-    -fx-text-fill: #cbd5e1;
-    -fx-background-radius: 8;
-    -fx-padding: 8 18 8 18;
+    -fx-background-color: rgba(124,58,237,0.12);
+    -fx-text-fill: #a78bfa;
+    -fx-background-radius: 10;
+    -fx-padding: 9 20 9 20;
     -fx-cursor: hand;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
 }
 .dialog-pane .button-bar .button:hover {
-    -fx-background-color: rgba(124,58,237,0.2);
+    -fx-background-color: rgba(124,58,237,0.28);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.35), 8, 0, 0, 0);
 }
 
-/* ── SUCCESS LABEL ── */
+/* ── SUCCESS / ERROR LABELS ── */
 .label-success {
-    -fx-text-fill: #10b981;
+    -fx-text-fill: #34d399;
     -fx-font-size: 13px;
     -fx-font-weight: bold;
 }
 .label-error {
-    -fx-text-fill: #ef4444;
+    -fx-text-fill: #f87171;
     -fx-font-size: 13px;
     -fx-font-weight: bold;
+}
+
+/* ── SCROLL PANE DARK ── */
+.scroll-dark .scroll-bar:vertical {
+    -fx-pref-width: 7;
+    -fx-background-color: transparent;
+}
+.scroll-dark .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(124,58,237,0.35);
+    -fx-background-radius: 4;
+}
+.scroll-dark .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: rgba(124,58,237,0.6);
+}
+.scroll-dark .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+}
+.scroll-dark .scroll-bar:vertical .increment-button,
+.scroll-dark .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-pref-height: 0;
+}
+.scroll-dark .scroll-bar:horizontal { -fx-pref-height: 0; -fx-opacity: 0; }
+
+/* ── LESSON CARDS ── */
+.lesson-card {
+    -fx-background-color: #12122b;
+    -fx-background-radius: 18;
+    -fx-padding: 20;
+    -fx-cursor: hand;
+    -fx-border-color: rgba(255,255,255,0.05);
+    -fx-border-radius: 18;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 14, 0, 0, 5);
+}
+.lesson-card:hover {
+    -fx-background-color: #18183a;
+    -fx-border-color: rgba(124,58,237,0.4);
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.45), 22, 0.05, 0, 5);
+}
+
+/* ── ACHIEVEMENT CARD ── */
+.achievement-card {
+    -fx-background-color: #12122b;
+    -fx-background-radius: 18;
+    -fx-padding: 20;
+    -fx-border-color: rgba(124,58,237,0.22);
+    -fx-border-radius: 18;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.3), 18, 0, 0, 5);
+}
+.achievement-card-locked {
+    -fx-background-color: #0e0e1e;
+    -fx-background-radius: 18;
+    -fx-padding: 20;
+    -fx-border-color: rgba(255,255,255,0.04);
+    -fx-border-radius: 18;
+    -fx-border-width: 1;
+    -fx-opacity: 0.5;
+}
+
+/* ── XP PROGRESS BAR ── */
+.progress-bar-xp > .track {
+    -fx-background-color: rgba(30,41,59,0.8);
+    -fx-background-radius: 5;
+    -fx-pref-height: 8;
+}
+.progress-bar-xp > .bar {
+    -fx-background-color: linear-gradient(to right, #c084fc, #8b5cf6);
+    -fx-background-radius: 5;
+    -fx-pref-height: 8;
+    -fx-effect: dropshadow(gaussian, rgba(167,139,250,0.5), 6, 0, 0, 0);
+}
+
+/* ── PLAN CARDS ── */
+.plan-card {
+    -fx-background-color: #12122b;
+    -fx-background-radius: 22;
+    -fx-padding: 32 28 32 28;
+    -fx-cursor: hand;
+    -fx-border-color: rgba(255,255,255,0.06);
+    -fx-border-radius: 22;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 18, 0, 0, 7);
+}
+.plan-card:hover {
+    -fx-background-color: #18183a;
+    -fx-border-color: rgba(124,58,237,0.4);
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.45), 24, 0.05, 0, 7);
+}
+.plan-card-selected {
+    -fx-background-color: #18183a;
+    -fx-background-radius: 22;
+    -fx-padding: 32 28 32 28;
+    -fx-cursor: hand;
+    -fx-border-color: #8b5cf6;
+    -fx-border-radius: 22;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(124,58,237,0.55), 26, 0.08, 0, 7);
 }
 

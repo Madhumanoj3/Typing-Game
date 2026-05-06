@@ -2,6 +2,8 @@ package model;
 
 import org.bson.types.ObjectId;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TrainingProgress {
 
@@ -15,6 +17,9 @@ public class TrainingProgress {
     private int           attempts;
     private LocalDateTime lastAttemptAt;
     private LocalDateTime completedAt;   // null until first completion
+    private Map<String, Integer> keyErrorCounts = new HashMap<>();
+    private String        typingStyle = "Balanced";
+    private String        recommendation = "Keep practicing with steady rhythm.";
 
     public TrainingProgress() {}
 
@@ -59,4 +64,15 @@ public class TrainingProgress {
 
     public LocalDateTime getCompletedAt()      { return completedAt; }
     public void setCompletedAt(LocalDateTime v){ this.completedAt = v; }
+
+    public Map<String, Integer> getKeyErrorCounts() { return keyErrorCounts; }
+    public void setKeyErrorCounts(Map<String, Integer> v) {
+        this.keyErrorCounts = v != null ? v : new HashMap<>();
+    }
+
+    public String getTypingStyle()             { return typingStyle; }
+    public void setTypingStyle(String v)       { this.typingStyle = v; }
+
+    public String getRecommendation()          { return recommendation; }
+    public void setRecommendation(String v)    { this.recommendation = v; }
 }

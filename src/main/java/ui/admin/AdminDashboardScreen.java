@@ -2,6 +2,7 @@ package ui.admin;
 
 import db.MongoDBManager;
 import db.SubscriptionDAO;
+import db.TrainingCertificateDAO;
 import javafx.geometry.*;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -23,7 +24,7 @@ public class AdminDashboardScreen {
 
     // Keep sidebar button references so we can toggle active state
     private Button dashBtn, usersBtn, contentBtn, lessonsBtn,
-                   gameBtn, leaderBtn, subsBtn, analyticsBtn;
+                   gameBtn, leaderBtn, subsBtn, certBtn, analyticsBtn;
 
     // ── Scene ────────────────────────────────────────────────────────────────
 
@@ -85,11 +86,12 @@ public class AdminDashboardScreen {
         gameBtn     = navBtn("🎮", "Game Settings",  false);
         leaderBtn   = navBtn("🏆", "Leaderboard",   false);
         subsBtn     = navBtn("💳", "Subscriptions",  false);
+        certBtn     = navBtn("📜", "Certificates",   false);
         analyticsBtn= navBtn("📈", "Analytics",     false);
 
         wireNavActions();
         navBox.getChildren().addAll(navLabel, dashBtn, usersBtn, contentBtn,
-                lessonsBtn, gameBtn, leaderBtn, subsBtn, analyticsBtn);
+                lessonsBtn, gameBtn, leaderBtn, subsBtn, certBtn, analyticsBtn);
 
         // ── Bottom: user info + sign-out ────────────────────────────────────
         VBox bottomBox = new VBox(10);
@@ -130,7 +132,7 @@ public class AdminDashboardScreen {
         });
         contentBtn.setOnAction(e -> {
             activateNav(contentBtn);
-            contentArea.getChildren().setAll(new AdminContentPanel().buildContent());
+            contentArea.getChildren().setAll(new AdminContentPanel());
         });
         lessonsBtn.setOnAction(e -> {
             activateNav(lessonsBtn);
@@ -147,6 +149,10 @@ public class AdminDashboardScreen {
         subsBtn.setOnAction(e -> {
             activateNav(subsBtn);
             contentArea.getChildren().setAll(new AdminSubscriptionsPanel().buildContent());
+        });
+        certBtn.setOnAction(e -> {
+            activateNav(certBtn);
+            contentArea.getChildren().setAll(new AdminCertificatesPanel().buildContent());
         });
         analyticsBtn.setOnAction(e -> {
             activateNav(analyticsBtn);
@@ -175,6 +181,7 @@ public class AdminDashboardScreen {
         // Notification badge
         long pendingCount = SubscriptionDAO.getInstance().getAllSubscriptions().stream()
                 .filter(s -> "PENDING".equals(s.getStatus())).count();
+        pendingCount += TrainingCertificateDAO.getInstance().countPending();
         if (pendingCount > 0) {
             StackPane notif = new StackPane();
             Label bell = new Label("🔔");
@@ -351,12 +358,19 @@ public class AdminDashboardScreen {
 
         List<Subscription> pending = SubscriptionDAO.getInstance().getAllSubscriptions()
                 .stream().filter(s -> "PENDING".equals(s.getStatus())).toList();
+        long pendingCerts = TrainingCertificateDAO.getInstance().countPending();
 
-        if (pending.isEmpty()) {
+        if (pending.isEmpty() && pendingCerts == 0) {
             Label ok = new Label("✅  No pending verifications — all clear!");
             ok.setStyle("-fx-text-fill: #475569; -fx-font-size: 13px;");
             box.getChildren().add(ok);
         } else {
+            if (pendingCerts > 0) {
+                Label certRow = new Label("📜  " + pendingCerts + " training certificate request" +
+                        (pendingCerts == 1 ? "" : "s") + " waiting for grade.");
+                certRow.setStyle("-fx-text-fill: #fbbf24; -fx-font-size: 13px; -fx-font-weight: bold;");
+                box.getChildren().add(certRow);
+            }
             DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMM, HH:mm");
             for (Subscription s : pending) {
                 String price = "MONTHLY".equals(s.getPlan()) ? "₹199/mo" : "₹1,999/yr";
@@ -587,7 +601,7 @@ public class AdminDashboardScreen {
 
     private void activateNav(Button active) {
         for (Button b : new Button[]{dashBtn, usersBtn, contentBtn, lessonsBtn,
-                                      gameBtn, leaderBtn, subsBtn, analyticsBtn}) {
+                                      gameBtn, leaderBtn, subsBtn, certBtn, analyticsBtn}) {
             b.setStyle(b == active ? activeNavStyle() : inactiveNavStyle());
         }
     }

@@ -304,9 +304,9 @@ public class MongoDBManager {
         u.setEmail(doc.getString("email"));
         u.setPasswordHash(doc.getString("passwordHash"));
         u.setTotalGames(doc.getInteger("totalGames", 0));
-        u.setBestWpm(doc.getDouble("bestWpm") != null ? doc.getDouble("bestWpm") : 0.0);
-        u.setAverageWpm(doc.getDouble("averageWpm") != null ? doc.getDouble("averageWpm") : 0.0);
-        u.setBestAccuracy(doc.getDouble("bestAccuracy") != null ? doc.getDouble("bestAccuracy") : 0.0);
+        u.setBestWpm(numberAsDouble(doc, "bestWpm"));
+        u.setAverageWpm(numberAsDouble(doc, "averageWpm"));
+        u.setBestAccuracy(numberAsDouble(doc, "bestAccuracy"));
         u.setSubscriptionType(doc.getString("subscriptionType") != null ? doc.getString("subscriptionType") : "FREE");
         u.setBlocked(doc.getBoolean("blocked", false));
         Date created = doc.getDate("createdAt");
@@ -323,8 +323,8 @@ public class MongoDBManager {
         r.setGameMode(doc.getString("gameMode"));
         r.setDifficulty(doc.getString("difficulty"));
         r.setDuration(doc.getInteger("duration", 0));
-        r.setWpm(doc.getDouble("wpm") != null ? doc.getDouble("wpm") : 0.0);
-        r.setAccuracy(doc.getDouble("accuracy") != null ? doc.getDouble("accuracy") : 0.0);
+        r.setWpm(numberAsDouble(doc, "wpm"));
+        r.setAccuracy(numberAsDouble(doc, "accuracy"));
         r.setErrorCount(doc.getInteger("errorCount", 0));
         r.setWordsTyped(doc.getInteger("wordsTyped", 0));
         Date played = doc.getDate("playedAt");
@@ -332,5 +332,10 @@ public class MongoDBManager {
             r.setPlayedAt(played.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
         }
         return r;
+    }
+
+    private double numberAsDouble(Document doc, String key) {
+        Object value = doc.get(key);
+        return value instanceof Number n ? n.doubleValue() : 0.0;
     }
 }

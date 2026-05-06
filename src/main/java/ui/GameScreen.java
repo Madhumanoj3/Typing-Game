@@ -17,6 +17,7 @@ import model.Achievement;
 import model.GameResult;
 import service.GamificationService;
 import service.GamificationService.GamificationResult;
+import service.LivePerformanceService;
 import util.SessionManager;
 
 import java.util.Collections;
@@ -285,6 +286,15 @@ public class GameScreen {
         errorLabel.setText(String.valueOf(typing.getErrors()));
         wordsLabel.setText(String.valueOf(typing.getWordsTyped()));
         progressBar.setProgress(typing.getProgress(typed));
+        LivePerformanceService.getInstance().publishMetric(
+                SessionManager.getInstance().getUsername(),
+                mode + " • " + difficulty,
+                typing.getWpm(),
+                typing.getAccuracy(),
+                typing.getErrors(),
+                typing.getWordsTyped(),
+                typing.getProgress(typed)
+        );
 
         // Finish condition for Practice and Normal modes
         if (!"Timer".equals(mode) && typing.isComplete(typed)) {
@@ -353,6 +363,13 @@ public class GameScreen {
                 newAchievements = gr.newAchievements();
                 leveledUp       = gr.leveledUp();
                 newLevel        = gr.newLevel();
+                for (Achievement achievement : newAchievements) {
+                    LivePerformanceService.getInstance().publishNotification(
+                            SessionManager.getInstance().getUsername(),
+                            "Achievement Unlocked",
+                            achievement.getTitle()
+                    );
+                }
             } catch (Exception ex) {
                 System.err.println("Gamification failed: " + ex.getMessage());
             }

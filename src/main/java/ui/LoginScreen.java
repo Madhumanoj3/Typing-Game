@@ -24,7 +24,6 @@ public class LoginScreen {
     // ── Login fields ──────────────────────────────────────────────────────
     private TextField     loginEmail;
     private PasswordField loginPassword;
-    private Label         loginMessage;
 
     // ── Register fields ───────────────────────────────────────────────────
     private TextField     regUsername;
@@ -35,7 +34,6 @@ public class LoginScreen {
     private DatePicker    regDob;
     private PasswordField regPassword;
     private PasswordField regConfirm;
-    private Label         regMessage;
     private HBox          strengthBar;
 
     // ── Root panes ────────────────────────────────────────────────────────
@@ -53,8 +51,9 @@ public class LoginScreen {
 
         // ── Center Card ───────────────────────────────────────────────────
         VBox card = new VBox(0);
-        card.setMaxWidth(440);
-        card.setMinWidth(440);
+        card.setMaxWidth(600);
+        card.setMinWidth(350);
+        card.setPrefWidth(440);
         card.getStyleClass().add("card");
         card.setStyle("-fx-background-color: #1a1a2e; -fx-background-radius: 20; -fx-padding: 40;");
 
@@ -62,6 +61,8 @@ public class LoginScreen {
         buildRegisterForm();
 
         formContainer = new VBox();
+        formContainer.setPrefHeight(-1); // Let it size based on content
+        formContainer.setStyle("-fx-padding: 0;");
         formContainer.getChildren().add(loginForm);
 
         card.getChildren().add(formContainer);
@@ -78,7 +79,9 @@ public class LoginScreen {
 
     private void buildLoginForm() {
         loginForm = new VBox(18);
-        loginForm.setAlignment(Pos.CENTER_LEFT);
+        loginForm.setAlignment(Pos.TOP_CENTER);
+        loginForm.setMaxWidth(Double.MAX_VALUE);
+        loginForm.setPrefHeight(-1);
 
         // Brand
         Label brand = new Label("⌨  TypeMaster");
@@ -110,10 +113,6 @@ public class LoginScreen {
         // Enter key support
         loginPassword.setOnAction(e -> handleLogin());
 
-        loginMessage = new Label("");
-        loginMessage.getStyleClass().add("label-error");
-        loginMessage.setWrapText(true);
-
         // Switch to register
         HBox switchRow = new HBox(6);
         switchRow.setAlignment(Pos.CENTER);
@@ -130,7 +129,7 @@ public class LoginScreen {
                 gap(4),
                 fieldLabel("Email"), loginEmail,
                 fieldLabel("Password"), loginPassword,
-                loginBtn, loginMessage,
+                loginBtn,
                 gap(8), switchRow
         );
     }
@@ -139,7 +138,9 @@ public class LoginScreen {
 
     private void buildRegisterForm() {
         registerForm = new VBox(14);
-        registerForm.setAlignment(Pos.CENTER_LEFT);
+        registerForm.setAlignment(Pos.TOP_CENTER);
+        registerForm.setMaxWidth(Double.MAX_VALUE);
+        registerForm.setPrefHeight(-1);
 
         Label brand = new Label("⌨  TypeMaster");
         brand.setStyle("-fx-text-fill: #a78bfa; -fx-font-size: 15px; -fx-font-weight: bold;");
@@ -213,10 +214,6 @@ public class LoginScreen {
         registerBtn.setOnAction(e -> handleRegister());
         regConfirm.setOnAction(e -> handleRegister());
 
-        regMessage = new Label("");
-        regMessage.getStyleClass().add("label-error");
-        regMessage.setWrapText(true);
-
         HBox switchRow = new HBox(6);
         switchRow.setAlignment(Pos.CENTER);
         Label switchLabel = new Label("Already have an account?");
@@ -239,7 +236,7 @@ public class LoginScreen {
                 fieldLabel("Password"), regPassword,
                 strengthLabel, strengthBar,
                 fieldLabel("Confirm Password"), regConfirm,
-                registerBtn, regMessage,
+                registerBtn,
                 gap(4), switchRow
         );
     }
@@ -251,7 +248,7 @@ public class LoginScreen {
         String pass  = loginPassword.getText();
 
         if (email.isEmpty() || pass.isEmpty()) {
-            loginMessage.setText("Please fill in all fields.");
+            AppDialogs.showError("Missing Fields", "Please enter your email and password.");
             return;
         }
 
@@ -267,12 +264,10 @@ public class LoginScreen {
         String hash = PasswordUtil.hash(pass);
         User user = MongoDBManager.getInstance().loginUser(email, hash);
         if (user == null) {
-            loginMessage.setStyle("-fx-text-fill: #ef4444;");
-            loginMessage.setText("Invalid email or password.");
+            AppDialogs.showError("Login Failed", "Invalid email or password.\nPlease check your credentials and try again.");
         } else {
             if (user.isBlocked()) {
-                loginMessage.setStyle("-fx-text-fill: #ef4444;");
-                loginMessage.setText("Your account has been blocked. Contact admin.");
+                AppDialogs.showError("Account Blocked", "Your account has been blocked.\nPlease contact the administrator.");
                 return;
             }
             SessionManager.getInstance().login(user);
@@ -291,14 +286,14 @@ public class LoginScreen {
         String pass      = regPassword.getText();
         String confirm   = regConfirm.getText();
 
-        if (username.isEmpty() || email.isEmpty() || phone.isEmpty() || address.isEmpty() || 
+        if (username.isEmpty() || email.isEmpty() || phone.isEmpty() || address.isEmpty() ||
             ageStr.isEmpty() || dob.isEmpty() || pass.isEmpty()) {
-            setRegError("Please fill in all fields.");
+            AppDialogs.showError("Missing Fields", "Please fill in all required fields before creating your account.");
             return;
         }
 
         if (!phone.matches("\\d{10}")) {
-            setRegError("Phone number must be exactly 10 digits.");
+            AppDialogs.showError("Invalid Phone Number", "Phone number must be exactly 10 digits.\nExample: 9876543210");
             return;
         }
 
@@ -307,35 +302,35 @@ public class LoginScreen {
             age = Integer.parseInt(ageStr);
             if (age < 0 || age > 150) throw new NumberFormatException();
         } catch (NumberFormatException e) {
-            setRegError("Please enter a valid age.");
+            AppDialogs.showError("Invalid Age", "Please enter a valid age between 0 and 150.");
             return;
         }
         if (!email.contains("@")) {
-            setRegError("Please enter a valid email address.");
+            AppDialogs.showError("Invalid Email", "Please enter a valid email address.\nExample: user@example.com");
             return;
         }
         if (!pass.equals(confirm)) {
-            setRegError("Passwords do not match.");
+            AppDialogs.showError("Passwords Don't Match", "The passwords you entered do not match.\nPlease re-enter and try again.");
             return;
         }
         if (pass.length() < 6) {
-            setRegError("Password must be at least 6 characters.");
+            AppDialogs.showError("Weak Password", "Password must be at least 6 characters long.\nChoose a stronger password.");
             return;
         }
 
         if (MongoDBManager.getInstance().isEmailTaken(email)) {
-            setRegError("This email address is already registered.");
+            AppDialogs.showError("Email Already Registered", "This email address is already in use.\nTry signing in or use a different email.");
             return;
         }
         if (MongoDBManager.getInstance().isUsernameTaken(username)) {
-            setRegError("This username is already taken.");
+            AppDialogs.showError("Username Taken", "The username \"" + username + "\" is already taken.\nPlease choose a different username.");
             return;
         }
 
         User newUser = new User(phone, address, age, dob, username, email, PasswordUtil.hash(pass));
         boolean ok = MongoDBManager.getInstance().registerUser(newUser);
         if (!ok) {
-            setRegError("Registration failed. Please try again.");
+            AppDialogs.showError("Registration Failed", "Something went wrong while creating your account.\nPlease try again.");
         } else {
             SessionManager.getInstance().login(newUser);
             StoreService.getInstance().loadUserPreferences(newUser.getUsername());
@@ -347,13 +342,12 @@ public class LoginScreen {
         showingLogin = !showingLogin;
         formContainer.getChildren().clear();
         if (showingLogin) {
-            loginMessage.setText("");
             formContainer.getChildren().add(loginForm);
         } else {
-            regMessage.setText("");
             ScrollPane sp = new ScrollPane(registerForm);
             sp.setFitToWidth(true);
-            sp.setPrefHeight(560);
+            sp.setPrefHeight(-1); // Let it size naturally
+            sp.setMaxHeight(Double.MAX_VALUE);
             sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
             sp.getStyleClass().add("scroll-dark");
             sp.setStyle("-fx-background: #1a1a2e; -fx-background-color: #1a1a2e;");
@@ -368,11 +362,6 @@ public class LoginScreen {
             Rectangle seg = (Rectangle) strengthBar.getChildren().get(i);
             seg.setFill(Color.web(i < score ? styles[score] : "#1e293b"));
         }
-    }
-
-    private void setRegError(String msg) {
-        regMessage.setStyle("-fx-text-fill: #ef4444;");
-        regMessage.setText(msg);
     }
 
     /** Returns [adminEmail, adminPassword] from config.properties (fallback to defaults). */

@@ -44,6 +44,7 @@ public class GamificationService {
         new AchievementDef("LESSON_1",       "First Lesson",      "Completed your first training lesson", "📖"),
         new AchievementDef("LESSON_5",       "Diligent Student",  "Completed 5 training lessons",         "📚"),
         new AchievementDef("LESSON_10",      "Course Champion",   "Completed all 10 lessons",             "🎓"),
+        new AchievementDef("CERTIFIED_TYPIST","Certified Typist",  "Exported a premium training certificate","📜"),
         new AchievementDef("DAILY_COMPLETE", "Daily Champion",    "Completed all daily challenges today", "📅")
     );
 

@@ -7,7 +7,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import model.Subscription;
+import service.BillPdfService;
 
+import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -149,7 +152,8 @@ public class AdminSubscriptionsPanel {
             userLine.setStyle("-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;");
 
             Label detailLine = new Label("💰 Amount: " + price + "  •  📅 Requested: " +
-                    (s.getStartDate() != null ? s.getStartDate().format(fmt) : "—"));
+                    (s.getStartDate() != null ? s.getStartDate().format(fmt) : "—") +
+                    "  •  💳 Payment: " + paymentLabel(s));
             detailLine.getStyleClass().add("label-muted");
 
             info.getChildren().addAll(userLine, detailLine);
@@ -158,17 +162,14 @@ public class AdminSubscriptionsPanel {
             Button verifyBtn = new Button("✅ Verify & Activate");
             verifyBtn.getStyleClass().add("btn-success");
             verifyBtn.setOnAction(e -> {
-                Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-                confirm.setTitle("Verify Payment");
-                confirm.setHeaderText("Verify payment for " + s.getUsername() + "?");
-                confirm.setContentText("Plan: " + s.getPlan() + "\nAmount: " + price +
-                        "\n\nConfirm that payment has been received?");
-                confirm.showAndWait().ifPresent(bt -> {
-                    if (bt == ButtonType.OK) {
-                        SubscriptionDAO.getInstance().updateStatus(s.getId(), "ACTIVE");
-                        refreshAll();
-                    }
-                });
+                boolean confirmed = AdminDialogs.showConfirm(
+                        "Verify Payment",
+                        "Confirm that payment has been received for " + s.getUsername() + "?",
+                        "📦 Plan: " + s.getPlan() + "  |  💰 Amount: " + price,
+                        "Verify & Activate", false);
+                if (confirmed) {
+                    verifyAndActivate(s);
+                }
             });
 
             Button rejectBtn = new Button("❌ Reject");
@@ -271,6 +272,10 @@ public class AdminSubscriptionsPanel {
             }
         });
 
+        TableColumn<Subscription, String> paymentCol = new TableColumn<>("Payment");
+        paymentCol.setCellValueFactory(d -> new javafx.beans.property.SimpleStringProperty(paymentLabel(d.getValue())));
+        paymentCol.setPrefWidth(180);
+
         TableColumn<Subscription, String> startCol = new TableColumn<>("Start Date");
         startCol.setCellValueFactory(d -> new javafx.beans.property.SimpleStringProperty(
                 d.getValue().getStartDate() != null ? d.getValue().getStartDate().format(fmt) : "—"));
@@ -281,7 +286,7 @@ public class AdminSubscriptionsPanel {
                 d.getValue().getEndDate() != null ? d.getValue().getEndDate().format(fmt) : "—"));
         endCol.setPrefWidth(145);
 
-        table.getColumns().addAll(userCol, planCol, statusCol, startCol, endCol);
+        table.getColumns().addAll(userCol, planCol, statusCol, paymentCol, startCol, endCol);
         return table;
     }
 
@@ -330,43 +335,55 @@ public class AdminSubscriptionsPanel {
 
     private void updateStatus(String newStatus) {
         Subscription sel = subsTable.getSelectionModel().getSelectedItem();
-        if (sel == null) { showAlert("No Selection", "Select a subscription first."); return; }
+        if (sel == null) { AdminDialogs.showInfo("No Selection", "Select a subscription first."); return; }
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Update Status");
-        confirm.setHeaderText("Set status to " + newStatus + "?");
-        confirm.setContentText("User: " + sel.getUsername() + "\nCurrent: " + sel.getStatus());
-
-        confirm.showAndWait().ifPresent(bt -> {
-            if (bt == ButtonType.OK) {
-                SubscriptionDAO.getInstance().updateStatus(sel.getId(), newStatus);
-                refreshAll();
-                showAlert("Success", "Status updated to " + newStatus);
+        boolean confirmed = AdminDialogs.showConfirm(
+                "Update Status",
+                "Set status to \"" + newStatus + "\" for " + sel.getUsername() + "?",
+                "Current status: " + sel.getStatus(),
+                "Update", false);
+        if (confirmed) {
+            if ("ACTIVE".equals(newStatus)) {
+                verifyAndActivate(sel);
+                return;
             }
-        });
+            SubscriptionDAO.getInstance().updateStatus(sel.getId(), newStatus);
+            refreshAll();
+            AdminDialogs.showSuccess("Status Updated", "Status changed to " + newStatus + ".");
+        }
+    }
+
+    private void verifyAndActivate(Subscription sub) {
+        try {
+            sub.setStatus("ACTIVE");
+            sub.setVerifiedDate(LocalDateTime.now());
+            Path billPath = BillPdfService.getInstance().generateBill(sub);
+            sub.setBillPath(billPath.toString());
+            SubscriptionDAO.getInstance().verifyAndStoreBill(sub.getId(), sub.getVerifiedDate(), sub.getBillPath());
+            refreshAll();
+            AdminDialogs.showSuccess("Payment Verified", "Premium activated and bill generated:\n" + billPath);
+        } catch (Exception ex) {
+            AdminDialogs.showError("Bill Generation Failed", "Payment was not activated because the bill PDF could not be generated.\n" + ex.getMessage());
+        }
+    }
+
+    private String paymentLabel(Subscription sub) {
+        String method = sub.getPaymentMethod() != null ? sub.getPaymentMethod() : "CARD";
+        String detail = sub.getPaymentDetail() != null && !sub.getPaymentDetail().isBlank()
+                ? " • " + sub.getPaymentDetail()
+                : "";
+        return method + detail;
     }
 
     private void changePlan() {
         Subscription sel = subsTable.getSelectionModel().getSelectedItem();
-        if (sel == null) { showAlert("No Selection", "Select a subscription first."); return; }
+        if (sel == null) { AdminDialogs.showInfo("No Selection", "Select a subscription first."); return; }
 
-        ChoiceDialog<String> d = new ChoiceDialog<>(sel.getPlan(), "FREE", "MONTHLY", "LIFETIME");
-        d.setTitle("Change Plan");
-        d.setHeaderText("Change plan for: " + sel.getUsername());
-        d.setContentText("Select new plan:");
-
-        d.showAndWait().ifPresent(plan -> {
-            SubscriptionDAO.getInstance().updatePlan(sel.getId(), plan);
+        String chosen = AdminDialogs.showPlanChoice(sel.getUsername(), sel.getPlan());
+        if (chosen != null) {
+            SubscriptionDAO.getInstance().updatePlan(sel.getId(), chosen);
             refreshAll();
-            showAlert("Success", "Plan changed to " + plan);
-        });
-    }
-
-    private void showAlert(String t, String m) {
-        Alert a = new Alert(Alert.AlertType.INFORMATION);
-        a.setTitle(t);
-        a.setHeaderText(null);
-        a.setContentText(m);
-        a.showAndWait();
+            AdminDialogs.showSuccess("Plan Changed", "Plan updated to " + chosen + ".");
+        }
     }
 }

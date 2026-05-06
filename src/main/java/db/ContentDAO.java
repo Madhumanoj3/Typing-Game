@@ -1,93 +1,123 @@
 package db;
 
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Sorts;
-import model.TypingContent;
+import com.mongodb.client.MongoDatabase;
+import model.Content;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-/**
- * Data access for the {@code content} collection.
- * Provides CRUD operations for admin-managed typing content.
- */
-public class ContentDAO {
+import static com.mongodb.client.model.Filters.*;
 
+public class ContentDAO {
     private static ContentDAO instance;
-    private final MongoCollection<Document> col;
+    private final MongoCollection<Document> collection;
 
     private ContentDAO() {
-        col = MongoDBManager.getInstance().getDatabase().getCollection("content");
+        MongoDatabase database = MongoDBManager.getInstance().getDatabase();
+        this.collection = database.getCollection("content");
     }
 
     public static ContentDAO getInstance() {
-        if (instance == null) instance = new ContentDAO();
+        if (instance == null) {
+            instance = new ContentDAO();
+        }
         return instance;
     }
 
-    // ── Read ──────────────────────────────────────────────────────────────
-
-    public List<TypingContent> getAll() {
-        List<TypingContent> list = new ArrayList<>();
-        for (Document d : col.find().sort(Sorts.descending("createdAt"))) {
-            list.add(toModel(d));
-        }
-        return list;
-    }
-
-    public List<TypingContent> getByDifficulty(String difficulty) {
-        List<TypingContent> list = new ArrayList<>();
-        for (Document d : col.find(Filters.eq("difficulty", difficulty))
-                              .sort(Sorts.descending("createdAt"))) {
-            list.add(toModel(d));
-        }
-        return list;
-    }
-
-    // ── Write ─────────────────────────────────────────────────────────────
-
-    public void save(TypingContent content) {
-        Document doc = fromModel(content);
-        col.insertOne(doc);
+    public void create(Content content) {
+        Document doc = new Document()
+                .append("type", content.getType())
+                .append("text", content.getText())
+                .append("difficulty", content.getDifficulty())
+                .append("category", content.getCategory())
+                .append("active", content.isActive());
+        collection.insertOne(doc);
         content.setId(doc.getObjectId("_id"));
     }
 
-    public void update(TypingContent content) {
-        col.replaceOne(Filters.eq("_id", content.getId()), fromModel(content));
+    public void save(Content content) {
+        create(content);
+    }
+
+    public Content findById(ObjectId id) {
+        Document doc = collection.find(eq("_id", id)).first();
+        return doc != null ? documentToContent(doc) : null;
+    }
+
+    public List<Content> getAll() {
+        List<Content> contents = new ArrayList<>();
+        for (Document doc : collection.find()) {
+            contents.add(documentToContent(doc));
+        }
+        return contents;
+    }
+
+    public List<Content> getWordsByDifficulty(String difficulty) {
+        List<Content> contents = new ArrayList<>();
+        for (Document doc : collection.find(and(eq("type", "WORD"), eq("difficulty", difficulty), eq("active", true)))) {
+            contents.add(documentToContent(doc));
+        }
+        return contents;
+    }
+
+    public List<Content> getSentences() {
+        List<Content> contents = new ArrayList<>();
+        for (Document doc : collection.find(and(eq("type", "SENTENCE"), eq("active", true)))) {
+            contents.add(documentToContent(doc));
+        }
+        return contents;
+    }
+
+    public long countByTypeAndDifficulty(String type, String difficulty) {
+        return collection.countDocuments(and(eq("type", type), eq("difficulty", difficulty)));
+    }
+
+    public List<Content> search(String searchText, String type, String difficulty) {
+        List<Content> contents = new ArrayList<>();
+        
+        var filters = new ArrayList<org.bson.conversions.Bson>();
+        if (searchText != null && !searchText.isEmpty()) {
+            filters.add(regex("text", searchText, "i"));
+        }
+        if (type != null && !type.isEmpty()) {
+            filters.add(eq("type", type));
+        }
+        if (difficulty != null && !difficulty.isEmpty()) {
+            filters.add(eq("difficulty", difficulty));
+        }
+        
+        var query = filters.isEmpty() ? new Document() : and(filters);
+        for (Document doc : collection.find(query)) {
+            contents.add(documentToContent(doc));
+        }
+        return contents;
+    }
+
+    public void update(Content content) {
+        Document doc = new Document()
+                .append("type", content.getType())
+                .append("text", content.getText())
+                .append("difficulty", content.getDifficulty())
+                .append("category", content.getCategory())
+                .append("active", content.isActive());
+        collection.updateOne(eq("_id", content.getId()), new Document("$set", doc));
     }
 
     public void delete(ObjectId id) {
-        col.deleteOne(Filters.eq("_id", id));
+        collection.deleteOne(eq("_id", id));
     }
 
-    // ── Mappers ───────────────────────────────────────────────────────────
-
-    private TypingContent toModel(Document d) {
-        TypingContent c = new TypingContent();
-        c.setId(d.getObjectId("_id"));
-        c.setType(d.getString("type"));
-        c.setText(d.getString("text"));
-        c.setDifficulty(d.getString("difficulty"));
-        Date created = d.getDate("createdAt");
-        if (created != null) {
-            c.setCreatedAt(created.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-        }
-        return c;
-    }
-
-    private Document fromModel(TypingContent c) {
-        Document doc = new Document()
-                .append("type",       c.getType())
-                .append("text",       c.getText())
-                .append("difficulty", c.getDifficulty())
-                .append("createdAt",  new Date());
-        if (c.getId() != null) doc.append("_id", c.getId());
-        return doc;
+    private Content documentToContent(Document doc) {
+        Content content = new Content();
+        content.setId(doc.getObjectId("_id"));
+        content.setType(doc.getString("type"));
+        content.setText(doc.getString("text"));
+        content.setDifficulty(doc.getString("difficulty"));
+        content.setCategory(doc.getString("category"));
+        content.setActive(doc.getBoolean("active", true));
+        return content;
     }
 }

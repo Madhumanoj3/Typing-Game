@@ -11,9 +11,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.*;
 import javafx.util.Duration;
 import model.Lesson;
+import service.CertificationService;
 import service.GamificationService;
+import service.LivePerformanceService;
 import service.TrainingService;
 import util.SessionManager;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Full-screen lesson view.
@@ -39,6 +44,7 @@ public class LessonViewScreen {
     private StackPane   root;
 
     private boolean finished = false;
+    private final Map<String, Integer> sessionKeyErrors = new HashMap<>();
 
     public LessonViewScreen(Lesson lesson) {
         this.lesson = lesson;
@@ -166,7 +172,7 @@ public class LessonViewScreen {
         inputArea.setWrapText(true);
         inputArea.setPrefHeight(110);
         inputArea.setMaxWidth(Double.MAX_VALUE);
-        inputArea.textProperty().addListener((obs, oldVal, newVal) -> onInput(newVal));
+        inputArea.textProperty().addListener((obs, oldVal, newVal) -> onInput(oldVal, newVal));
 
         // Controls
         Button restart = new Button("↺  Restart");
@@ -257,9 +263,10 @@ public class LessonViewScreen {
 
     // ── Input handler ─────────────────────────────────────────────────────
 
-    private void onInput(String typed) {
+    private void onInput(String oldTyped, String typed) {
         if (finished) return;
 
+        trackNewKeyErrors(oldTyped, typed);
         typing.update(typed);
         renderPassage(typed);
 
@@ -267,10 +274,31 @@ public class LessonViewScreen {
         accLabel.setText(String.format("%.0f%%", typing.getAccuracy()));
         errorLabel.setText(String.valueOf(typing.getErrors()));
         progressBar.setProgress(typing.getProgress(typed));
+        LivePerformanceService.getInstance().publishMetric(username, "Lesson: " + lesson.getTitle(),
+                typing.getWpm(), typing.getAccuracy(), typing.getErrors(), typing.getWordsTyped(),
+                typing.getProgress(typed));
 
         if (typing.isComplete(typed)) {
             finishLesson(typed);
         }
+    }
+
+    private void trackNewKeyErrors(String oldTyped, String typed) {
+        int oldLen = oldTyped != null ? oldTyped.length() : 0;
+        if (typed.length() <= oldLen) return;
+
+        String passage = lesson.getContent();
+        for (int i = oldLen; i < typed.length() && i < passage.length(); i++) {
+            if (typed.charAt(i) != passage.charAt(i)) {
+                String key = displayKey(passage.charAt(i));
+                sessionKeyErrors.merge(key, 1, Integer::sum);
+            }
+        }
+    }
+
+    private String displayKey(char ch) {
+        if (Character.isWhitespace(ch)) return "Space";
+        return String.valueOf(Character.toUpperCase(ch));
     }
 
     // ── Completion ────────────────────────────────────────────────────────
@@ -284,9 +312,10 @@ public class LessonViewScreen {
         double accuracy = typing.getAccuracy();
 
         try {
-            trainingService.recordAttempt(username, lesson, wpm, accuracy);
+            trainingService.recordAttempt(username, lesson, wpm, accuracy, sessionKeyErrors);
             int completed = trainingService.countCompleted(username);
             GamificationService.getInstance().checkLessonAchievements(username, completed);
+            CertificationService.getInstance().requestReviewIfEligible(username);
         } catch (Exception ex) {
             System.err.println("Training progress save failed: " + ex.getMessage());
         }

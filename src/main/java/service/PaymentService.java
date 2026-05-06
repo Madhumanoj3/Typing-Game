@@ -28,6 +28,8 @@ public class PaymentService {
 
     public static final String PLAN_MONTHLY = "MONTHLY";
     public static final String PLAN_LIFETIME = "LIFETIME";
+    public static final String METHOD_CARD = "CARD";
+    public static final String METHOD_UPI = "UPI";
 
     public static String getDisplayPrice(String plan) {
         return switch (plan) {
@@ -53,6 +55,14 @@ public class PaymentService {
         return cvv != null && cvv.matches("\\d{3,4}");
     }
 
+    public boolean isUpiIdValid(String upiId) {
+        return upiId != null && upiId.trim().matches("[A-Za-z0-9._-]{2,256}@[A-Za-z][A-Za-z0-9]{2,64}");
+    }
+
+    public boolean isUpiPinValid(String pin) {
+        return pin != null && pin.matches("\\d{4}|\\d{6}");
+    }
+
     /**
      * Validates all card fields.
      * 
@@ -70,6 +80,14 @@ public class PaymentService {
         return null;
     }
 
+    public String validateUpi(String upiId, String pin) {
+        if (!isUpiIdValid(upiId))
+            return "Please enter a valid UPI ID, for example name@bank.";
+        if (!isUpiPinValid(pin))
+            return "UPI PIN must be 4 or 6 digits.";
+        return null;
+    }
+
     // ── Processing ────────────────────────────────────────────────────────
 
     /**
@@ -80,11 +98,17 @@ public class PaymentService {
      * @param plan     PLAN_MONTHLY or PLAN_LIFETIME
      */
     public Subscription processPayment(String username, String plan) {
+        return processPayment(username, plan, METHOD_CARD, "Card payment");
+    }
+
+    public Subscription processPayment(String username, String plan, String paymentMethod, String paymentDetail) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime end = PLAN_LIFETIME.equals(plan) ? now.plusYears(1) : now.plusMonths(1);
 
         // Status is PENDING — admin must verify before activation
         Subscription sub = new Subscription(username, plan, "PENDING", now, end);
+        sub.setPaymentMethod(paymentMethod);
+        sub.setPaymentDetail(paymentDetail);
         subscriptionDAO.save(sub);
         return sub;
     }

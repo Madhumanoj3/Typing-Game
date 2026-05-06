@@ -11,6 +11,10 @@ public class Subscription {
     private String        status;    // "ACTIVE" | "EXPIRED" | "CANCELLED"
     private LocalDateTime startDate;
     private LocalDateTime endDate;   // null means no expiry (LIFETIME)
+    private String        paymentMethod; // "CARD" | "UPI"
+    private String        paymentDetail; // masked card / UPI id for admin and bill
+    private LocalDateTime verifiedDate;
+    private String        billPath;
 
     public Subscription() {}
 
@@ -42,6 +46,18 @@ public class Subscription {
 
     public LocalDateTime getEndDate()       { return endDate; }
     public void setEndDate(LocalDateTime v) { this.endDate = v; }
+
+    public String getPaymentMethod()        { return paymentMethod; }
+    public void setPaymentMethod(String v)  { this.paymentMethod = v; }
+
+    public String getPaymentDetail()        { return paymentDetail; }
+    public void setPaymentDetail(String v)  { this.paymentDetail = v; }
+
+    public LocalDateTime getVerifiedDate()  { return verifiedDate; }
+    public void setVerifiedDate(LocalDateTime v) { this.verifiedDate = v; }
+
+    public String getBillPath()             { return billPath; }
+    public void setBillPath(String v)       { this.billPath = v; }
 
     public boolean isActive() {
         if (!"ACTIVE".equals(status)) return false;

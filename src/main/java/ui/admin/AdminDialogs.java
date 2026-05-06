@@ -197,6 +197,55 @@ public final class AdminDialogs {
         return b;
     }
 
+    // ── Plan Choice Dialog ────────────────────────────────────────────────────
+
+    /**
+     * Shows a styled plan-selection dialog with a ComboBox.
+     * Returns the chosen plan string, or null if cancelled.
+     */
+    public static String showPlanChoice(String username, String currentPlan) {
+        Stage stage = buildStage("Change Plan");
+        String[] result = {null};
+
+        VBox root = new VBox(20);
+        root.setStyle("-fx-background-color: #0c0c1e; -fx-padding: 34 30 28 30;");
+        root.setAlignment(Pos.CENTER);
+        root.setPrefWidth(400);
+
+        StackPane iconWrap = new StackPane();
+        Circle bg = new Circle(32);
+        bg.setFill(Color.web("rgba(124,58,237,0.14)"));
+        bg.setStroke(Color.web("rgba(124,58,237,0.40)"));
+        bg.setStrokeWidth(1.5);
+        Label icon = new Label("📦");
+        icon.setStyle("-fx-font-size: 22px;");
+        iconWrap.getChildren().addAll(bg, icon);
+
+        Label titleLbl = new Label("Change Plan");
+        titleLbl.setStyle("-fx-text-fill: white; -fx-font-size: 17px; -fx-font-weight: bold;");
+
+        Label subLbl = new Label("Select a new plan for: " + username);
+        subLbl.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 13px;");
+
+        javafx.scene.control.ComboBox<String> planCombo = new javafx.scene.control.ComboBox<>();
+        planCombo.getItems().addAll("FREE", "MONTHLY", "LIFETIME");
+        planCombo.setValue(currentPlan);
+        planCombo.getStyleClass().add("field-dark");
+        planCombo.setPrefWidth(240);
+
+        HBox btns = new HBox(14);
+        btns.setAlignment(Pos.CENTER);
+        Button cancelBtn = ghostBtn("Cancel");
+        cancelBtn.setOnAction(e -> stage.close());
+        Button okBtn = filledBtn("Apply", "#7c3aed", "#6d28d9", "#7c3aed66");
+        okBtn.setOnAction(e -> { result[0] = planCombo.getValue(); stage.close(); });
+        btns.getChildren().addAll(cancelBtn, okBtn);
+
+        root.getChildren().addAll(iconWrap, titleLbl, subLbl, planCombo, btns);
+        showModal(stage, root);
+        return result[0];
+    }
+
     /** Styled form label */
     public static Label formLabel(String text) {
         Label l = new Label(text);

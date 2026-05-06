@@ -35,7 +35,11 @@ public class SubscriptionDAO {
                 .append("plan",      sub.getPlan())
                 .append("status",    sub.getStatus())
                 .append("startDate", toDate(sub.getStartDate()))
-                .append("endDate",   sub.getEndDate() != null ? toDate(sub.getEndDate()) : null);
+                .append("endDate",   sub.getEndDate() != null ? toDate(sub.getEndDate()) : null)
+                .append("paymentMethod", sub.getPaymentMethod())
+                .append("paymentDetail", sub.getPaymentDetail())
+                .append("verifiedDate", sub.getVerifiedDate() != null ? toDate(sub.getVerifiedDate()) : null)
+                .append("billPath", sub.getBillPath());
         col.insertOne(doc);
         sub.setId(doc.getObjectId("_id"));
     }
@@ -75,6 +79,18 @@ public class SubscriptionDAO {
         );
     }
 
+    /** Marks a subscription verified and stores the generated bill location. */
+    public void verifyAndStoreBill(org.bson.types.ObjectId id, LocalDateTime verifiedDate, String billPath) {
+        col.updateOne(
+                Filters.eq("_id", id),
+                com.mongodb.client.model.Updates.combine(
+                        com.mongodb.client.model.Updates.set("status", "ACTIVE"),
+                        com.mongodb.client.model.Updates.set("verifiedDate", toDate(verifiedDate)),
+                        com.mongodb.client.model.Updates.set("billPath", billPath)
+                )
+        );
+    }
+
     /** Updates subscription plan. */
     public void updatePlan(org.bson.types.ObjectId id, String plan) {
         col.updateOne(
@@ -94,6 +110,11 @@ public class SubscriptionDAO {
         s.setStartDate(toLocal(d.getDate("startDate")));
         Date end = d.getDate("endDate");
         s.setEndDate(end != null ? toLocal(end) : null);
+        s.setPaymentMethod(d.getString("paymentMethod"));
+        s.setPaymentDetail(d.getString("paymentDetail"));
+        Date verified = d.getDate("verifiedDate");
+        s.setVerifiedDate(verified != null ? toLocal(verified) : null);
+        s.setBillPath(d.getString("billPath"));
         return s;
     }
 

@@ -42,7 +42,10 @@ public class TrainingProgressDAO {
                 .append("bestAccuracy", p.getBestAccuracy())
                 .append("attempts",     p.getAttempts())
                 .append("lastAttemptAt", toDate(p.getLastAttemptAt()))
-                .append("completedAt",  toDate(p.getCompletedAt()));
+                .append("completedAt",  toDate(p.getCompletedAt()))
+                .append("keyErrorCounts", new Document(p.getKeyErrorCounts()))
+                .append("typingStyle", p.getTypingStyle())
+                .append("recommendation", p.getRecommendation());
 
         col.replaceOne(
                 Filters.and(
@@ -80,11 +83,24 @@ public class TrainingProgressDAO {
         p.setLessonId(d.getString("lessonId"));
         p.setLessonTitle(d.getString("lessonTitle"));
         p.setCompleted(Boolean.TRUE.equals(d.getBoolean("completed")));
-        p.setBestWpm(d.getDouble("bestWpm") != null ? d.getDouble("bestWpm") : 0);
-        p.setBestAccuracy(d.getDouble("bestAccuracy") != null ? d.getDouble("bestAccuracy") : 0);
+        p.setBestWpm(numberAsDouble(d, "bestWpm"));
+        p.setBestAccuracy(numberAsDouble(d, "bestAccuracy"));
         p.setAttempts(d.getInteger("attempts", 0));
         p.setLastAttemptAt(toLocal(d.getDate("lastAttemptAt")));
         p.setCompletedAt(toLocal(d.getDate("completedAt")));
+        Document keyErrors = d.get("keyErrorCounts", Document.class);
+        if (keyErrors != null) {
+            java.util.Map<String, Integer> map = new java.util.HashMap<>();
+            for (String key : keyErrors.keySet()) {
+                Object value = keyErrors.get(key);
+                if (value instanceof Number n) map.put(key, n.intValue());
+            }
+            p.setKeyErrorCounts(map);
+        }
+        p.setTypingStyle(d.getString("typingStyle") != null ? d.getString("typingStyle") : "Balanced");
+        p.setRecommendation(d.getString("recommendation") != null
+                ? d.getString("recommendation")
+                : "Keep practicing with steady rhythm.");
         return p;
     }
 
@@ -96,5 +112,10 @@ public class TrainingProgressDAO {
     private LocalDateTime toLocal(Date d) {
         if (d == null) return null;
         return d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    private double numberAsDouble(Document doc, String key) {
+        Object value = doc.get(key);
+        return value instanceof Number n ? n.doubleValue() : 0.0;
     }
 }
