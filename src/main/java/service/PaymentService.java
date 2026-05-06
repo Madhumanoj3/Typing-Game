@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 /**
  * Simulated payment processing.
- * No real payment gateway — validates card format locally and always succeeds.
+ * Payments create PENDING subscriptions that require admin verification before activation.
  */
 public class PaymentService {
 
@@ -31,8 +31,8 @@ public class PaymentService {
 
     public static String getDisplayPrice(String plan) {
         return switch (plan) {
-            case PLAN_MONTHLY -> "Rs.199 / month";
-            case PLAN_LIFETIME -> "$Rs.1999 one-time";
+            case PLAN_MONTHLY  -> "₹199 / month";
+            case PLAN_LIFETIME -> "₹1,999 / year";
             default -> "Free";
         };
     }
@@ -73,16 +73,18 @@ public class PaymentService {
     // ── Processing ────────────────────────────────────────────────────────
 
     /**
-     * Simulates a successful payment and creates an ACTIVE subscription record.
+     * Creates a PENDING subscription that requires admin verification.
+     * The subscription will only become ACTIVE after the admin verifies the payment.
      * 
-     * @param username the user being upgraded
+     * @param username the user requesting upgrade
      * @param plan     PLAN_MONTHLY or PLAN_LIFETIME
      */
     public Subscription processPayment(String username, String plan) {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime end = PLAN_LIFETIME.equals(plan) ? null : now.plusMonths(1);
+        LocalDateTime end = PLAN_LIFETIME.equals(plan) ? now.plusYears(1) : now.plusMonths(1);
 
-        Subscription sub = new Subscription(username, plan, "ACTIVE", now, end);
+        // Status is PENDING — admin must verify before activation
+        Subscription sub = new Subscription(username, plan, "PENDING", now, end);
         subscriptionDAO.save(sub);
         return sub;
     }

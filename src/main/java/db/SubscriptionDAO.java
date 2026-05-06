@@ -56,6 +56,33 @@ public class SubscriptionDAO {
         return sub != null && sub.isActive() && !"FREE".equals(sub.getPlan());
     }
 
+    // ── Admin Operations ──────────────────────────────────────────────────
+
+    /** Returns all subscription records. */
+    public java.util.List<Subscription> getAllSubscriptions() {
+        java.util.List<Subscription> list = new java.util.ArrayList<>();
+        for (Document d : col.find().sort(Sorts.descending("startDate"))) {
+            list.add(toSub(d));
+        }
+        return list;
+    }
+
+    /** Updates subscription status (ACTIVE / EXPIRED / CANCELLED). */
+    public void updateStatus(org.bson.types.ObjectId id, String status) {
+        col.updateOne(
+                Filters.eq("_id", id),
+                com.mongodb.client.model.Updates.set("status", status)
+        );
+    }
+
+    /** Updates subscription plan. */
+    public void updatePlan(org.bson.types.ObjectId id, String plan) {
+        col.updateOne(
+                Filters.eq("_id", id),
+                com.mongodb.client.model.Updates.set("plan", plan)
+        );
+    }
+
     // ── Mappers ───────────────────────────────────────────────────────────
 
     private Subscription toSub(Document d) {

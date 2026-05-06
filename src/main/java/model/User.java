@@ -18,6 +18,8 @@ public class User {
     private double averageWpm;
     private double bestAccuracy;
     private LocalDateTime createdAt;
+    private String subscriptionType = "FREE";
+    private boolean blocked = false;
 
     public User() {
         this.createdAt = LocalDateTime.now();
@@ -78,6 +80,15 @@ public class User {
 
     public LocalDateTime getCreatedAt()    { return createdAt; }
     public void setCreatedAt(LocalDateTime v) { this.createdAt = v; }
+
+    public String getSubscriptionType()    { return subscriptionType; }
+    public void setSubscriptionType(String v) { this.subscriptionType = v; }
+
+    public boolean isBlocked()             { return blocked; }
+    public void setBlocked(boolean v)      { this.blocked = v; }
+
+    public String getPhoneNumber()         { return phone; }
+    public String getDateOfBirth()         { return dob; }
 
     @Override
     public String toString() {

@@ -101,6 +101,16 @@ public class MainUI extends Application {
         setScene(store.buildScene());
     }
 
+    public static void showLevelUp(int newLevel, model.UserStats stats) {
+        LevelUpScreen levelUp = new LevelUpScreen(newLevel, stats);
+        setScene(levelUp.buildScene());
+    }
+
+    public static void showAdminPanel() {
+        ui.admin.AdminDashboardScreen admin = new ui.admin.AdminDashboardScreen();
+        setScene(admin.buildScene());
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────
 
     private static void setScene(Scene scene) {

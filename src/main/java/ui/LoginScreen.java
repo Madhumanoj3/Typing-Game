@@ -255,12 +255,26 @@ public class LoginScreen {
             return;
         }
 
+        // Admin login — credentials loaded from config.properties
+        String[] adminCreds = loadAdminCredentials();
+        if (adminCreds[0].equals(email) && adminCreds[1].equals(pass)) {
+            User adminUser = new User("", "", 0, "", "admin", email, "");
+            SessionManager.getInstance().login(adminUser);
+            MainUI.showAdminPanel();
+            return;
+        }
+
         String hash = PasswordUtil.hash(pass);
         User user = MongoDBManager.getInstance().loginUser(email, hash);
         if (user == null) {
             loginMessage.setStyle("-fx-text-fill: #ef4444;");
             loginMessage.setText("Invalid email or password.");
         } else {
+            if (user.isBlocked()) {
+                loginMessage.setStyle("-fx-text-fill: #ef4444;");
+                loginMessage.setText("Your account has been blocked. Contact admin.");
+                return;
+            }
             SessionManager.getInstance().login(user);
             StoreService.getInstance().loadUserPreferences(user.getUsername());
             MainUI.showDashboard();
@@ -359,6 +373,18 @@ public class LoginScreen {
     private void setRegError(String msg) {
         regMessage.setStyle("-fx-text-fill: #ef4444;");
         regMessage.setText(msg);
+    }
+
+    /** Returns [adminEmail, adminPassword] from config.properties (fallback to defaults). */
+    private String[] loadAdminCredentials() {
+        java.util.Properties p = new java.util.Properties();
+        try (java.io.InputStream is = getClass().getResourceAsStream("/config.properties")) {
+            if (is != null) p.load(is);
+        } catch (java.io.IOException ignored) { }
+        return new String[]{
+            p.getProperty("admin.email",    "admin@typing.com"),
+            p.getProperty("admin.password", "admin123")
+        };
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────

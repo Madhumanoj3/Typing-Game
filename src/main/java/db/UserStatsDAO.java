@@ -47,6 +47,16 @@ public class UserStatsDAO {
         );
     }
 
+    /** Returns all user stats for admin view. */
+    public List<UserStats> getAll() {
+        List<UserStats> list = new ArrayList<>();
+        for (Document doc : col.find()
+                .sort(Sorts.orderBy(Sorts.descending("level"), Sorts.descending("xp")))) {
+            list.add(docToStats(doc));
+        }
+        return list;
+    }
+
     /** Returns all user stats sorted by level desc, then XP desc (for level rankings). */
     public List<UserStats> getAllSortedByLevel(int limit) {
         List<UserStats> list = new ArrayList<>();

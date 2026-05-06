@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * Subscription / upgrade screen with simulated payment form.
- * Free users see plan options; premium users see their current plan status.
+ * Payments create PENDING subscriptions; admin must verify before activation.
  */
 public class SubscriptionScreen {
 
@@ -66,7 +66,10 @@ public class SubscriptionScreen {
 
         Subscription existing = paymentService.getSubscription(username);
 
-        if (existing != null && existing.isActive()) {
+        if (existing != null && "PENDING".equals(existing.getStatus())) {
+            // Payment submitted but awaiting admin verification
+            body.getChildren().addAll(buildPendingSection(existing));
+        } else if (existing != null && existing.isActive()) {
             body.getChildren().addAll(buildCurrentPlanSection(existing));
         } else {
             body.getChildren().addAll(
@@ -77,6 +80,57 @@ public class SubscriptionScreen {
 
         scroll.setContent(body);
         return scroll;
+    }
+
+    // ── Pending verification view ─────────────────────────────────────────
+
+    private VBox buildPendingSection(Subscription sub) {
+        VBox section = new VBox(24);
+        section.setAlignment(Pos.CENTER);
+        section.setMaxWidth(550);
+
+        Label icon = new Label("⏳");
+        icon.setStyle("-fx-font-size: 64px;");
+
+        Label title = new Label("Payment Submitted — Awaiting Verification");
+        title.getStyleClass().add("label-title");
+        title.setWrapText(true);
+        title.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
+
+        String price = "MONTHLY".equals(sub.getPlan()) ? "₹199/month" : "₹1,999/year";
+        Label plan = new Label("Plan: " + sub.getPlan() + "  •  " + price);
+        plan.setStyle("-fx-text-fill: #fbbf24; -fx-font-size: 16px; -fx-font-weight: bold;");
+
+        VBox infoCard = new VBox(12);
+        infoCard.setStyle(
+            "-fx-background-color: rgba(251,191,36,0.08);" +
+            "-fx-background-radius: 16;" +
+            "-fx-padding: 24;" +
+            "-fx-border-color: rgba(251,191,36,0.2);" +
+            "-fx-border-radius: 16;" +
+            "-fx-border-width: 1;");
+
+        Label msg1 = new Label("🔔 Your payment is being reviewed by the admin.");
+        msg1.setStyle("-fx-text-fill: #fbbf24; -fx-font-size: 14px; -fx-font-weight: bold;");
+        msg1.setWrapText(true);
+
+        Label msg2 = new Label("The admin will verify the amount paid and your selected subscription plan. " +
+                "Once verified, your premium features will be activated automatically.");
+        msg2.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 13px;");
+        msg2.setWrapText(true);
+
+        Label msg3 = new Label("This usually takes a few minutes. Please check back soon!");
+        msg3.setStyle("-fx-text-fill: #10b981; -fx-font-size: 13px;");
+        msg3.setWrapText(true);
+
+        infoCard.getChildren().addAll(msg1, msg2, msg3);
+
+        Button backBtn = new Button("← Back to Dashboard");
+        backBtn.getStyleClass().add("btn-primary");
+        backBtn.setOnAction(e -> MainUI.showDashboard());
+
+        section.getChildren().addAll(icon, title, plan, infoCard, backBtn);
+        return section;
     }
 
     // ── Active plan view ──────────────────────────────────────────────────
@@ -91,7 +145,8 @@ public class SubscriptionScreen {
         Label title = new Label("You have Premium Access!");
         title.getStyleClass().add("label-title");
 
-        Label plan = new Label("Plan: " + sub.getPlan());
+        String price = "MONTHLY".equals(sub.getPlan()) ? "₹199/month" : "₹1,999/year";
+        Label plan = new Label("Plan: " + sub.getPlan() + "  •  " + price);
         plan.setStyle("-fx-text-fill: #fbbf24; -fx-font-size: 16px; -fx-font-weight: bold;");
 
         String expiryText = sub.getEndDate() == null
@@ -153,12 +208,12 @@ public class SubscriptionScreen {
         HBox row = new HBox(24);
         row.setAlignment(Pos.CENTER);
 
-        VBox monthly = buildPlanCard(PaymentService.PLAN_MONTHLY, "Monthly", "Rs.199",
+        VBox monthly = buildPlanCard(PaymentService.PLAN_MONTHLY, "Monthly", "₹199",
                 "/month", "Best for trying out", false);
-        VBox lifetime = buildPlanCard(PaymentService.PLAN_LIFETIME, "Lifetime", "Rs.1999",
-                "one-time", "Best value — forever", true);
+        VBox yearly = buildPlanCard(PaymentService.PLAN_LIFETIME, "Yearly", "₹1,999",
+                "/year", "Best value — save 16%", true);
 
-        row.getChildren().addAll(monthly, lifetime);
+        row.getChildren().addAll(monthly, yearly);
         return row;
     }
 
@@ -212,11 +267,8 @@ public class SubscriptionScreen {
 
         card.setOnMouseClicked(e -> {
             selectedPlan = planId;
-            // Refresh: caller will need to rebuild; simplest approach is to toggle styles
-            // here
             String active = selectedPlan.equals(planId) ? selectedStyle : baseStyle;
             card.setStyle(active);
-            // Force redraw of sibling by re-querying parent
             if (card.getParent() instanceof HBox parent) {
                 parent.getChildren().forEach(child -> {
                     if (child instanceof VBox sibling && sibling != card) {
@@ -247,6 +299,15 @@ public class SubscriptionScreen {
                         "-fx-background-radius: 8;" +
                         "-fx-padding: 8 14 8 14;" +
                         "-fx-font-size: 12px;");
+
+        Label verifyNote = new Label("⏳ After payment, the admin will verify your payment and activate your plan.");
+        verifyNote.setStyle(
+                "-fx-background-color: rgba(251,191,36,0.1);" +
+                        "-fx-text-fill: #fbbf24;" +
+                        "-fx-background-radius: 8;" +
+                        "-fx-padding: 8 14 8 14;" +
+                        "-fx-font-size: 12px;");
+        verifyNote.setWrapText(true);
 
         TextField cardHolder = styledField("Cardholder Name", false);
         TextField cardNumber = styledField("Card Number (16 digits)", false);
@@ -280,14 +341,13 @@ public class SubscriptionScreen {
         payBtn.getStyleClass().add("btn-success");
         payBtn.setMaxWidth(Double.MAX_VALUE);
         payBtn.setOnAction(e -> {
-            // Re-read selected plan price on click
             payBtn.setText("Pay " + PaymentService.getDisplayPrice(selectedPlan) + "  →");
             handlePayment(cardHolder.getText(), cardNumber.getText(),
                     expiry.getText(), cvv.getText(), payBtn);
         });
 
         form.getChildren().addAll(
-                formTitle, simNote,
+                formTitle, simNote, verifyNote,
                 fieldGroup("Cardholder Name", cardHolder),
                 fieldGroup("Card Number", cardNumber),
                 new HBox(16,
@@ -310,17 +370,16 @@ public class SubscriptionScreen {
         statusLabel.setText("Processing payment…");
         payBtn.setDisable(true);
 
-        // Simulate brief processing delay
         javafx.animation.PauseTransition pt = new javafx.animation.PauseTransition(
                 javafx.util.Duration.millis(900));
         pt.setOnFinished(ev -> {
             try {
                 paymentService.processPayment(username, selectedPlan);
                 statusLabel.getStyleClass().setAll("label-success");
-                statusLabel.setText("✅  Payment successful! Premium unlocked.");
+                statusLabel.setText("✅  Payment submitted! Awaiting admin verification. You will be notified once approved.");
                 javafx.animation.PauseTransition wait = new javafx.animation.PauseTransition(
-                        javafx.util.Duration.millis(1200));
-                wait.setOnFinished(e2 -> MainUI.showDashboard());
+                        javafx.util.Duration.millis(2000));
+                wait.setOnFinished(e2 -> MainUI.showSubscription());
                 wait.play();
             } catch (Exception ex) {
                 statusLabel.getStyleClass().setAll("label-error");

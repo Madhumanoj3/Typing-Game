@@ -342,6 +342,8 @@ public class GameScreen {
         int xpGained    = 0;
         int coinsGained = 0;
         List<Achievement> newAchievements = Collections.emptyList();
+        boolean leveledUp = false;
+        int newLevel = 0;
         if (!"Practice".equals(mode)) {
             try {
                 GamificationResult gr = GamificationService.getInstance()
@@ -349,6 +351,8 @@ public class GameScreen {
                 xpGained        = gr.xpGained();
                 coinsGained     = gr.coinsGained();
                 newAchievements = gr.newAchievements();
+                leveledUp       = gr.leveledUp();
+                newLevel        = gr.newLevel();
             } catch (Exception ex) {
                 System.err.println("Gamification failed: " + ex.getMessage());
             }
@@ -357,9 +361,24 @@ public class GameScreen {
         final int finalXp     = xpGained;
         final int finalCoins  = coinsGained;
         final List<Achievement> finalAch = newAchievements;
+        final boolean finalLevelUp = leveledUp;
+        final int finalNewLevel = newLevel;
 
         PauseTransition pause = new PauseTransition(Duration.millis(300));
-        pause.setOnFinished(e -> MainUI.showResult(result, finalXp, finalCoins, finalAch));
+        pause.setOnFinished(e -> {
+            if (finalLevelUp) {
+                // Show level up screen first
+                try {
+                    model.UserStats stats = service.GamificationService.getInstance()
+                            .getStats(SessionManager.getInstance().getUsername());
+                    MainUI.showLevelUp(finalNewLevel, stats);
+                } catch (Exception ex) {
+                    MainUI.showResult(result, finalXp, finalCoins, finalAch);
+                }
+            } else {
+                MainUI.showResult(result, finalXp, finalCoins, finalAch);
+            }
+        });
         pause.play();
     }
 

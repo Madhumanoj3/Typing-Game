@@ -55,6 +55,27 @@ public class LessonDAO {
         return d == null ? null : toLesson(d);
     }
 
+    // ── Admin Write Operations ────────────────────────────────────────────
+
+    /** Inserts a new lesson. */
+    public void saveNew(Lesson lesson) {
+        col.insertOne(fromLesson(lesson));
+    }
+
+    /** Updates an existing lesson by lessonId. */
+    public void updateLesson(Lesson lesson) {
+        col.replaceOne(
+                Filters.eq("lessonId", lesson.getLessonId()),
+                fromLesson(lesson),
+                new ReplaceOptions().upsert(true)
+        );
+    }
+
+    /** Deletes a lesson by lessonId. */
+    public void deleteLesson(String lessonId) {
+        col.deleteOne(Filters.eq("lessonId", lessonId));
+    }
+
     // ── Seed data ─────────────────────────────────────────────────────────
 
     private void seedIfEmpty() {

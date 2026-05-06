@@ -200,6 +200,97 @@ public class MongoDBManager {
         return list;
     }
 
+    // ── Admin operations ──────────────────────────────────────────────────
+
+    /** Returns all users for admin panel. */
+    public List<User> getAllUsers() {
+        List<User> list = new ArrayList<>();
+        FindIterable<Document> it = users.find().sort(Sorts.descending("createdAt"));
+        for (Document doc : it) {
+            list.add(documentToUser(doc));
+        }
+        return list;
+    }
+
+    /** Updates a user document (for admin block/unblock, subscription changes). */
+    public void updateUser(User user) {
+        users.updateOne(
+                Filters.eq("email", user.getEmail()),
+                Updates.combine(
+                        Updates.set("subscriptionType", user.getSubscriptionType()),
+                        Updates.set("blocked", user.isBlocked())
+                )
+        );
+    }
+
+    /** Deletes a user by email. */
+    public void deleteUser(String email) {
+        users.deleteOne(Filters.eq("email", email));
+        results.deleteMany(Filters.eq("username", getUserByEmail(email)));
+    }
+
+    private String getUserByEmail(String email) {
+        Document doc = users.find(Filters.eq("email", email)).first();
+        return doc != null ? doc.getString("username") : null;
+    }
+
+    // ── Analytics operations ──────────────────────────────────────────────
+
+    /** Returns total number of game sessions played. */
+    public long getTotalSessions() {
+        return results.countDocuments();
+    }
+
+    /** Returns the most recent N game results. */
+    public List<GameResult> getRecentSessions(int limit) {
+        List<GameResult> list = new ArrayList<>();
+        for (Document doc : results.find()
+                .sort(Sorts.descending("playedAt"))
+                .limit(limit)) {
+            list.add(documentToResult(doc));
+        }
+        return list;
+    }
+
+    /** Returns the most popular game mode by count. */
+    public String getMostPopularGameMode() {
+        // Simple approach: count occurrences of each mode
+        Map<String, Integer> modeCounts = new java.util.LinkedHashMap<>();
+        for (Document doc : results.find()) {
+            String mode = doc.getString("gameMode");
+            if (mode != null) {
+                modeCounts.merge(mode, 1, Integer::sum);
+            }
+        }
+        return modeCounts.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse("N/A");
+    }
+
+    /** Searches users by username or email containing the query string. */
+    public List<User> searchUsers(String query) {
+        List<User> list = new ArrayList<>();
+        String regex = ".*" + java.util.regex.Pattern.quote(query) + ".*";
+        for (Document doc : users.find(Filters.or(
+                Filters.regex("username", regex, "i"),
+                Filters.regex("email", regex, "i")
+        )).sort(Sorts.descending("createdAt"))) {
+            list.add(documentToUser(doc));
+        }
+        return list;
+    }
+
+    /** Deletes a single game result by ID. */
+    public void deleteGameResult(org.bson.types.ObjectId id) {
+        results.deleteOne(Filters.eq("_id", id));
+    }
+
+    /** Deletes all game results (admin reset rankings). */
+    public void deleteAllGameResults() {
+        results.deleteMany(new Document());
+    }
+
     // ── Mappers ───────────────────────────────────────────────────────────
 
     private User documentToUser(Document doc) {
@@ -216,6 +307,8 @@ public class MongoDBManager {
         u.setBestWpm(doc.getDouble("bestWpm") != null ? doc.getDouble("bestWpm") : 0.0);
         u.setAverageWpm(doc.getDouble("averageWpm") != null ? doc.getDouble("averageWpm") : 0.0);
         u.setBestAccuracy(doc.getDouble("bestAccuracy") != null ? doc.getDouble("bestAccuracy") : 0.0);
+        u.setSubscriptionType(doc.getString("subscriptionType") != null ? doc.getString("subscriptionType") : "FREE");
+        u.setBlocked(doc.getBoolean("blocked", false));
         Date created = doc.getDate("createdAt");
         if (created != null) {
             u.setCreatedAt(created.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());

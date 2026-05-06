@@ -7,119 +7,159 @@
 /* ── dark_violet (default, level 1) ─────────────────────── */
 .theme-dark_violet .sidebar        { -fx-background-color: #12122a; }
 .theme-dark_violet .header-bar     { -fx-background-color: #12122a; }
+.theme-dark_violet .card           { -fx-background-color: #1a1a2e; }
+.theme-dark_violet .mode-card      { -fx-background-color: #1a1a2e; }
 .theme-dark_violet .btn-primary    { -fx-background-color: #7c3aed; }
 .theme-dark_violet .progress-bar-custom > .bar { -fx-background-color: #7c3aed; }
 
 /* ── ocean_blue (level 2) ────────────────────────────────── */
 .theme-ocean_blue .sidebar         { -fx-background-color: #0d1f3c; }
 .theme-ocean_blue .header-bar      { -fx-background-color: #0d1f3c; }
+.theme-ocean_blue .card            { -fx-background-color: #0f2340; }
+.theme-ocean_blue .mode-card       { -fx-background-color: #0f2340; }
 .theme-ocean_blue .btn-primary     { -fx-background-color: #3b82f6; }
 .theme-ocean_blue .progress-bar-custom > .bar  { -fx-background-color: #3b82f6; }
 
 /* ── forest_green (level 3) ──────────────────────────────── */
 .theme-forest_green .sidebar       { -fx-background-color: #0d200d; }
 .theme-forest_green .header-bar    { -fx-background-color: #0d200d; }
+.theme-forest_green .card          { -fx-background-color: #0f2a0f; }
+.theme-forest_green .mode-card     { -fx-background-color: #0f2a0f; }
 .theme-forest_green .btn-primary   { -fx-background-color: #10b981; }
 .theme-forest_green .progress-bar-custom > .bar { -fx-background-color: #10b981; }
 
 /* ── crimson_red (level 4) ───────────────────────────────── */
 .theme-crimson_red .sidebar        { -fx-background-color: #200d0d; }
 .theme-crimson_red .header-bar     { -fx-background-color: #200d0d; }
+.theme-crimson_red .card           { -fx-background-color: #2a0f0f; }
+.theme-crimson_red .mode-card      { -fx-background-color: #2a0f0f; }
 .theme-crimson_red .btn-primary    { -fx-background-color: #ef4444; }
 .theme-crimson_red .progress-bar-custom > .bar  { -fx-background-color: #ef4444; }
 
 /* ── midnight (level 5) ──────────────────────────────────── */
 .theme-midnight .sidebar           { -fx-background-color: #0a0a12; }
 .theme-midnight .header-bar        { -fx-background-color: #0a0a12; }
+.theme-midnight .card              { -fx-background-color: #111118; }
+.theme-midnight .mode-card         { -fx-background-color: #111118; }
 .theme-midnight .btn-primary       { -fx-background-color: #6366f1; }
 .theme-midnight .progress-bar-custom > .bar     { -fx-background-color: #6366f1; }
 
 /* ── arctic_ice (level 7) ────────────────────────────────── */
 .theme-arctic_ice .sidebar         { -fx-background-color: #0b1520; }
 .theme-arctic_ice .header-bar      { -fx-background-color: #0b1520; }
+.theme-arctic_ice .card            { -fx-background-color: #0f2030; }
+.theme-arctic_ice .mode-card       { -fx-background-color: #0f2030; }
 .theme-arctic_ice .btn-primary     { -fx-background-color: #67e8f9; -fx-text-fill: #0b1520; }
 .theme-arctic_ice .progress-bar-custom > .bar   { -fx-background-color: #67e8f9; }
 
 /* ── sunset_orange (level 10) ───────────────────────────── */
 .theme-sunset_orange .sidebar      { -fx-background-color: #200e05; }
 .theme-sunset_orange .header-bar   { -fx-background-color: #200e05; }
+.theme-sunset_orange .card         { -fx-background-color: #2a1a08; }
+.theme-sunset_orange .mode-card    { -fx-background-color: #2a1a08; }
 .theme-sunset_orange .btn-primary  { -fx-background-color: #f97316; }
 .theme-sunset_orange .progress-bar-custom > .bar { -fx-background-color: #f97316; }
 
 /* ── galaxy_purple (level 13) ───────────────────────────── */
 .theme-galaxy_purple .sidebar      { -fx-background-color: #100818; }
 .theme-galaxy_purple .header-bar   { -fx-background-color: #100818; }
+.theme-galaxy_purple .card         { -fx-background-color: #1c1030; }
+.theme-galaxy_purple .mode-card    { -fx-background-color: #1c1030; }
 .theme-galaxy_purple .btn-primary  { -fx-background-color: #c084fc; }
 .theme-galaxy_purple .progress-bar-custom > .bar { -fx-background-color: #c084fc; }
 
 /* ── neon_cyan (level 16) ────────────────────────────────── */
 .theme-neon_cyan .sidebar          { -fx-background-color: #001018; }
 .theme-neon_cyan .header-bar       { -fx-background-color: #001018; }
+.theme-neon_cyan .card             { -fx-background-color: #00202a; }
+.theme-neon_cyan .mode-card        { -fx-background-color: #00202a; }
 .theme-neon_cyan .btn-primary      { -fx-background-color: #22d3ee; -fx-text-fill: #001018; }
 .theme-neon_cyan .progress-bar-custom > .bar    { -fx-background-color: #22d3ee; }
 
 /* ── golden_light (level 20) ────────────────────────────── */
 .theme-golden_light .sidebar       { -fx-background-color: #201505; }
 .theme-golden_light .header-bar    { -fx-background-color: #201505; }
+.theme-golden_light .card          { -fx-background-color: #2a2008; }
+.theme-golden_light .mode-card     { -fx-background-color: #2a2008; }
 .theme-golden_light .btn-primary   { -fx-background-color: #eab308; -fx-text-fill: #1a1505; }
 .theme-golden_light .progress-bar-custom > .bar { -fx-background-color: #eab308; }
 
-/* ── rose_pink (15 coins) ────────────────────────────────── */
+/* ── rose_pink (40 coins) ────────────────────────────────── */
 .theme-rose_pink .sidebar          { -fx-background-color: #200d15; }
 .theme-rose_pink .header-bar       { -fx-background-color: #200d15; }
+.theme-rose_pink .card             { -fx-background-color: #2a0f1c; }
+.theme-rose_pink .mode-card        { -fx-background-color: #2a0f1c; }
 .theme-rose_pink .btn-primary      { -fx-background-color: #f472b6; }
 .theme-rose_pink .progress-bar-custom > .bar    { -fx-background-color: #f472b6; }
 
-/* ── amber_gold (20 coins) ───────────────────────────────── */
+/* ── amber_gold (50 coins) ───────────────────────────────── */
 .theme-amber_gold .sidebar         { -fx-background-color: #201500; }
 .theme-amber_gold .header-bar      { -fx-background-color: #201500; }
+.theme-amber_gold .card            { -fx-background-color: #2a1e00; }
+.theme-amber_gold .mode-card       { -fx-background-color: #2a1e00; }
 .theme-amber_gold .btn-primary     { -fx-background-color: #fbbf24; -fx-text-fill: #1a1200; }
 .theme-amber_gold .progress-bar-custom > .bar   { -fx-background-color: #fbbf24; }
 
-/* ── emerald (25 coins) ──────────────────────────────────── */
+/* ── emerald (60 coins) ──────────────────────────────────── */
 .theme-emerald .sidebar            { -fx-background-color: #012012; }
 .theme-emerald .header-bar         { -fx-background-color: #012012; }
+.theme-emerald .card               { -fx-background-color: #022a18; }
+.theme-emerald .mode-card          { -fx-background-color: #022a18; }
 .theme-emerald .btn-primary        { -fx-background-color: #34d399; -fx-text-fill: #011a0e; }
 .theme-emerald .progress-bar-custom > .bar      { -fx-background-color: #34d399; }
 
-/* ── slate_gray (15 coins) ───────────────────────────────── */
+/* ── slate_gray (45 coins) ───────────────────────────────── */
 .theme-slate_gray .sidebar         { -fx-background-color: #141820; }
 .theme-slate_gray .header-bar      { -fx-background-color: #141820; }
+.theme-slate_gray .card            { -fx-background-color: #1a1f2e; }
+.theme-slate_gray .mode-card       { -fx-background-color: #1a1f2e; }
 .theme-slate_gray .btn-primary     { -fx-background-color: #94a3b8; -fx-text-fill: #0f1218; }
 .theme-slate_gray .progress-bar-custom > .bar   { -fx-background-color: #94a3b8; }
 
-/* ── royal_blue (20 coins) ───────────────────────────────── */
+/* ── royal_blue (55 coins) ───────────────────────────────── */
 .theme-royal_blue .sidebar         { -fx-background-color: #0a1130; }
 .theme-royal_blue .header-bar      { -fx-background-color: #0a1130; }
+.theme-royal_blue .card            { -fx-background-color: #0f1540; }
+.theme-royal_blue .mode-card       { -fx-background-color: #0f1540; }
 .theme-royal_blue .btn-primary     { -fx-background-color: #818cf8; }
 .theme-royal_blue .progress-bar-custom > .bar   { -fx-background-color: #818cf8; }
 
-/* ── sakura (25 coins) ───────────────────────────────────── */
+/* ── sakura (65 coins) ───────────────────────────────────── */
 .theme-sakura .sidebar             { -fx-background-color: #200c10; }
 .theme-sakura .header-bar          { -fx-background-color: #200c10; }
+.theme-sakura .card                { -fx-background-color: #2a1015; }
+.theme-sakura .mode-card           { -fx-background-color: #2a1015; }
 .theme-sakura .btn-primary         { -fx-background-color: #fb7185; }
 .theme-sakura .progress-bar-custom > .bar       { -fx-background-color: #fb7185; }
 
-/* ── lava (30 coins) ─────────────────────────────────────── */
+/* ── lava (75 coins) ─────────────────────────────────────── */
 .theme-lava .sidebar               { -fx-background-color: #1e0900; }
 .theme-lava .header-bar            { -fx-background-color: #1e0900; }
+.theme-lava .card                  { -fx-background-color: #280d00; }
+.theme-lava .mode-card             { -fx-background-color: #280d00; }
 .theme-lava .btn-primary           { -fx-background-color: #ff4500; }
 .theme-lava .progress-bar-custom > .bar         { -fx-background-color: #ff4500; }
 
-/* ── matrix (30 coins) ───────────────────────────────────── */
+/* ── matrix (80 coins) ───────────────────────────────────── */
 .theme-matrix .sidebar             { -fx-background-color: #000c00; }
 .theme-matrix .header-bar          { -fx-background-color: #000c00; }
+.theme-matrix .card                { -fx-background-color: #001500; }
+.theme-matrix .mode-card           { -fx-background-color: #001500; }
 .theme-matrix .btn-primary         { -fx-background-color: #00ff41; -fx-text-fill: #000f00; }
 .theme-matrix .progress-bar-custom > .bar       { -fx-background-color: #00ff41; }
 
-/* ── pastel (35 coins) ───────────────────────────────────── */
+/* ── pastel (90 coins) ───────────────────────────────────── */
 .theme-pastel .sidebar             { -fx-background-color: #12122a; }
 .theme-pastel .header-bar          { -fx-background-color: #12122a; }
+.theme-pastel .card                { -fx-background-color: #1a1a2e; }
+.theme-pastel .mode-card           { -fx-background-color: #1a1a2e; }
 .theme-pastel .btn-primary         { -fx-background-color: #c4b5fd; -fx-text-fill: #0f0f1a; }
 .theme-pastel .progress-bar-custom > .bar       { -fx-background-color: #c4b5fd; }
 
-/* ── cosmic (40 coins) ───────────────────────────────────── */
+/* ── cosmic (100 coins) ───────────────────────────────────── */
 .theme-cosmic .sidebar             { -fx-background-color: #050018; }
 .theme-cosmic .header-bar          { -fx-background-color: #050018; }
+.theme-cosmic .card                { -fx-background-color: #080025; }
+.theme-cosmic .mode-card           { -fx-background-color: #080025; }
 .theme-cosmic .btn-primary         { -fx-background-color: #a855f7; }
 .theme-cosmic .progress-bar-custom > .bar       { -fx-background-color: #a855f7; }

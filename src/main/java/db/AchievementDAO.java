@@ -46,6 +46,24 @@ public class AchievementDAO {
         a.setId(doc.getObjectId("_id"));
     }
 
+    /** Returns all earned achievements for admin view. */
+    public List<Achievement> getAll() {
+        List<Achievement> list = new ArrayList<>();
+        for (Document doc : col.find()) {
+            Achievement a = new Achievement();
+            a.setId(doc.getObjectId("_id"));
+            a.setUsername(doc.getString("username"));
+            a.setBadge(doc.getString("badge"));
+            a.setTitle(doc.getString("title"));
+            a.setDescription(doc.getString("description"));
+            Date earned = doc.getDate("earnedAt");
+            if (earned != null)
+                a.setEarnedAt(earned.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+            list.add(a);
+        }
+        return list;
+    }
+
     public List<Achievement> getForUser(String username) {
         List<Achievement> list = new ArrayList<>();
         for (Document doc : col.find(Filters.eq("username", username))) {

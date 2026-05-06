@@ -44,16 +44,16 @@ public class ThemeManager {
         new ThemeDef("golden_light", "Golden Light",  "#1a1505","#2a2008","#201505","#3a3010","#eab308","#ca8a04","#facc15", "LEVEL", 20, 0),
 
         // ── Coin-purchase ───────────────────────────────────────────────
-        new ThemeDef("rose_pink",    "Rose Pink",     "#1a0a12","#2a0f1c","#200d15","#3a1e28","#f472b6","#ec4899","#f9a8d4", "COINS",  0, 15),
-        new ThemeDef("amber_gold",   "Amber Gold",    "#1a1200","#2a1e00","#201500","#3a2e00","#fbbf24","#f59e0b","#fcd34d", "COINS",  0, 20),
-        new ThemeDef("emerald",      "Emerald Glow",  "#011a0e","#022a18","#012012","#033a22","#34d399","#10b981","#6ee7b7", "COINS",  0, 25),
-        new ThemeDef("slate_gray",   "Slate Gray",    "#0f1218","#1a1f2e","#141820","#252d3a","#94a3b8","#64748b","#cbd5e1", "COINS",  0, 15),
-        new ThemeDef("royal_blue",   "Royal Blue",    "#080e2a","#0f1540","#0a1130","#151e50","#818cf8","#6366f1","#a5b4fc", "COINS",  0, 20),
-        new ThemeDef("sakura",       "Sakura",        "#1a0a0d","#2a1015","#200c10","#3a1820","#fb7185","#f43f5e","#fda4af", "COINS",  0, 25),
-        new ThemeDef("lava",         "Lava",          "#180800","#280d00","#1e0900","#380e00","#ff4500","#e63900","#ff6a33", "COINS",  0, 30),
-        new ThemeDef("matrix",       "Matrix Green",  "#000f00","#001500","#000c00","#002000","#00ff41","#00cc33","#66ff80", "COINS",  0, 30),
-        new ThemeDef("pastel",       "Pastel Dream",  "#0f0f1a","#1a1a2e","#12122a","#1e293b","#c4b5fd","#a78bfa","#ddd6fe", "COINS",  0, 35),
-        new ThemeDef("cosmic",       "Cosmic Dark",   "#030014","#080025","#050018","#0e0030","#a855f7","#9333ea","#d8b4fe", "COINS",  0, 40)
+        new ThemeDef("rose_pink",    "Rose Pink",     "#1a0a12","#2a0f1c","#200d15","#3a1e28","#f472b6","#ec4899","#f9a8d4", "COINS",  0, 40),
+        new ThemeDef("amber_gold",   "Amber Gold",    "#1a1200","#2a1e00","#201500","#3a2e00","#fbbf24","#f59e0b","#fcd34d", "COINS",  0, 50),
+        new ThemeDef("emerald",      "Emerald Glow",  "#011a0e","#022a18","#012012","#033a22","#34d399","#10b981","#6ee7b7", "COINS",  0, 60),
+        new ThemeDef("slate_gray",   "Slate Gray",    "#0f1218","#1a1f2e","#141820","#252d3a","#94a3b8","#64748b","#cbd5e1", "COINS",  0, 45),
+        new ThemeDef("royal_blue",   "Royal Blue",    "#080e2a","#0f1540","#0a1130","#151e50","#818cf8","#6366f1","#a5b4fc", "COINS",  0, 55),
+        new ThemeDef("sakura",       "Sakura",        "#1a0a0d","#2a1015","#200c10","#3a1820","#fb7185","#f43f5e","#fda4af", "COINS",  0, 65),
+        new ThemeDef("lava",         "Lava",          "#180800","#280d00","#1e0900","#380e00","#ff4500","#e63900","#ff6a33", "COINS",  0, 75),
+        new ThemeDef("matrix",       "Matrix Green",  "#000f00","#001500","#000c00","#002000","#00ff41","#00cc33","#66ff80", "COINS",  0, 80),
+        new ThemeDef("pastel",       "Pastel Dream",  "#0f0f1a","#1a1a2e","#12122a","#1e293b","#c4b5fd","#a78bfa","#ddd6fe", "COINS",  0, 90),
+        new ThemeDef("cosmic",       "Cosmic Dark",   "#030014","#080025","#050018","#0e0030","#a855f7","#9333ea","#d8b4fe", "COINS",  0, 100)
     );
 
     // ── 20 Fonts ──────────────────────────────────────────────────────────
@@ -72,16 +72,16 @@ public class ThemeManager {
         new FontDef("impact",      "Impact",              "Impact",              "LEVEL", 18, 0),
 
         // ── Coin-purchase ───────────────────────────────────────────────
-        new FontDef("comic",       "Comic Sans MS",       "Comic Sans MS",       "COINS",  0, 10),
-        new FontDef("palatino",    "Palatino Linotype",   "Palatino Linotype",   "COINS",  0, 15),
-        new FontDef("century",     "Century Gothic",      "Century Gothic",      "COINS",  0, 15),
-        new FontDef("franklin",    "Franklin Gothic",     "Franklin Gothic Medium","COINS", 0, 20),
-        new FontDef("times",       "Times New Roman",     "Times New Roman",     "COINS",  0, 12),
-        new FontDef("lucida",      "Lucida Console",      "Lucida Console",      "COINS",  0, 18),
-        new FontDef("cambria",     "Cambria",             "Cambria",             "COINS",  0, 15),
-        new FontDef("garamond",    "Garamond",            "Garamond",            "COINS",  0, 20),
-        new FontDef("rockwell",    "Rockwell",            "Rockwell",            "COINS",  0, 25),
-        new FontDef("copperplate", "Copperplate Gothic",  "Copperplate Gothic Bold","COINS", 0, 30)
+        new FontDef("comic",       "Comic Sans MS",       "Comic Sans MS",       "COINS",  0, 40),
+        new FontDef("palatino",    "Palatino Linotype",   "Palatino Linotype",   "COINS",  0, 45),
+        new FontDef("century",     "Century Gothic",      "Century Gothic",      "COINS",  0, 50),
+        new FontDef("franklin",    "Franklin Gothic",     "Franklin Gothic Medium","COINS", 0, 55),
+        new FontDef("times",       "Times New Roman",     "Times New Roman",     "COINS",  0, 60),
+        new FontDef("lucida",      "Lucida Console",      "Lucida Console",      "COINS",  0, 65),
+        new FontDef("cambria",     "Cambria",             "Cambria",             "COINS",  0, 70),
+        new FontDef("garamond",    "Garamond",            "Garamond",            "COINS",  0, 75),
+        new FontDef("rockwell",    "Rockwell",            "Rockwell",            "COINS",  0, 80),
+        new FontDef("copperplate", "Copperplate Gothic",  "Copperplate Gothic Bold","COINS", 0, 90)
     );
 
     // ── Singleton state ───────────────────────────────────────────────────
@@ -158,8 +158,11 @@ public class ThemeManager {
         root.getStyleClass().removeIf(c -> c.startsWith("theme-"));
         root.getStyleClass().add(theme.cssClass());
 
-        // Apply font family to root inline (replace, not append)
-        root.setStyle("-fx-font-family: '" + fontFamily() + "';");
+        // Inline style wins over all CSS — set bg + font here so every screen is covered
+        root.setStyle(
+            "-fx-background-color: " + theme.bg() + ";" +
+            "-fx-font-family: '" + fontFamily() + "';"
+        );
     }
 
     // ── Level title helper (shared across screens) ────────────────────────

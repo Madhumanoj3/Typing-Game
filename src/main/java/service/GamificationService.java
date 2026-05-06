@@ -16,7 +16,7 @@ import java.util.List;
 public class GamificationService {
 
     // ── Result record returned after processing a game ────────────────────
-    public record GamificationResult(int xpGained, int coinsGained, List<Achievement> newAchievements) {}
+    public record GamificationResult(int xpGained, int coinsGained, List<Achievement> newAchievements, boolean leveledUp, int newLevel) {}
 
     // ── Daily challenge progress snapshot ────────────────────────────────
     public record DailyChallengeProgress(int gamesPlayed, double maxWpm, int charsTyped) {
@@ -106,6 +106,7 @@ public class GamificationService {
         UserStats stats = statsDAO.getOrCreate(username);
         List<Achievement> newAchievements = new ArrayList<>();
 
+        int oldLevel = stats.getLevel();
         int xpGained = calculateXP(result.getWpm(), result.getAccuracy());
 
         // Coin rewards: Normal/Timer modes only, accuracy > 80%
@@ -133,7 +134,15 @@ public class GamificationService {
 
         // Apply XP and derive level
         stats.setXp(stats.getXp() + xpGained);
-        stats.setLevel(calculateLevel(stats.getXp()));
+        int newLevel = calculateLevel(stats.getXp());
+        stats.setLevel(newLevel);
+
+        // Check if leveled up and add bonus
+        boolean leveledUp = newLevel > oldLevel;
+        if (leveledUp) {
+            stats.setCoins(stats.getCoins() + 10);
+            coinsGained += 10;
+        }
 
         // Update login/play streak
         updateStreak(stats);
@@ -164,7 +173,7 @@ public class GamificationService {
             }
         }
 
-        return new GamificationResult(xpGained, coinsGained, newAchievements);
+        return new GamificationResult(xpGained, coinsGained, newAchievements, leveledUp, newLevel);
     }
 
     // ── Lesson achievements (called from LessonViewScreen) ───────────────
