@@ -38,6 +38,7 @@ public class MainUI extends Application {
     // ── Scene navigation ──────────────────────────────────────────────────
 
     public static void showLogin() {
+        ThemeManager.getInstance().setTheme(ThemeManager.DEFAULT_DARK_THEME_ID);
         LoginScreen login = new LoginScreen();
         setScene(login.buildScene());
     }

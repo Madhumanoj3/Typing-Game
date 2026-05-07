@@ -1,5 +1,8 @@
 package game;
 
+import javafx.collections.ListChangeListener;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 
 import java.util.List;
@@ -10,6 +13,10 @@ import java.util.List;
  * Call applyTheme(scene) after creating each scene to add the CSS stylesheet overlay.
  */
 public class ThemeManager {
+    public static final String DEFAULT_DARK_THEME_ID = "dark_violet";
+    public static final String PRINT_LIGHT_THEME_ID = "print_light";
+    private static final String ORIGINAL_STYLE_KEY = "typemaster.originalStyle";
+    private static final String CHILD_LISTENER_KEY = "typemaster.themeChildListener";
 
     // ── Theme definition ──────────────────────────────────────────────────
 
@@ -28,11 +35,11 @@ public class ThemeManager {
             String unlockType, int levelRequired, int coinCost
     ) {}
 
-    // ── 20 Themes ─────────────────────────────────────────────────────────
+    // ── Themes ────────────────────────────────────────────────────────────
 
     public static final List<ThemeDef> ALL_THEMES = List.of(
         // ── Level-unlocked ──────────────────────────────────────────────
-        new ThemeDef("dark_violet",  "Dark Violet",   "#0f0f1a","#1a1a2e","#12122a","#1e293b","#7c3aed","#6d28d9","#a78bfa", "LEVEL",  1, 0),
+        new ThemeDef(DEFAULT_DARK_THEME_ID,  "Dark Violet",   "#0f0f1a","#1a1a2e","#12122a","#1e293b","#7c3aed","#6d28d9","#a78bfa", "LEVEL",  1, 0),
         new ThemeDef("ocean_blue",   "Ocean Blue",    "#0a1628","#0f2340","#0d1f3c","#1e3a5f","#3b82f6","#2563eb","#60a5fa", "LEVEL",  2, 0),
         new ThemeDef("forest_green", "Forest Green",  "#0a1a0a","#0f2a0f","#0d200d","#1e3a1e","#10b981","#059669","#34d399", "LEVEL",  3, 0),
         new ThemeDef("crimson_red",  "Crimson Red",   "#1a0a0a","#2a0f0f","#200d0d","#3a1e1e","#ef4444","#dc2626","#f87171", "LEVEL",  4, 0),
@@ -53,7 +60,10 @@ public class ThemeManager {
         new ThemeDef("lava",         "Lava",          "#180800","#280d00","#1e0900","#380e00","#ff4500","#e63900","#ff6a33", "COINS",  0, 75),
         new ThemeDef("matrix",       "Matrix Green",  "#000f00","#001500","#000c00","#002000","#00ff41","#00cc33","#66ff80", "COINS",  0, 80),
         new ThemeDef("pastel",       "Pastel Dream",  "#0f0f1a","#1a1a2e","#12122a","#1e293b","#c4b5fd","#a78bfa","#ddd6fe", "COINS",  0, 90),
-        new ThemeDef("cosmic",       "Cosmic Dark",   "#030014","#080025","#050018","#0e0030","#a855f7","#9333ea","#d8b4fe", "COINS",  0, 100)
+        new ThemeDef("cosmic",       "Cosmic Dark",   "#030014","#080025","#050018","#0e0030","#a855f7","#9333ea","#d8b4fe", "COINS",  0, 100),
+
+        // ── Printable/colorful light theme ──────────────────────────────
+        new ThemeDef(PRINT_LIGHT_THEME_ID, "Print Light", "#fff7fb","#ffffff","#fff1b8","#e8f3ff","#ec4899","#2563eb","#f59e0b", "LEVEL", 1, 0)
     );
 
     // ── 20 Fonts ──────────────────────────────────────────────────────────
@@ -88,7 +98,8 @@ public class ThemeManager {
 
     private static ThemeManager instance;
 
-    private String activeThemeId = "dark_violet";
+    private String activeThemeId = DEFAULT_DARK_THEME_ID;
+    private String lastNonLightThemeId = DEFAULT_DARK_THEME_ID;
     private String activeFontId  = "segoe";
 
     private ThemeManager() {}
@@ -101,8 +112,31 @@ public class ThemeManager {
     // ── Active theme / font ───────────────────────────────────────────────
 
     public void setTheme(String themeId) {
-        if (ALL_THEMES.stream().anyMatch(t -> t.id().equals(themeId)))
+        if (ALL_THEMES.stream().anyMatch(t -> t.id().equals(themeId))) {
             this.activeThemeId = themeId;
+            if (!PRINT_LIGHT_THEME_ID.equals(themeId)) {
+                rememberNonLightTheme(themeId);
+            }
+        }
+    }
+
+    public void rememberNonLightTheme(String themeId) {
+        if (!PRINT_LIGHT_THEME_ID.equals(themeId) &&
+                ALL_THEMES.stream().anyMatch(t -> t.id().equals(themeId))) {
+            this.lastNonLightThemeId = themeId;
+        }
+    }
+
+    public void setPrintLightTheme() {
+        setTheme(PRINT_LIGHT_THEME_ID);
+    }
+
+    public void restoreLastNonLightTheme() {
+        setTheme(lastNonLightThemeId != null ? lastNonLightThemeId : DEFAULT_DARK_THEME_ID);
+    }
+
+    public boolean isPrintLightTheme() {
+        return PRINT_LIGHT_THEME_ID.equals(activeThemeId);
     }
 
     public void setFont(String fontId) {
@@ -163,6 +197,119 @@ public class ThemeManager {
             "-fx-background-color: " + theme.bg() + ";" +
             "-fx-font-family: '" + fontFamily() + "';"
         );
+        applyInlineThemeOverridesToChildren(root, tm.isPrintLightTheme());
+    }
+
+    private static void applyInlineThemeOverridesToChildren(Node root, boolean printLight) {
+        if (root instanceof Parent parent) {
+            for (Node child : parent.getChildrenUnmodifiable()) {
+                applyInlineThemeOverrides(child, printLight);
+            }
+        }
+    }
+
+    private static void applyInlineThemeOverrides(Node node, boolean printLight) {
+        if (printLight) {
+            Object stored = node.getProperties().get(ORIGINAL_STYLE_KEY);
+            if (stored == null) {
+                node.getProperties().put(ORIGINAL_STYLE_KEY, node.getStyle() == null ? "" : node.getStyle());
+            }
+            String original = (String) node.getProperties().get(ORIGINAL_STYLE_KEY);
+            if (original != null && !original.isBlank()) {
+                node.setStyle(toPrintLightStyle(original));
+            }
+        } else {
+            Object stored = node.getProperties().remove(ORIGINAL_STYLE_KEY);
+            if (stored instanceof String original) {
+                node.setStyle(original);
+            }
+        }
+
+        if (node instanceof Parent parent) {
+            installLightThemeChildListener(parent);
+            for (Node child : parent.getChildrenUnmodifiable()) {
+                applyInlineThemeOverrides(child, printLight);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void installLightThemeChildListener(Parent parent) {
+        if (parent.getProperties().containsKey(CHILD_LISTENER_KEY)) return;
+
+        ListChangeListener<Node> listener = change -> {
+            while (change.next()) {
+                if (getInstance().isPrintLightTheme()) {
+                    for (Node added : change.getAddedSubList()) {
+                        applyInlineThemeOverrides(added, true);
+                    }
+                }
+            }
+        };
+        parent.getChildrenUnmodifiable().addListener(listener);
+        parent.getProperties().put(CHILD_LISTENER_KEY, listener);
+    }
+
+    private static String toPrintLightStyle(String style) {
+        String s = style;
+
+        s = replaceAll(s, "#0f0f1a", "#fff7fb");
+        s = replaceAll(s, "#080818", "#fff7fb");
+        s = replaceAll(s, "#030014", "#fff7fb");
+        s = replaceAll(s, "#050508", "#fff7fb");
+        s = replaceAll(s, "#000000", "#111827");
+
+        s = replaceAll(s, "#1a1a2e", "linear-gradient(to bottom right, #ffffff, #ffe4f1)");
+        s = replaceAll(s, "#12122b", "linear-gradient(to bottom right, #ffffff, #e8f3ff)");
+        s = replaceAll(s, "#111128", "linear-gradient(to bottom right, #ffffff, #fff1b8)");
+        s = replaceAll(s, "#0e0e1e", "linear-gradient(to bottom right, #ffffff, #e8f3ff)");
+        s = replaceAll(s, "#0e0e22", "#ffffff");
+        s = replaceAll(s, "#0e0e24", "#ffffff");
+        s = replaceAll(s, "#111118", "#ffffff");
+        s = replaceAll(s, "#080025", "#ffffff");
+        s = replaceAll(s, "#050018", "#ffffff");
+        s = replaceAll(s, "#0e0030", "#e8f3ff");
+
+        s = replaceAll(s, "#12122a", "linear-gradient(to bottom, #ffe4f1, #e8f3ff)");
+        s = replaceAll(s, "#0d0d20", "linear-gradient(to bottom, #ffe4f1, #e8f3ff)");
+        s = replaceAll(s, "#0b0b1e", "#fff1b8");
+        s = replaceAll(s, "#0a0a1c", "#e8f3ff");
+        s = replaceAll(s, "#0a0a1a", "#e8f3ff");
+
+        s = replaceAll(s, "#16213e", "#e8f3ff");
+        s = replaceAll(s, "#0f172a", "#fff1b8");
+        s = replaceAll(s, "#1e293b", "#bfdbfe");
+
+        s = replaceAll(s, "rgba(255,255,255,0.015)", "rgba(236,72,153,0.06)");
+        s = replaceAll(s, "rgba(255,255,255,0.04)", "rgba(59,130,246,0.10)");
+        s = replaceAll(s, "rgba(255,255,255,0.05)", "rgba(236,72,153,0.18)");
+        s = replaceAll(s, "rgba(255,255,255,0.06)", "rgba(37,99,235,0.18)");
+
+        s = replaceAll(s, "-fx-text-fill: white", "-fx-text-fill: #111827");
+        s = replaceAll(s, "-fx-text-fill:white", "-fx-text-fill:#111827");
+        s = replaceAll(s, "-fx-text-fill: #cbd5e1", "-fx-text-fill: #111827");
+        s = replaceAll(s, "-fx-text-fill:#cbd5e1", "-fx-text-fill:#111827");
+        s = replaceAll(s, "-fx-text-fill: #94a3b8", "-fx-text-fill: #374151");
+        s = replaceAll(s, "-fx-text-fill:#94a3b8", "-fx-text-fill:#374151");
+        s = replaceAll(s, "-fx-text-fill: #64748b", "-fx-text-fill: #4b5563");
+        s = replaceAll(s, "-fx-text-fill:#64748b", "-fx-text-fill:#4b5563");
+        s = replaceAll(s, "-fx-text-fill: #475569", "-fx-text-fill: #4b5563");
+        s = replaceAll(s, "-fx-text-fill:#475569", "-fx-text-fill:#4b5563");
+        s = replaceAll(s, "-fx-text-fill: #334155", "-fx-text-fill: #4b5563");
+        s = replaceAll(s, "-fx-text-fill:#334155", "-fx-text-fill:#4b5563");
+
+        s = replaceAll(s, "-fx-text-fill: #fbbf24", "-fx-text-fill: #b45309");
+        s = replaceAll(s, "-fx-text-fill: #a78bfa", "-fx-text-fill: #7c3aed");
+        s = replaceAll(s, "-fx-text-fill: #38bdf8", "-fx-text-fill: #0369a1");
+        s = replaceAll(s, "-fx-text-fill: #34d399", "-fx-text-fill: #047857");
+        s = replaceAll(s, "-fx-text-fill: #f472b6", "-fx-text-fill: #be185d");
+
+        return s;
+    }
+
+    private static String replaceAll(String value, String target, String replacement) {
+        return value.replace(target, replacement)
+                .replace(target.toUpperCase(), replacement);
     }
 
     // ── Level title helper (shared across screens) ────────────────────────

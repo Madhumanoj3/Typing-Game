@@ -33,6 +33,7 @@ public class AchievementsScreen {
     }
 
     public ScrollPane buildContent() {
+        cardColorIndex = 0; // Reset for each build
         String username = SessionManager.getInstance().getUsername();
         GamificationService gs = GamificationService.getInstance();
 
@@ -84,6 +85,9 @@ public class AchievementsScreen {
 
     // ── Card ──────────────────────────────────────────────────────────────
 
+    private static final String[] CARD_COLORS = {"card-blue", "card-pink", "card-yellow", "card-red", "card-green", "card-purple"};
+    private static int cardColorIndex = 0;
+
     private VBox buildAchievementCard(AchievementDef def, Achievement earned) {
         boolean unlocked = earned != null;
 
@@ -91,11 +95,17 @@ public class AchievementsScreen {
         card.setPrefWidth(220);
         card.setMaxWidth(220);
         card.setAlignment(Pos.TOP_LEFT);
-        card.setStyle(unlocked
-            ? "-fx-background-color: #1a1a2e; -fx-background-radius: 16; -fx-padding: 20;" +
-              "-fx-effect: dropshadow(gaussian, rgba(124,58,237,0.3), 18, 0, 0, 4);"
-            : "-fx-background-color: #141422; -fx-background-radius: 16; -fx-padding: 20;" +
-              "-fx-opacity: 0.55;");
+
+        // Assign colorful card style for unlocked achievements
+        if (unlocked) {
+            String colorClass = CARD_COLORS[cardColorIndex % CARD_COLORS.length];
+            card.getStyleClass().add(colorClass);
+            cardColorIndex++;
+        } else {
+            card.setStyle(
+                "-fx-background-color: #e8e8e8; -fx-background-radius: 16; -fx-padding: 20;" +
+                "-fx-opacity: 0.6;");
+        }
 
         // Icon
         Label icon = new Label(unlocked ? def.icon() : "🔒");
@@ -104,13 +114,13 @@ public class AchievementsScreen {
         // Title
         Label titleLbl = new Label(def.title());
         titleLbl.setStyle(unlocked
-            ? "-fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold;"
-            : "-fx-text-fill: #475569; -fx-font-size: 13px; -fx-font-weight: bold;");
+            ? "-fx-text-fill: #1a1a1a; -fx-font-size: 13px; -fx-font-weight: bold;"
+            : "-fx-text-fill: #666666; -fx-font-size: 13px; -fx-font-weight: bold;");
         titleLbl.setWrapText(true);
 
         // Description
         Label desc = new Label(def.description());
-        desc.setStyle("-fx-text-fill: #64748b; -fx-font-size: 11px;");
+        desc.setStyle("-fx-text-fill: #555555; -fx-font-size: 11px;");
         desc.setWrapText(true);
 
         card.getChildren().addAll(icon, titleLbl, desc);
@@ -119,8 +129,8 @@ public class AchievementsScreen {
         if (unlocked && earned.getEarnedAt() != null) {
             Label dateLbl = new Label("Earned " + earned.getEarnedAt().format(DATE_FMT));
             dateLbl.setStyle(
-                "-fx-background-color: rgba(124,58,237,0.18);" +
-                "-fx-text-fill: #a78bfa;" +
+                "-fx-background-color: rgba(59,130,246,0.15);" +
+                "-fx-text-fill: #1a1a1a;" +
                 "-fx-background-radius: 8;" +
                 "-fx-padding: 3 8 3 8;" +
                 "-fx-font-size: 10px;" +
@@ -130,7 +140,7 @@ public class AchievementsScreen {
             Label locked = new Label("LOCKED");
             locked.setStyle(
                 "-fx-background-color: rgba(100,116,139,0.15);" +
-                "-fx-text-fill: #475569;" +
+                "-fx-text-fill: #666666;" +
                 "-fx-background-radius: 8;" +
                 "-fx-padding: 3 8 3 8;" +
                 "-fx-font-size: 10px;" +

@@ -1,6 +1,7 @@
 package ui;
 
 import db.MongoDBManager;
+import game.ThemeManager;
 import javafx.geometry.*;
 import service.StoreService;
 import javafx.scene.Scene;
@@ -40,11 +41,11 @@ public class LoginScreen {
     private VBox loginForm;
     private VBox registerForm;
     private VBox formContainer;
+    private Button themeToggleButton;
 
     public Scene buildScene() {
         // ── Background ────────────────────────────────────────────────────
         StackPane root = new StackPane();
-        root.setStyle("-fx-background-color: #0f0f1a;");
 
         // Decorative gradient blobs (behind the card)
         Pane blobs = buildBlobs();
@@ -55,7 +56,7 @@ public class LoginScreen {
         card.setMinWidth(350);
         card.setPrefWidth(440);
         card.getStyleClass().add("card");
-        card.setStyle("-fx-background-color: #1a1a2e; -fx-background-radius: 20; -fx-padding: 40;");
+        card.setStyle("-fx-background-radius: 20; -fx-padding: 40;");
 
         buildLoginForm();
         buildRegisterForm();
@@ -67,8 +68,12 @@ public class LoginScreen {
 
         card.getChildren().add(formContainer);
 
+        themeToggleButton = buildThemeToggleButton();
+
         StackPane.setAlignment(card, Pos.CENTER);
-        root.getChildren().addAll(blobs, card);
+        StackPane.setAlignment(themeToggleButton, Pos.TOP_RIGHT);
+        StackPane.setMargin(themeToggleButton, new Insets(24));
+        root.getChildren().addAll(blobs, card, themeToggleButton);
 
         Scene scene = new Scene(root, 1200, 750);
         scene.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
@@ -85,7 +90,8 @@ public class LoginScreen {
 
         // Brand
         Label brand = new Label("⌨  TypeMaster");
-        brand.setStyle("-fx-text-fill: #a78bfa; -fx-font-size: 15px; -fx-font-weight: bold;");
+        brand.getStyleClass().add("label-accent");
+        brand.setStyle("-fx-font-size: 15px; -fx-font-weight: bold;");
 
         Label title = new Label("Welcome back");
         title.getStyleClass().add("label-title");
@@ -143,7 +149,8 @@ public class LoginScreen {
         registerForm.setPrefHeight(-1);
 
         Label brand = new Label("⌨  TypeMaster");
-        brand.setStyle("-fx-text-fill: #a78bfa; -fx-font-size: 15px; -fx-font-weight: bold;");
+        brand.getStyleClass().add("label-accent");
+        brand.setStyle("-fx-font-size: 15px; -fx-font-weight: bold;");
 
         Label title = new Label("Create account");
         title.getStyleClass().add("label-title");
@@ -350,7 +357,6 @@ public class LoginScreen {
             sp.setMaxHeight(Double.MAX_VALUE);
             sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
             sp.getStyleClass().add("scroll-dark");
-            sp.setStyle("-fx-background: #1a1a2e; -fx-background-color: #1a1a2e;");
             formContainer.getChildren().add(sp);
         }
     }
@@ -391,6 +397,32 @@ public class LoginScreen {
         return r;
     }
 
+    private Button buildThemeToggleButton() {
+        Button btn = new Button();
+        btn.getStyleClass().add("theme-toggle-btn");
+        btn.setMinSize(44, 44);
+        btn.setPrefSize(44, 44);
+        btn.setMaxSize(44, 44);
+        updateThemeToggleButton(btn);
+        btn.setOnAction(e -> {
+            ThemeManager tm = ThemeManager.getInstance();
+            if (tm.isPrintLightTheme()) {
+                tm.restoreLastNonLightTheme();
+            } else {
+                tm.setPrintLightTheme();
+            }
+            updateThemeToggleButton(btn);
+            ThemeManager.applyTheme(btn.getScene());
+        });
+        return btn;
+    }
+
+    private void updateThemeToggleButton(Button btn) {
+        boolean light = ThemeManager.getInstance().isPrintLightTheme();
+        btn.setText(light ? "☾" : "☀");
+        btn.setTooltip(new Tooltip(light ? "Switch to dark theme" : "Switch to light print theme"));
+    }
+
     private Pane buildBlobs() {
         Pane p = new Pane();
         p.setMouseTransparent(true);
@@ -399,6 +431,7 @@ public class LoginScreen {
         Region b1 = new Region();
         b1.setStyle("-fx-background-color: radial-gradient(center 50% 50%, radius 50%, #7c3aed44, transparent); " +
                     "-fx-background-radius: 300;");
+        b1.getStyleClass().add("login-blob");
         b1.setPrefSize(500, 500);
         b1.setLayoutX(-100);
         b1.setLayoutY(-100);
@@ -407,6 +440,7 @@ public class LoginScreen {
         Region b2 = new Region();
         b2.setStyle("-fx-background-color: radial-gradient(center 50% 50%, radius 50%, #06b6d422, transparent); " +
                     "-fx-background-radius: 300;");
+        b2.getStyleClass().add("login-blob");
         b2.setPrefSize(400, 400);
         b2.setLayoutX(800);
         b2.setLayoutY(400);

@@ -79,6 +79,7 @@ public class TrainingDashboardScreen {
     // ── Body ──────────────────────────────────────────────────────────────
 
     private VBox buildBody() {
+        cardColorIndex = 0; // Reset for each build
         VBox body = new VBox(32);
         body.setStyle("-fx-padding: 36 40 40 40;");
 
@@ -484,23 +485,29 @@ public class TrainingDashboardScreen {
 
     // ── Lesson card ───────────────────────────────────────────────────────
 
+    private static final String[] CARD_COLORS = {"card-blue", "card-pink", "card-yellow", "card-red", "card-green", "card-purple"};
+    private static int cardColorIndex = 0;
+
     private VBox buildLessonCard(Lesson lesson, TrainingProgress progress, boolean accessible) {
         VBox card = new VBox(12);
         card.setPrefWidth(260);
-        card.setStyle(
-            "-fx-background-color: #1a1a2e;" +
-            "-fx-background-radius: 16;" +
-            "-fx-padding: 20;" +
-            "-fx-cursor: hand;" +
-            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 12, 0, 0, 4);");
+
+        // Apply colorful card style
+        String colorClass = CARD_COLORS[cardColorIndex % CARD_COLORS.length];
+        card.getStyleClass().add(colorClass);
+        cardColorIndex++;
+
+        if (!accessible) {
+            card.setStyle(card.getStyle() + "; -fx-opacity: 0.6;");
+        }
 
         // Top row: number badge + lock or check
         HBox topRow = new HBox(8);
         topRow.setAlignment(Pos.CENTER_LEFT);
         Label numBadge = new Label("#" + lesson.getLessonNumber());
         numBadge.setStyle(
-            "-fx-background-color: #0f172a;" +
-            "-fx-text-fill: #7c3aed;" +
+            "-fx-background-color: rgba(59,130,246,0.2);" +
+            "-fx-text-fill: #1a1a1a;" +
             "-fx-background-radius: 6;" +
             "-fx-padding: 2 8 2 8;" +
             "-fx-font-size: 12px;" +
@@ -527,7 +534,7 @@ public class TrainingDashboardScreen {
 
         // Title
         Label titleLabel = new Label(lesson.getTitle());
-        titleLabel.setStyle("-fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: bold;");
+        titleLabel.setStyle("-fx-text-fill: #1a1a1a; -fx-font-size: 15px; -fx-font-weight: bold;");
         titleLabel.setWrapText(true);
 
         // Level badge + target WPM
@@ -544,7 +551,7 @@ public class TrainingDashboardScreen {
         if (progress != null && progress.getAttempts() > 0) {
             Label best = new Label(String.format("Best: %.0f WPM  •  %.0f%% acc",
                     progress.getBestWpm(), progress.getBestAccuracy()));
-            best.setStyle("-fx-text-fill: #06b6d4; -fx-font-size: 12px;");
+            best.setStyle("-fx-text-fill: #1a1a1a; -fx-font-size: 12px; -fx-font-weight: bold;");
             Label attempts = new Label(progress.getAttempts() + " attempt" +
                     (progress.getAttempts() == 1 ? "" : "s"));
             attempts.getStyleClass().add("label-muted");
@@ -586,9 +593,9 @@ public class TrainingDashboardScreen {
 
     private String levelBadgeStyle(String level) {
         String color = switch (level) {
-            case "Beginner"     -> "rgba(16,185,129,0.2); -fx-text-fill: #10b981;";
-            case "Intermediate" -> "rgba(245,158,11,0.2); -fx-text-fill: #fbbf24;";
-            default             -> "rgba(239,68,68,0.2);  -fx-text-fill: #ef4444;";
+            case "Beginner"     -> "rgba(16,185,129,0.25); -fx-text-fill: #10b981;";
+            case "Intermediate" -> "rgba(251,191,36,0.25); -fx-text-fill: #fbbf24;";
+            default             -> "rgba(239,68,68,0.25);  -fx-text-fill: #ef4444;";
         };
         return "-fx-background-color: " + color +
                "-fx-background-radius: 8;" +

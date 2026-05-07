@@ -110,6 +110,7 @@ public class ThemeStoreScreen {
         boolean active = ThemeManager.getInstance().getActiveThemeId().equals(t.id());
         boolean canAfford = "COINS".equals(t.unlockType()) && coins >= t.coinCost();
         boolean levelOk   = "LEVEL".equals(t.unlockType()) && level >= t.levelRequired();
+        boolean lightCard = ThemeManager.PRINT_LIGHT_THEME_ID.equals(t.id());
 
         VBox card = new VBox(10);
         card.setPrefWidth(160);
@@ -118,7 +119,7 @@ public class ThemeStoreScreen {
             "-fx-background-color: " + t.card() + ";" +
             "-fx-background-radius: 14;" +
             "-fx-padding: 16;" +
-            "-fx-border-color: " + (active ? t.accent() : "transparent") + ";" +
+            "-fx-border-color: " + (active ? t.accent() : (lightCard ? "#f9a8d4" : "transparent")) + ";" +
             "-fx-border-radius: 14;" +
             "-fx-border-width: 2;");
 
@@ -135,7 +136,7 @@ public class ThemeStoreScreen {
         }
 
         Label name = new Label(t.name());
-        name.setStyle("-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;");
+        name.setStyle("-fx-text-fill: " + (lightCard ? "#111827" : "white") + "; -fx-font-size: 12px; -fx-font-weight: bold;");
         name.setWrapText(true);
         name.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
 
