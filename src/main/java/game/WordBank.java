@@ -1,5 +1,8 @@
 package game;
 
+import db.WordBankDAO;
+
+import java.util.List;
 import java.util.Random;
 
 public class WordBank {
@@ -16,6 +19,13 @@ public class WordBank {
     };
 
     public static String[] getWords(String difficulty) {
+        try {
+            List<String> dbWords = WordBankDAO.getInstance().getWords(difficulty);
+            if (!dbWords.isEmpty()) return dbWords.toArray(String[]::new);
+        } catch (Exception ex) {
+            System.err.println("Word bank DB unavailable, using fallback words: " + ex.getMessage());
+        }
+
         switch (difficulty.toUpperCase()) {
             case "EASY": return EASY_WORDS;
             case "MEDIUM": return MEDIUM_WORDS;
@@ -26,6 +36,12 @@ public class WordBank {
 
     public static String getRandomSentence() {
         Random random = new Random();
+        try {
+            List<String> dbSentences = WordBankDAO.getInstance().getSentences();
+            if (!dbSentences.isEmpty()) return dbSentences.get(random.nextInt(dbSentences.size()));
+        } catch (Exception ex) {
+            System.err.println("Sentence bank DB unavailable, using fallback sentence: " + ex.getMessage());
+        }
         return SENTENCES[random.nextInt(SENTENCES.length)];
     }
 
