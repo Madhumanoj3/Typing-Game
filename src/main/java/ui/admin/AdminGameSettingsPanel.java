@@ -1,6 +1,7 @@
 package ui.admin;
 
 import db.GameConfigDAO;
+import game.ThemeManager;
 import javafx.collections.FXCollections;
 import javafx.geometry.*;
 import javafx.scene.control.*;
@@ -51,11 +52,13 @@ public class AdminGameSettingsPanel {
     // ── Mode Card ─────────────────────────────────────────────────────────
 
     private VBox buildModeCard(GameConfig config) {
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
         VBox card = new VBox(16);
         card.setStyle(
-            "-fx-background-color: #1a1a2e;" +
+            "-fx-background-color: " + (isLight ? "#ffffff" : "#1a1a2e") + ";" +
             "-fx-background-radius: 16;" +
-            "-fx-padding: 24;");
+            "-fx-padding: 24;" +
+            (isLight ? "-fx-border-color: rgba(124,58,237,0.15); -fx-border-radius: 16; -fx-border-width: 1;" : ""));
 
         // Header
         HBox header = new HBox(12);
@@ -73,7 +76,7 @@ public class AdminGameSettingsPanel {
 
         VBox headerText = new VBox(2);
         Label modeName = new Label(config.getModeName());
-        modeName.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
+        modeName.setStyle("-fx-text-fill: " + (isLight ? "#111827" : "white") + "; -fx-font-size: 18px; -fx-font-weight: bold;");
 
         Label statusBadge = new Label(config.isEnabled() ? "● ENABLED" : "● DISABLED");
         statusBadge.setStyle(config.isEnabled()
@@ -113,13 +116,13 @@ public class AdminGameSettingsPanel {
                 VBox durCard = new VBox(4);
                 durCard.setAlignment(Pos.CENTER);
                 durCard.setStyle(
-                    "-fx-background-color: #16213e;" +
+                    "-fx-background-color: " + (isLight ? "#f0f9ff" : "#16213e") + ";" +
                     "-fx-background-radius: 10;" +
                     "-fx-padding: 12 20 12 20;" +
                     "-fx-min-width: 120;");
 
                 Label diffLabel = new Label(entry.getKey());
-                diffLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 12px;");
+                diffLabel.setStyle("-fx-text-fill: " + (isLight ? "#374151" : "#94a3b8") + "; -fx-font-size: 12px;");
 
                 Label valLabel = new Label(entry.getValue() == 0 ? "∞ Unlimited" : entry.getValue() + "s");
                 String color = switch (entry.getKey()) {
@@ -186,7 +189,13 @@ public class AdminGameSettingsPanel {
         }
 
         dialog.getDialogPane().setContent(grid);
-        dialog.getDialogPane().setStyle("-fx-background-color: #1a1a2e;");
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
+        dialog.getDialogPane().setStyle("-fx-background-color: " + (isLight ? "#ffffff" : "#1a1a2e") + ";");
+        // Apply theme to dialog header
+        if (dialog.getDialogPane().lookup(".header-panel") != null) {
+            dialog.getDialogPane().lookup(".header-panel").setStyle(
+                "-fx-background-color: " + (isLight ? "#f0f9ff" : "#12122a") + ";");
+        }
 
         dialog.setResultConverter(bt -> {
             if (bt == saveType) {

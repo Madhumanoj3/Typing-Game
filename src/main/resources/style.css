@@ -327,6 +327,15 @@
     -fx-effect: dropshadow(gaussian, rgba(168,85,247,0.35), 16, 0.05, 0, 6);
 }
 
+/* ── RESULT & LEVEL-UP CARDS ── */
+.result-card {
+    -fx-text-fill: white;
+}
+
+.levelup-card {
+    -fx-text-fill: white;
+}
+
 /* ── SIDEBAR ── */
 .sidebar {
     -fx-background-color: #0d0d20;

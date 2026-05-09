@@ -1,6 +1,7 @@
 package ui;
 
 import game.SoundManager;
+import game.ThemeManager;
 import javafx.geometry.*;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -34,16 +35,18 @@ public class LevelUpScreen {
     }
 
     private VBox buildCard() {
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
         VBox outer = new VBox();
         outer.setAlignment(Pos.CENTER);
-        outer.setStyle("-fx-background-color: #0f0f1a; -fx-padding: 40;");
+        outer.setStyle("-fx-background-color: " + ThemeManager.bg() + "; -fx-padding: 40;");
         outer.setFillWidth(true);
 
         VBox card = new VBox(24);
         card.setMaxWidth(600);
         card.setMinWidth(520);
-        card.setStyle("-fx-background-color: #1a1a2e; -fx-background-radius: 20; -fx-padding: 44;");
+        card.setStyle("-fx-background-color: " + ThemeManager.card() + "; -fx-background-radius: 20; -fx-padding: 44;");
         card.setAlignment(Pos.CENTER);
+        card.getStyleClass().add("levelup-card");
 
         // ── Trophy / icon ─────────────────────────────────────────────────
         Label trophy = new Label("🎉");
@@ -53,7 +56,7 @@ public class LevelUpScreen {
         title.getStyleClass().add("label-title");
 
         Label levelLabel = new Label("Level " + newLevel + " — " + getLevelTitle(newLevel));
-        levelLabel.setStyle("-fx-text-fill: #a78bfa; -fx-font-size: 20px; -fx-font-weight: bold;");
+        levelLabel.setStyle("-fx-text-fill: " + (isLight ? "#7c3aed" : "#a78bfa") + "; -fx-font-size: 20px; -fx-font-weight: bold;");
 
         // ── Stats display ─────────────────────────────────────────────────
         GridPane grid = new GridPane();
@@ -87,7 +90,7 @@ public class LevelUpScreen {
 
         // ── Motivational message ──────────────────────────────────────────
         Label message = new Label(getMotivationalMessage(newLevel));
-        message.setStyle("-fx-text-fill: #a78bfa; -fx-font-size: 15px;");
+        message.setStyle("-fx-text-fill: " + (isLight ? "#7c3aed" : "#a78bfa") + "; -fx-font-size: 15px;");
         message.setWrapText(true);
         message.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
         message.setMaxWidth(480);
@@ -114,8 +117,9 @@ public class LevelUpScreen {
 
     private void addStatCell(GridPane grid, int col, int row,
                               String label, String value, String style) {
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
         VBox cell = new VBox(4);
-        cell.setStyle("-fx-background-color: #0f172a; -fx-background-radius: 12; -fx-padding: 16 30 16 30;");
+        cell.setStyle("-fx-background-color: " + (isLight ? "#fef3c7" : "#0f172a") + "; -fx-background-radius: 12; -fx-padding: 16 30 16 30;");
         cell.setAlignment(Pos.CENTER);
         Label val = new Label(value);
         val.getStyleClass().add(style);

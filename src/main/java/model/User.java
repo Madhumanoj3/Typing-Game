@@ -20,6 +20,7 @@ public class User {
     private LocalDateTime createdAt;
     private String subscriptionType = "FREE";
     private boolean blocked = false;
+    private boolean firstLogin = true;
 
     public User() {
         this.createdAt = LocalDateTime.now();
@@ -86,6 +87,9 @@ public class User {
 
     public boolean isBlocked()             { return blocked; }
     public void setBlocked(boolean v)      { this.blocked = v; }
+
+    public boolean isFirstLogin()           { return firstLogin; }
+    public void setFirstLogin(boolean v)    { this.firstLogin = v; }
 
     public String getPhoneNumber()         { return phone; }
     public String getDateOfBirth()         { return dob; }

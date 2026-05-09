@@ -19,7 +19,8 @@ $jfxJars = @(
     "$m2\org\openjfx\javafx-base\21\javafx-base-21-win.jar",
     "$m2\org\openjfx\javafx-controls\21\javafx-controls-21-win.jar",
     "$m2\org\openjfx\javafx-graphics\21\javafx-graphics-21-win.jar",
-    "$m2\org\openjfx\javafx-fxml\21\javafx-fxml-21-win.jar"
+    "$m2\org\openjfx\javafx-fxml\21\javafx-fxml-21-win.jar",
+    "$m2\org\openjfx\javafx-media\21\javafx-media-21-win.jar"
 )
 
 # ── MongoDB driver JARs ───────────────────────────────────────
@@ -57,7 +58,7 @@ Write-Host "Compiling $($sources.Count) source files..." -ForegroundColor Yellow
 & javac.exe "-cp" ($allJars -join ";") `
             "-d" $outDir `
             "--module-path" $modulePath `
-            "--add-modules" "javafx.controls,javafx.fxml,javafx.graphics" `
+            "--add-modules" "javafx.controls,javafx.fxml,javafx.graphics,javafx.media" `
             $sources 2>&1
 
 if ($LASTEXITCODE -ne 0) {
@@ -73,6 +74,6 @@ Write-Host "Resources copied." -ForegroundColor Green
 # ── Launch ────────────────────────────────────────────────────
 Write-Host "Launching TypeMaster..." -ForegroundColor Cyan
 & java.exe "--module-path" $modulePath `
-           "--add-modules" "javafx.controls,javafx.fxml,javafx.graphics" `
+           "--add-modules" "javafx.controls,javafx.fxml,javafx.graphics,javafx.media" `
            "-cp" $classpath `
            "ui.MainUI"

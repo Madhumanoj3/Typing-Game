@@ -1,6 +1,7 @@
 package ui.admin;
 
 import db.LessonDAO;
+import game.ThemeManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.*;
@@ -24,6 +25,7 @@ public class AdminLessonsPanel {
     public ScrollPane buildContent() {
         VBox content = new VBox(20);
         content.setStyle("-fx-padding: 36 40 36 40;");
+        content.getStyleClass().add("admin-lessons-panel");
 
         Label title = new Label("Lesson Management");
         title.getStyleClass().add("label-section");
@@ -191,19 +193,20 @@ public class AdminLessonsPanel {
 
         Stage stage = AdminDialogs.buildStage("Lesson Content");
 
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
         VBox root = new VBox(0);
-        root.setStyle("-fx-background-color: #0c0c1e;");
+        root.setStyle("-fx-background-color: " + (isLight ? "#ffffff" : "#0c0c1e") + ";");
         root.setPrefWidth(520);
 
         // Header
         VBox header = new VBox(6);
         header.setStyle(
-            "-fx-background-color: linear-gradient(to right, #1e1040, #0c0c1e);" +
+            "-fx-background-color: " + (isLight ? "linear-gradient(to right, #f0e6ff, #ffffff)" : "linear-gradient(to right, #1e1040, #0c0c1e)") + ";" +
             "-fx-padding: 24 28 18 28;" +
-            "-fx-border-color: transparent transparent rgba(124,58,237,0.3) transparent;" +
+            "-fx-border-color: transparent transparent " + (isLight ? "rgba(124,58,237,0.2)" : "rgba(124,58,237,0.3)") + " transparent;" +
             "-fx-border-width: 0 0 1 0;");
         Label htitle = new Label("📖  " + sel.getTitle());
-        htitle.setStyle("-fx-text-fill: white; -fx-font-size: 17px; -fx-font-weight: bold;");
+        htitle.setStyle("-fx-text-fill: " + (isLight ? "#111827" : "white") + "; -fx-font-size: 17px; -fx-font-weight: bold;");
         String lc = switch (sel.getLevel()) {
             case "Beginner" -> "#10b981"; case "Intermediate" -> "#fbbf24"; default -> "#ef4444";
         };
@@ -217,13 +220,13 @@ public class AdminLessonsPanel {
 
         // Body
         VBox body = new VBox(18);
-        body.setStyle("-fx-padding: 24 28 24 28; -fx-background-color: #0c0c1e;");
+        body.setStyle("-fx-padding: 24 28 24 28; -fx-background-color: " + (isLight ? "#ffffff" : "#0c0c1e") + ";");
 
         body.getChildren().add(AdminDialogs.sectionHeader("📝", "Typing Passage", "#a78bfa"));
         Label contentText = new Label(sel.getContent().isBlank() ? "(no content)" : sel.getContent());
         contentText.setStyle(
-            "-fx-text-fill: #e2e8f0; -fx-font-size: 13px; -fx-line-spacing: 4;" +
-            "-fx-background-color: #111128; -fx-padding: 14 16 14 16;" +
+            "-fx-text-fill: " + (isLight ? "#111827" : "#e2e8f0") + "; -fx-font-size: 13px; -fx-line-spacing: 4;" +
+            "-fx-background-color: " + (isLight ? "#f3f4f6" : "#111128") + "; -fx-padding: 14 16 14 16;" +
             "-fx-background-radius: 10;");
         contentText.setWrapText(true);
         contentText.setMaxWidth(Double.MAX_VALUE);
@@ -232,8 +235,8 @@ public class AdminLessonsPanel {
         body.getChildren().add(AdminDialogs.sectionHeader("🖐", "Finger Hint / Guidance", "#38bdf8"));
         Label hintText = new Label(sel.getFingerHint().isBlank() ? "(no hint provided)" : sel.getFingerHint());
         hintText.setStyle(
-            "-fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-line-spacing: 3;" +
-            "-fx-background-color: rgba(56,189,248,0.05); -fx-padding: 12 16 12 16;" +
+            "-fx-text-fill: " + (isLight ? "#374151" : "#94a3b8") + "; -fx-font-size: 13px; -fx-line-spacing: 3;" +
+            "-fx-background-color: " + (isLight ? "rgba(59,130,246,0.06)" : "rgba(56,189,248,0.05)") + "; -fx-padding: 12 16 12 16;" +
             "-fx-background-radius: 10; -fx-border-color: rgba(56,189,248,0.15);" +
             "-fx-border-radius: 10; -fx-border-width: 1;");
         hintText.setWrapText(true);
@@ -244,7 +247,7 @@ public class AdminLessonsPanel {
         sp.setFitToWidth(true);
         sp.setPrefHeight(360);
         sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        sp.setStyle("-fx-background: #0c0c1e; -fx-background-color: #0c0c1e;");
+        sp.setStyle("-fx-background: " + (isLight ? "#ffffff" : "#0c0c1e") + "; -fx-background-color: " + (isLight ? "#ffffff" : "#0c0c1e") + ";");
 
         HBox btns = new HBox();
         btns.setAlignment(Pos.CENTER_RIGHT);
@@ -263,7 +266,7 @@ public class AdminLessonsPanel {
         Stage stage = AdminDialogs.buildStage("Add New Lesson");
 
         VBox root = new VBox(0);
-        root.setStyle("-fx-background-color: #0c0c1e;");
+        root.setStyle("-fx-background-color: " + (ThemeManager.getInstance().isPrintLightTheme() ? "#ffffff" : "#0c0c1e") + ";");
         root.setPrefWidth(580);
 
         VBox header = buildFormHeader("➕  Add New Lesson",
@@ -312,7 +315,7 @@ public class AdminLessonsPanel {
         Stage stage = AdminDialogs.buildStage("Edit Lesson");
 
         VBox root = new VBox(0);
-        root.setStyle("-fx-background-color: #0c0c1e;");
+        root.setStyle("-fx-background-color: " + (ThemeManager.getInstance().isPrintLightTheme() ? "#ffffff" : "#0c0c1e") + ";");
         root.setPrefWidth(580);
 
         VBox header = buildFormHeader("✏️  Edit Lesson", sel.getTitle(), sel);
@@ -373,11 +376,12 @@ public class AdminLessonsPanel {
     // ── Form Builder ──────────────────────────────────────────────────────
 
     private VBox buildFormHeader(String title, String subtitle, Lesson lesson) {
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
         VBox header = new VBox(6);
         header.setStyle(
-            "-fx-background-color: linear-gradient(to right, #1e1040, #0c0c1e);" +
+            "-fx-background-color: " + (isLight ? "linear-gradient(to right, #f0e6ff, #ffffff)" : "linear-gradient(to right, #1e1040, #0c0c1e)") + ";" +
             "-fx-padding: 24 28 18 28;" +
-            "-fx-border-color: transparent transparent rgba(124,58,237,0.3) transparent;" +
+            "-fx-border-color: transparent transparent " + (isLight ? "rgba(124,58,237,0.2)" : "rgba(124,58,237,0.3)") + " transparent;" +
             "-fx-border-width: 0 0 1 0;");
 
         if (lesson != null) {
@@ -394,16 +398,17 @@ public class AdminLessonsPanel {
         }
 
         Label htitle = new Label(title);
-        htitle.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
+        htitle.setStyle("-fx-text-fill: " + (isLight ? "#111827" : "white") + "; -fx-font-size: 18px; -fx-font-weight: bold;");
         Label hsub = new Label(subtitle);
-        hsub.setStyle("-fx-text-fill: #475569; -fx-font-size: 12px;");
+        hsub.setStyle("-fx-text-fill: " + (isLight ? "#6b7280" : "#475569") + "; -fx-font-size: 12px;");
         header.getChildren().addAll(htitle, hsub);
         return header;
     }
 
     private VBox buildLessonForm(Lesson ex) {
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
         VBox form = new VBox(18);
-        form.setStyle("-fx-padding: 24 28 12 28; -fx-background-color: #0c0c1e;");
+        form.setStyle("-fx-padding: 24 28 12 28; -fx-background-color: " + (isLight ? "#ffffff" : "#0c0c1e") + ";");
 
         // ── Section: Basic Info ───────────────────────────────────────────
         form.getChildren().add(AdminDialogs.sectionHeader("📋", "Basic Information", "#a78bfa"));
@@ -543,19 +548,21 @@ public class AdminLessonsPanel {
     // ── Style helpers ─────────────────────────────────────────────────────
 
     private TextField styledField(String prompt, String value, String id) {
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
         TextField f = new TextField(value);
         f.setId(id);
         f.setPromptText(prompt);
         f.setMaxWidth(Double.MAX_VALUE);
         f.setStyle(
-            "-fx-control-inner-background: #111128; -fx-text-fill: #e2e8f0;" +
-            "-fx-font-size: 13px; -fx-background-color: #111128;" +
-            "-fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 10;" +
+            "-fx-control-inner-background: " + (isLight ? "#f9fafb" : "#111128") + "; -fx-text-fill: " + (isLight ? "#111827" : "#e2e8f0") + ";" +
+            "-fx-font-size: 13px; -fx-background-color: " + (isLight ? "#f9fafb" : "#111128") + ";" +
+            "-fx-border-color: " + (isLight ? "rgba(124,58,237,0.2)" : "rgba(255,255,255,0.1)") + "; -fx-border-radius: 10;" +
             "-fx-background-radius: 10; -fx-padding: 10 12 10 12;");
         return f;
     }
 
     private TextArea styledTextArea(String prompt, String value, int rows, String id) {
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
         TextArea a = new TextArea(value);
         a.setId(id);
         a.setPromptText(prompt);
@@ -563,9 +570,9 @@ public class AdminLessonsPanel {
         a.setPrefRowCount(rows);
         a.setMaxWidth(Double.MAX_VALUE);
         a.setStyle(
-            "-fx-control-inner-background: #111128; -fx-text-fill: #e2e8f0;" +
-            "-fx-font-size: 13px; -fx-background-color: #111128;" +
-            "-fx-border-color: rgba(255,255,255,0.1); -fx-border-radius: 10;" +
+            "-fx-control-inner-background: " + (isLight ? "#f9fafb" : "#111128") + "; -fx-text-fill: " + (isLight ? "#111827" : "#e2e8f0") + ";" +
+            "-fx-font-size: 13px; -fx-background-color: " + (isLight ? "#f9fafb" : "#111128") + ";" +
+            "-fx-border-color: " + (isLight ? "rgba(124,58,237,0.2)" : "rgba(255,255,255,0.1)") + "; -fx-border-radius: 10;" +
             "-fx-background-radius: 10;");
         return a;
     }
@@ -604,11 +611,12 @@ public class AdminLessonsPanel {
     }
 
     private ScrollPane scrollPane(javafx.scene.Node content, double height) {
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
         ScrollPane sp = new ScrollPane(content);
         sp.setFitToWidth(true);
         sp.setPrefHeight(height);
         sp.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        sp.setStyle("-fx-background: #0c0c1e; -fx-background-color: #0c0c1e;");
+        sp.setStyle("-fx-background: " + (isLight ? "#ffffff" : "#0c0c1e") + "; -fx-background-color: " + (isLight ? "#ffffff" : "#0c0c1e") + ";");
         return sp;
     }
 }

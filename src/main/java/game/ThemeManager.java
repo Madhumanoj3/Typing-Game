@@ -253,16 +253,20 @@ public class ThemeManager {
     private static String toPrintLightStyle(String style) {
         String s = style;
 
+        // Background colors
         s = replaceAll(s, "#0f0f1a", "#fff7fb");
         s = replaceAll(s, "#080818", "#fff7fb");
         s = replaceAll(s, "#030014", "#fff7fb");
         s = replaceAll(s, "#050508", "#fff7fb");
+        s = replaceAll(s, "#0c0c1e", "#ffffff");
+        s = replaceAll(s, "#1e1040", "#f0e6ff");
         s = replaceAll(s, "#000000", "#111827");
 
-        s = replaceAll(s, "#1a1a2e", "linear-gradient(to bottom right, #ffffff, #ffe4f1)");
-        s = replaceAll(s, "#12122b", "linear-gradient(to bottom right, #ffffff, #e8f3ff)");
-        s = replaceAll(s, "#111128", "linear-gradient(to bottom right, #ffffff, #fff1b8)");
-        s = replaceAll(s, "#0e0e1e", "linear-gradient(to bottom right, #ffffff, #e8f3ff)");
+        // Card backgrounds
+        s = replaceAll(s, "#1a1a2e", "#ffffff");
+        s = replaceAll(s, "#12122b", "#ffffff");
+        s = replaceAll(s, "#111128", "#ffffff");
+        s = replaceAll(s, "#0e0e1e", "#ffffff");
         s = replaceAll(s, "#0e0e22", "#ffffff");
         s = replaceAll(s, "#0e0e24", "#ffffff");
         s = replaceAll(s, "#111118", "#ffffff");
@@ -270,39 +274,58 @@ public class ThemeManager {
         s = replaceAll(s, "#050018", "#ffffff");
         s = replaceAll(s, "#0e0030", "#e8f3ff");
 
-        s = replaceAll(s, "#12122a", "linear-gradient(to bottom, #ffe4f1, #e8f3ff)");
-        s = replaceAll(s, "#0d0d20", "linear-gradient(to bottom, #ffe4f1, #e8f3ff)");
+        // Secondary backgrounds
+        s = replaceAll(s, "#12122a", "#f0f9ff");
+        s = replaceAll(s, "#0d0d20", "#fef3c7");
         s = replaceAll(s, "#0b0b1e", "#fff1b8");
         s = replaceAll(s, "#0a0a1c", "#e8f3ff");
         s = replaceAll(s, "#0a0a1a", "#e8f3ff");
+        s = replaceAll(s, "#16213e", "#e0f2fe");
+        s = replaceAll(s, "#0f172a", "#fef3c7");
+        s = replaceAll(s, "#1e293b", "#e0e7ff");
+        s = replaceAll(s, "#1e2942", "#fce7f3");
 
-        s = replaceAll(s, "#16213e", "#e8f3ff");
-        s = replaceAll(s, "#0f172a", "#fff1b8");
-        s = replaceAll(s, "#1e293b", "#bfdbfe");
-
+        // Transparent overlays
         s = replaceAll(s, "rgba(255,255,255,0.015)", "rgba(236,72,153,0.06)");
         s = replaceAll(s, "rgba(255,255,255,0.04)", "rgba(59,130,246,0.10)");
-        s = replaceAll(s, "rgba(255,255,255,0.05)", "rgba(236,72,153,0.18)");
-        s = replaceAll(s, "rgba(255,255,255,0.06)", "rgba(37,99,235,0.18)");
+        s = replaceAll(s, "rgba(255,255,255,0.05)", "rgba(236,72,153,0.12)");
+        s = replaceAll(s, "rgba(255,255,255,0.06)", "rgba(37,99,235,0.15)");
+        s = replaceAll(s, "rgba(255,255,255,0.08)", "rgba(236,72,153,0.15)");
+        s = replaceAll(s, "rgba(255,255,255,0.1)", "rgba(59,130,246,0.18)");
 
+        // Dark overlays for light theme
+        s = replaceAll(s, "rgba(0,0,0,0.4)", "rgba(0,0,0,0.08)");
+        s = replaceAll(s, "rgba(0,0,0,0.3)", "rgba(0,0,0,0.06)");
+
+        // Text colors - primary
         s = replaceAll(s, "-fx-text-fill: white", "-fx-text-fill: #111827");
         s = replaceAll(s, "-fx-text-fill:white", "-fx-text-fill:#111827");
-        s = replaceAll(s, "-fx-text-fill: #cbd5e1", "-fx-text-fill: #111827");
-        s = replaceAll(s, "-fx-text-fill:#cbd5e1", "-fx-text-fill:#111827");
+        s = replaceAll(s, "-fx-text-fill: #cbd5e1", "-fx-text-fill: #1f2937");
+        s = replaceAll(s, "-fx-text-fill:#cbd5e1", "-fx-text-fill:#1f2937");
+        
+        // Text colors - secondary
         s = replaceAll(s, "-fx-text-fill: #94a3b8", "-fx-text-fill: #374151");
         s = replaceAll(s, "-fx-text-fill:#94a3b8", "-fx-text-fill:#374151");
         s = replaceAll(s, "-fx-text-fill: #64748b", "-fx-text-fill: #4b5563");
         s = replaceAll(s, "-fx-text-fill:#64748b", "-fx-text-fill:#4b5563");
-        s = replaceAll(s, "-fx-text-fill: #475569", "-fx-text-fill: #4b5563");
-        s = replaceAll(s, "-fx-text-fill:#475569", "-fx-text-fill:#4b5563");
-        s = replaceAll(s, "-fx-text-fill: #334155", "-fx-text-fill: #4b5563");
-        s = replaceAll(s, "-fx-text-fill:#334155", "-fx-text-fill:#4b5563");
+        s = replaceAll(s, "-fx-text-fill: #475569", "-fx-text-fill: #6b7280");
+        s = replaceAll(s, "-fx-text-fill:#475569", "-fx-text-fill:#6b7280");
+        s = replaceAll(s, "-fx-text-fill: #334155", "-fx-text-fill: #6b7280");
+        s = replaceAll(s, "-fx-text-fill:#334155", "-fx-text-fill:#6b7280");
 
-        s = replaceAll(s, "-fx-text-fill: #fbbf24", "-fx-text-fill: #b45309");
+        // Accent colors - keep vibrant but adjust for readability
+        s = replaceAll(s, "-fx-text-fill: #fbbf24", "-fx-text-fill: #d97706");
         s = replaceAll(s, "-fx-text-fill: #a78bfa", "-fx-text-fill: #7c3aed");
-        s = replaceAll(s, "-fx-text-fill: #38bdf8", "-fx-text-fill: #0369a1");
-        s = replaceAll(s, "-fx-text-fill: #34d399", "-fx-text-fill: #047857");
-        s = replaceAll(s, "-fx-text-fill: #f472b6", "-fx-text-fill: #be185d");
+        s = replaceAll(s, "-fx-text-fill: #38bdf8", "-fx-text-fill: #0284c7");
+        s = replaceAll(s, "-fx-text-fill: #34d399", "-fx-text-fill: #059669");
+        s = replaceAll(s, "-fx-text-fill: #f472b6", "-fx-text-fill: #db2777");
+        s = replaceAll(s, "-fx-text-fill: #10b981", "-fx-text-fill: #047857");
+        s = replaceAll(s, "-fx-text-fill: #ef4444", "-fx-text-fill: #dc2626");
+
+        // Border colors
+        s = replaceAll(s, "-fx-border-color: rgba(124,58,237,0.5)", "-fx-border-color: rgba(124,58,237,0.3)");
+        s = replaceAll(s, "-fx-border-color: rgba(124,58,237,0.35)", "-fx-border-color: rgba(124,58,237,0.25)");
+        s = replaceAll(s, "-fx-border-color: rgba(124,58,237,0.25)", "-fx-border-color: rgba(124,58,237,0.2)");
 
         return s;
     }

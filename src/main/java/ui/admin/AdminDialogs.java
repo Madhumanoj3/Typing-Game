@@ -1,5 +1,6 @@
 package ui.admin;
 
+import game.ThemeManager;
 import javafx.geometry.*;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -33,9 +34,10 @@ public final class AdminDialogs {
                                       String detail, String confirmText, boolean danger) {
         Stage stage = buildStage(title);
         boolean[] result = {false};
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
 
         VBox root = new VBox(22);
-        root.setStyle("-fx-background-color: #0c0c1e; -fx-padding: 36 32 32 32;");
+        root.setStyle("-fx-background-color: " + (isLight ? "#ffffff" : "#0c0c1e") + "; -fx-padding: 36 32 32 32;");
         root.setAlignment(Pos.CENTER);
         root.setPrefWidth(440);
 
@@ -51,14 +53,14 @@ public final class AdminDialogs {
 
         // ── Title ────────────────────────────────────────────────────────
         Label titleLbl = new Label(title);
-        titleLbl.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
+        titleLbl.setStyle("-fx-text-fill: " + (isLight ? "#111827" : "white") + "; -fx-font-size: 18px; -fx-font-weight: bold;");
         titleLbl.setWrapText(true);
         titleLbl.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
         titleLbl.setMaxWidth(360);
 
         // ── Message ──────────────────────────────────────────────────────
         Label msgLbl = new Label(message);
-        msgLbl.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 13px;");
+        msgLbl.setStyle("-fx-text-fill: " + (isLight ? "#374151" : "#94a3b8") + "; -fx-font-size: 13px;");
         msgLbl.setWrapText(true);
         msgLbl.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
         msgLbl.setMaxWidth(360);
@@ -120,9 +122,10 @@ public final class AdminDialogs {
     private static void showStatus(String iconStr, String title, String message,
                                     String fgColor, String bgColor, String borderColor) {
         Stage stage = buildStage(title);
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
 
         VBox root = new VBox(18);
-        root.setStyle("-fx-background-color: #0c0c1e; -fx-padding: 34 30 30 30;");
+        root.setStyle("-fx-background-color: " + (isLight ? "#ffffff" : "#0c0c1e") + "; -fx-padding: 34 30 30 30;");
         root.setAlignment(Pos.CENTER);
         root.setPrefWidth(380);
 
@@ -137,7 +140,7 @@ public final class AdminDialogs {
         iconWrap.getChildren().addAll(bg, icon);
 
         Label titleLbl = new Label(title);
-        titleLbl.setStyle("-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;");
+        titleLbl.setStyle("-fx-text-fill: " + (isLight ? "#111827" : "white") + "; -fx-font-size: 16px; -fx-font-weight: bold;");
 
         Label msgLbl = new Label(message);
         msgLbl.setStyle("-fx-text-fill: " + fgColor + "; -fx-font-size: 13px;");
@@ -166,24 +169,31 @@ public final class AdminDialogs {
         Scene scene = new Scene(root);
         scene.getStylesheets().add(AdminDialogs.class.getResource("/style.css").toExternalForm());
         scene.setFill(Color.TRANSPARENT);
+        ThemeManager.applyTheme(scene);
         stage.setScene(scene);
         stage.showAndWait();
     }
 
     static Button ghostBtn(String text) {
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
         Button b = new Button(text);
-        b.setStyle(
-            "-fx-background-color: rgba(255,255,255,0.06);" +
-            "-fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-font-weight: bold;" +
-            "-fx-padding: 10 26 10 26; -fx-background-radius: 10; -fx-cursor: hand;");
-        b.setOnMouseEntered(e -> b.setStyle(
-            "-fx-background-color: rgba(255,255,255,0.1);" +
-            "-fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold;" +
-            "-fx-padding: 10 26 10 26; -fx-background-radius: 10; -fx-cursor: hand;"));
-        b.setOnMouseExited(e -> b.setStyle(
-            "-fx-background-color: rgba(255,255,255,0.06);" +
-            "-fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-font-weight: bold;" +
-            "-fx-padding: 10 26 10 26; -fx-background-radius: 10; -fx-cursor: hand;"));
+        String base = isLight
+            ? "-fx-background-color: rgba(124,58,237,0.08);" +
+              "-fx-text-fill: #6b7280; -fx-font-size: 13px; -fx-font-weight: bold;" +
+              "-fx-padding: 10 26 10 26; -fx-background-radius: 10; -fx-cursor: hand;"
+            : "-fx-background-color: rgba(255,255,255,0.06);" +
+              "-fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-font-weight: bold;" +
+              "-fx-padding: 10 26 10 26; -fx-background-radius: 10; -fx-cursor: hand;";
+        String hover = isLight
+            ? "-fx-background-color: rgba(124,58,237,0.15);" +
+              "-fx-text-fill: #111827; -fx-font-size: 13px; -fx-font-weight: bold;" +
+              "-fx-padding: 10 26 10 26; -fx-background-radius: 10; -fx-cursor: hand;"
+            : "-fx-background-color: rgba(255,255,255,0.1);" +
+              "-fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold;" +
+              "-fx-padding: 10 26 10 26; -fx-background-radius: 10; -fx-cursor: hand;";
+        b.setStyle(base);
+        b.setOnMouseEntered(e -> b.setStyle(hover));
+        b.setOnMouseExited(e -> b.setStyle(base));
         return b;
     }
 
@@ -206,9 +216,10 @@ public final class AdminDialogs {
     public static String showPlanChoice(String username, String currentPlan) {
         Stage stage = buildStage("Change Plan");
         String[] result = {null};
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
 
         VBox root = new VBox(20);
-        root.setStyle("-fx-background-color: #0c0c1e; -fx-padding: 34 30 28 30;");
+        root.setStyle("-fx-background-color: " + (isLight ? "#ffffff" : "#0c0c1e") + "; -fx-padding: 34 30 28 30;");
         root.setAlignment(Pos.CENTER);
         root.setPrefWidth(400);
 
@@ -222,10 +233,10 @@ public final class AdminDialogs {
         iconWrap.getChildren().addAll(bg, icon);
 
         Label titleLbl = new Label("Change Plan");
-        titleLbl.setStyle("-fx-text-fill: white; -fx-font-size: 17px; -fx-font-weight: bold;");
+        titleLbl.setStyle("-fx-text-fill: " + (isLight ? "#111827" : "white") + "; -fx-font-size: 17px; -fx-font-weight: bold;");
 
         Label subLbl = new Label("Select a new plan for: " + username);
-        subLbl.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 13px;");
+        subLbl.setStyle("-fx-text-fill: " + (isLight ? "#374151" : "#94a3b8") + "; -fx-font-size: 13px;");
 
         javafx.scene.control.ComboBox<String> planCombo = new javafx.scene.control.ComboBox<>();
         planCombo.getItems().addAll("FREE", "MONTHLY", "LIFETIME");
@@ -248,8 +259,9 @@ public final class AdminDialogs {
 
     /** Styled form label */
     public static Label formLabel(String text) {
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
         Label l = new Label(text);
-        l.setStyle("-fx-text-fill: #64748b; -fx-font-size: 11px; -fx-font-weight: bold;");
+        l.setStyle("-fx-text-fill: " + (isLight ? "#374151" : "#64748b") + "; -fx-font-size: 11px; -fx-font-weight: bold;");
         return l;
     }
 

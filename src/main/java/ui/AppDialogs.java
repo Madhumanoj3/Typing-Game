@@ -1,5 +1,6 @@
 package ui;
 
+import game.ThemeManager;
 import javafx.geometry.*;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -12,8 +13,8 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.*;
 
 /**
- * Attractive custom dark-themed modal dialogs for all user-facing screens.
- * Provides consistent, polished error/success/info/confirm popups.
+ * Attractive custom themed modal dialogs for all user-facing screens.
+ * Automatically adapts to light/dark theme.
  */
 public final class AppDialogs {
 
@@ -49,8 +50,8 @@ public final class AppDialogs {
                 danger ? "rgba(239,68,68,0.14)" : "rgba(124,58,237,0.14)",
                 danger ? "rgba(239,68,68,0.35)" : "rgba(124,58,237,0.35)", 36, 30);
 
-        Label titleLbl = centeredLabel(title, "white", 18, true);
-        Label msgLbl   = centeredLabel(message, "#94a3b8", 13, false);
+        Label titleLbl = centeredLabel(title, getTextColor("white"), 18, true);
+        Label msgLbl   = centeredLabel(message, getTextColor("#94a3b8"), 13, false);
         root.getChildren().addAll(iconWrap, titleLbl, msgLbl);
 
         if (detail != null && !detail.isBlank()) {
@@ -93,16 +94,16 @@ public final class AppDialogs {
         StackPane iconWrap = buildIconCircle(iconStr, accent, bgColor, borderColor, 38, 26);
 
         // Title
-        Label titleLbl = centeredLabel(title, "white", 18, true);
+        Label titleLbl = centeredLabel(title, getTextColor("white"), 18, true);
 
         // Thin divider
         Region divider = new Region();
         divider.setPrefHeight(1);
         divider.setPrefWidth(280);
-        divider.setStyle("-fx-background-color: rgba(255,255,255,0.07);");
+        divider.setStyle("-fx-background-color: " + getDividerColor() + ";");
 
         // Message
-        Label msgLbl = centeredLabel(message, "#94a3b8", 13, false);
+        Label msgLbl = centeredLabel(message, getTextColor("#94a3b8"), 13, false);
 
         // Close button — colored to match accent for error, purple otherwise
         String btnColor  = accent.equals("#ef4444") ? "#ef4444" : "#7c3aed";
@@ -119,11 +120,12 @@ public final class AppDialogs {
     // ── Component helpers ─────────────────────────────────────────────────────
 
     private static VBox buildRoot() {
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
         VBox v = new VBox(20);
         v.setStyle(
-            "-fx-background-color: #0c0c1e;" +
+            "-fx-background-color: " + (isLight ? "#ffffff" : "#0c0c1e") + ";" +
             "-fx-padding: 36 32 32 32;" +
-            "-fx-border-color: rgba(255,255,255,0.06);" +
+            "-fx-border-color: " + (isLight ? "rgba(124,58,237,0.2)" : "rgba(255,255,255,0.06)") + ";" +
             "-fx-border-radius: 18;" +
             "-fx-background-radius: 18;");
         v.setAlignment(Pos.CENTER);
@@ -187,6 +189,21 @@ public final class AppDialogs {
         return box;
     }
 
+    // ── Theme helpers ─────────────────────────────────────────────────────────
+
+    private static String getTextColor(String darkColor) {
+        if (!ThemeManager.getInstance().isPrintLightTheme()) return darkColor;
+        if (darkColor.equals("white")) return "#111827";
+        if (darkColor.equals("#94a3b8")) return "#374151";
+        return darkColor;
+    }
+
+    private static String getDividerColor() {
+        return ThemeManager.getInstance().isPrintLightTheme() 
+            ? "rgba(124,58,237,0.15)" 
+            : "rgba(255,255,255,0.07)";
+    }
+
     // ── Stage / Scene ─────────────────────────────────────────────────────────
 
     static Stage buildStage(String title) {
@@ -208,15 +225,22 @@ public final class AppDialogs {
     // ── Button styles ─────────────────────────────────────────────────────────
 
     static Button ghostBtn(String text) {
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
         Button b = new Button(text);
-        String base =
-            "-fx-background-color: rgba(255,255,255,0.06);" +
-            "-fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-font-weight: bold;" +
-            "-fx-padding: 10 28 10 28; -fx-background-radius: 10; -fx-cursor: hand;";
-        String hover =
-            "-fx-background-color: rgba(255,255,255,0.12);" +
-            "-fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold;" +
-            "-fx-padding: 10 28 10 28; -fx-background-radius: 10; -fx-cursor: hand;";
+        String base = isLight
+            ? "-fx-background-color: rgba(124,58,237,0.08);" +
+              "-fx-text-fill: #6b7280; -fx-font-size: 13px; -fx-font-weight: bold;" +
+              "-fx-padding: 10 28 10 28; -fx-background-radius: 10; -fx-cursor: hand;"
+            : "-fx-background-color: rgba(255,255,255,0.06);" +
+              "-fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-font-weight: bold;" +
+              "-fx-padding: 10 28 10 28; -fx-background-radius: 10; -fx-cursor: hand;";
+        String hover = isLight
+            ? "-fx-background-color: rgba(124,58,237,0.15);" +
+              "-fx-text-fill: #111827; -fx-font-size: 13px; -fx-font-weight: bold;" +
+              "-fx-padding: 10 28 10 28; -fx-background-radius: 10; -fx-cursor: hand;"
+            : "-fx-background-color: rgba(255,255,255,0.12);" +
+              "-fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold;" +
+              "-fx-padding: 10 28 10 28; -fx-background-radius: 10; -fx-cursor: hand;";
         b.setStyle(base);
         b.setOnMouseEntered(e -> b.setStyle(hover));
         b.setOnMouseExited(e -> b.setStyle(base));

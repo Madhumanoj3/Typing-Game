@@ -87,6 +87,7 @@ public class MongoDBManager {
                     .append("bestWpm",      user.getBestWpm())
                     .append("averageWpm",   user.getAverageWpm())
                     .append("bestAccuracy", user.getBestAccuracy())
+                    .append("firstLogin",   true)
                     .append("createdAt",    new Date());
             users.insertOne(doc);
             user.setId(doc.getObjectId("_id"));
@@ -218,8 +219,17 @@ public class MongoDBManager {
                 Filters.eq("email", user.getEmail()),
                 Updates.combine(
                         Updates.set("subscriptionType", user.getSubscriptionType()),
-                        Updates.set("blocked", user.isBlocked())
+                        Updates.set("blocked", user.isBlocked()),
+                        Updates.set("firstLogin", user.isFirstLogin())
                 )
+        );
+    }
+
+    /** Marks firstLogin as false for the given user (after intro video plays). */
+    public void markFirstLoginComplete(String email) {
+        users.updateOne(
+                Filters.eq("email", email),
+                Updates.set("firstLogin", false)
         );
     }
 
@@ -309,6 +319,7 @@ public class MongoDBManager {
         u.setBestAccuracy(numberAsDouble(doc, "bestAccuracy"));
         u.setSubscriptionType(doc.getString("subscriptionType") != null ? doc.getString("subscriptionType") : "FREE");
         u.setBlocked(doc.getBoolean("blocked", false));
+        u.setFirstLogin(doc.getBoolean("firstLogin", true));
         Date created = doc.getDate("createdAt");
         if (created != null) {
             u.setCreatedAt(created.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());

@@ -172,6 +172,14 @@ public class LoginScreen {
         regPhone.setPromptText("Phone Number");
         regPhone.getStyleClass().add("field-dark");
         regPhone.setMaxWidth(Double.MAX_VALUE);
+        // Validation: Phone number - max 10 digits, only numbers
+        regPhone.textProperty().addListener((obs, old, nv) -> {
+            if (!nv.matches("\\d*")) {
+                regPhone.setText(nv.replaceAll("[^0-9]", ""));
+            } else if (nv.length() > 10) {
+                regPhone.setText(nv.substring(0, 10));
+            }
+        });
 
         regAddress = new TextField();
         regAddress.setPromptText("Address");
@@ -182,6 +190,12 @@ public class LoginScreen {
         regAge.setPromptText("Age");
         regAge.getStyleClass().add("field-dark");
         regAge.setMaxWidth(Double.MAX_VALUE);
+        // Validation: Age - only numbers, no characters or symbols
+        regAge.textProperty().addListener((obs, old, nv) -> {
+            if (!nv.matches("\\d*")) {
+                regAge.setText(nv.replaceAll("[^0-9]", ""));
+            }
+        });
 
         regDob = new DatePicker();
         regDob.setPromptText("Date of Birth");
@@ -279,7 +293,7 @@ public class LoginScreen {
             }
             SessionManager.getInstance().login(user);
             StoreService.getInstance().loadUserPreferences(user.getUsername());
-            MainUI.showDashboard();
+            MainUI.showVideoIntro();
         }
     }
 
@@ -307,9 +321,12 @@ public class LoginScreen {
         int age;
         try {
             age = Integer.parseInt(ageStr);
-            if (age < 0 || age > 150) throw new NumberFormatException();
+            if (age < 5 || age > 100) {
+                AppDialogs.showError("Invalid Age", "Age must be between 5 and 100 years old.");
+                return;
+            }
         } catch (NumberFormatException e) {
-            AppDialogs.showError("Invalid Age", "Please enter a valid age between 0 and 150.");
+            AppDialogs.showError("Invalid Age", "Please enter a valid age between 5 and 100.");
             return;
         }
         if (!email.contains("@")) {
@@ -341,7 +358,7 @@ public class LoginScreen {
         } else {
             SessionManager.getInstance().login(newUser);
             StoreService.getInstance().loadUserPreferences(newUser.getUsername());
-            MainUI.showDashboard();
+            MainUI.showVideoIntro();
         }
     }
 

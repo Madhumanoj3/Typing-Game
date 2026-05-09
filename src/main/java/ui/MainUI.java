@@ -43,6 +43,11 @@ public class MainUI extends Application {
         setScene(login.buildScene());
     }
 
+    public static void showVideoIntro() {
+        VideoIntroScreen intro = new VideoIntroScreen();
+        setScene(intro.buildScene());
+    }
+
     public static void showDashboard() {
         DashboardScreen dashboard = new DashboardScreen();
         setScene(dashboard.buildScene());

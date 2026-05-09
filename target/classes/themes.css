@@ -1107,3 +1107,92 @@
     -fx-background-color: #e9d5ff;
     -fx-border-color: #7c3aed;
 }
+/* ── Light theme result & level-up cards ── */
+.theme-light_friendly .result-card,
+.theme-light_friendly .levelup-card {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #1a1a1a;
+    -fx-border-color: #e0e6eb;
+}
+
+.theme-light_friendly .result-card .label-title,
+.theme-light_friendly .result-card .label-muted,
+.theme-light_friendly .result-card .label-body,
+.theme-light_friendly .levelup-card .label-title,
+.theme-light_friendly .levelup-card .label-muted,
+.theme-light_friendly .levelup-card .label-body {
+    -fx-text-fill: #1a1a1a;
+}
+
+.theme-light_friendly .result-card .stat-number,
+.theme-light_friendly .result-card .stat-number-cyan,
+.theme-light_friendly .result-card .stat-number-green,
+.theme-light_friendly .result-card .stat-number-orange,
+.theme-light_friendly .levelup-card .stat-number,
+.theme-light_friendly .levelup-card .stat-number-cyan,
+.theme-light_friendly .levelup-card .stat-number-green,
+.theme-light_friendly .levelup-card .stat-number-orange {
+    -fx-text-fill: #3b82f6;
+}
+
+/* ── Light theme admin panels ── */
+.theme-light_friendly .admin-content-panel,
+.theme-light_friendly .admin-lessons-panel {
+    -fx-background-color: #f5f7fa;
+    -fx-text-fill: #1a1a1a;
+}
+
+.theme-light_friendly .admin-content-panel .label,
+.theme-light_friendly .admin-lessons-panel .label {
+    -fx-text-fill: #1a1a1a;
+}
+
+.theme-light_friendly .admin-content-panel .label-section,
+.theme-light_friendly .admin-lessons-panel .label-section {
+    -fx-text-fill: #1a1a1a;
+}
+
+.theme-light_friendly .admin-content-panel .label-muted,
+.theme-light_friendly .admin-lessons-panel .label-muted {
+    -fx-text-fill: #555555;
+}
+
+.theme-light_friendly .admin-content-panel .table-dark,
+.theme-light_friendly .admin-lessons-panel .table-dark {
+    -fx-background-color: #ffffff;
+    -fx-table-cell-border-color: #e0e6eb;
+}
+
+.theme-light_friendly .admin-content-panel .table-dark .column-header-background,
+.theme-light_friendly .admin-lessons-panel .table-dark .column-header-background {
+    -fx-background-color: #f0f4f8;
+}
+
+.theme-light_friendly .admin-content-panel .table-dark .column-header .label,
+.theme-light_friendly .admin-lessons-panel .table-dark .column-header .label,
+.theme-light_friendly .admin-content-panel .table-dark .table-cell,
+.theme-light_friendly .admin-lessons-panel .table-dark .table-cell {
+    -fx-text-fill: #1a1a1a;
+}
+
+.theme-light_friendly .admin-content-panel .table-dark .table-row-cell:even,
+.theme-light_friendly .admin-lessons-panel .table-dark .table-row-cell:even {
+    -fx-background-color: #fafbfc;
+}
+
+.theme-light_friendly .admin-content-panel .table-dark .table-row-cell:odd,
+.theme-light_friendly .admin-lessons-panel .table-dark .table-row-cell:odd {
+    -fx-background-color: #ffffff;
+}
+
+.theme-light_friendly .admin-content-panel .table-dark .table-row-cell:hover,
+.theme-light_friendly .admin-lessons-panel .table-dark .table-row-cell:hover,
+.theme-light_friendly .admin-content-panel .table-dark .table-row-cell:selected,
+.theme-light_friendly .admin-lessons-panel .table-dark .table-row-cell:selected {
+    -fx-background-color: #e8f0ff;
+}
+
+.theme-light_friendly .admin-content-panel .table-dark .table-row-cell:selected .table-cell,
+.theme-light_friendly .admin-lessons-panel .table-dark .table-row-cell:selected .table-cell {
+    -fx-text-fill: #1a1a1a;
+}
