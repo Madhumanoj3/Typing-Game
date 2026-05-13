@@ -350,7 +350,7 @@ public class TrainingDashboardScreen {
             if (Desktop.isDesktopSupported()) {
                 Desktop.getDesktop().open(certificate.toFile());
             } else {
-                AppDialogs.showInfo("Certificate Exported", "Certificate saved at:\n" + certificate.toAbsolutePath());
+                AppDialogs.showInfo("Certificate Exported", "PDF certificate saved at:\n" + certificate.toAbsolutePath());
             }
         } catch (Exception ex) {
             AppDialogs.showError("Certificate Export Failed", ex.getMessage());

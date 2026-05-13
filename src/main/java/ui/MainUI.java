@@ -39,6 +39,7 @@ public class MainUI extends Application {
 
     public static void showLogin() {
         ThemeManager.getInstance().setTheme(ThemeManager.DEFAULT_DARK_THEME_ID);
+        ThemeManager.getInstance().setFont("segoe");
         LoginScreen login = new LoginScreen();
         setScene(login.buildScene());
     }

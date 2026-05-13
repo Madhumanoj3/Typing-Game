@@ -229,31 +229,45 @@ public class SubscriptionScreen {
 
     private VBox buildPlanCard(String planId, String name, String price,
             String period, String tagline, boolean popular) {
-        VBox card = new VBox(14);
-        card.setPrefWidth(260);
-        card.setAlignment(Pos.TOP_CENTER);
+        boolean isLight = game.ThemeManager.getInstance().isPrintLightTheme();
 
-        String baseStyle = "-fx-background-color: #1a1a2e;" +
+        String baseBg    = isLight ? "#f8f8f8"  : "#1a1a2e";
+        String selBg     = isLight ? "#f0e6ff"  : "#1e2942";
+        String textFill  = isLight ? "#111827"  : "white";
+        String priceFill = isLight ? "#7c3aed"  : "#a78bfa";
+        String badgeFill = isLight ? "#b45309"  : "#fbbf24";
+        String badgeBg   = isLight ? "rgba(180,83,9,0.12)" : "rgba(245,158,11,0.2)";
+        String shadow    = isLight
+                ? "dropshadow(gaussian, rgba(0,0,0,0.12), 12, 0, 0, 3)"
+                : "dropshadow(gaussian, rgba(0,0,0,0.4), 16, 0, 0, 6)";
+        String selShadow = "dropshadow(gaussian, rgba(124,58,237,0.45), 22, 0, 0, 6)";
+        String lightBorder = isLight ? "-fx-border-color: #e5e7eb; -fx-border-radius: 20; -fx-border-width: 1;" : "";
+
+        String baseStyle = "-fx-background-color: " + baseBg + ";" +
                 "-fx-background-radius: 20;" +
                 "-fx-padding: 32 28 32 28;" +
                 "-fx-cursor: hand;" +
-                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 16, 0, 0, 6);";
-        String selectedStyle = "-fx-background-color: #1e2942;" +
+                lightBorder +
+                "-fx-effect: " + shadow + ";";
+        String selectedStyle = "-fx-background-color: " + selBg + ";" +
                 "-fx-background-radius: 20;" +
                 "-fx-padding: 32 28 32 28;" +
                 "-fx-cursor: hand;" +
                 "-fx-border-color: #7c3aed;" +
                 "-fx-border-radius: 20;" +
                 "-fx-border-width: 2;" +
-                "-fx-effect: dropshadow(gaussian, rgba(124,58,237,0.45), 22, 0, 0, 6);";
+                "-fx-effect: " + selShadow + ";";
 
+        VBox card = new VBox(14);
+        card.setPrefWidth(260);
+        card.setAlignment(Pos.TOP_CENTER);
         card.setStyle(selectedPlan.equals(planId) ? selectedStyle : baseStyle);
 
         if (popular) {
             Label badge = new Label("MOST POPULAR");
             badge.setStyle(
-                    "-fx-background-color: rgba(245,158,11,0.2);" +
-                            "-fx-text-fill: #fbbf24;" +
+                    "-fx-background-color: " + badgeBg + ";" +
+                            "-fx-text-fill: " + badgeFill + ";" +
                             "-fx-background-radius: 10;" +
                             "-fx-padding: 3 12 3 12;" +
                             "-fx-font-size: 11px;" +
@@ -262,10 +276,10 @@ public class SubscriptionScreen {
         }
 
         Label nameLabel = new Label(name);
-        nameLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
+        nameLabel.setStyle("-fx-text-fill: " + textFill + "; -fx-font-size: 18px; -fx-font-weight: bold;");
 
         Label priceLabel = new Label(price);
-        priceLabel.setStyle("-fx-text-fill: #a78bfa; -fx-font-size: 36px; -fx-font-weight: bold;");
+        priceLabel.setStyle("-fx-text-fill: " + priceFill + "; -fx-font-size: 36px; -fx-font-weight: bold;");
 
         Label periodLabel = new Label(period);
         periodLabel.getStyleClass().add("label-muted");
@@ -277,8 +291,6 @@ public class SubscriptionScreen {
 
         card.setOnMouseClicked(e -> {
             selectedPlan = planId;
-            String active = selectedPlan.equals(planId) ? selectedStyle : baseStyle;
-            card.setStyle(active);
             if (card.getParent() instanceof HBox parent) {
                 parent.getChildren().forEach(child -> {
                     if (child instanceof VBox sibling && sibling != card) {
