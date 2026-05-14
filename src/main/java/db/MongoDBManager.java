@@ -123,6 +123,44 @@ public class MongoDBManager {
         return users.find(Filters.eq("username", username)).first() != null;
     }
 
+    /** True if email belongs to someone other than currentUsername. */
+    public boolean isEmailTakenByOther(String email, String currentUsername) {
+        Document doc = users.find(Filters.eq("email", email)).first();
+        return doc != null && !currentUsername.equals(doc.getString("username"));
+    }
+
+    /** True if newUsername is in use by someone other than currentUsername. */
+    public boolean isUsernameTakenByOther(String newUsername, String currentUsername) {
+        Document doc = users.find(Filters.eq("username", newUsername)).first();
+        return doc != null && !currentUsername.equals(doc.getString("username"));
+    }
+
+    /** Updates profile fields (username, email, phone, address, age, dob) identified by currentUsername. */
+    public void updateUserProfile(String currentUsername, User user) {
+        users.updateOne(
+                Filters.eq("username", currentUsername),
+                Updates.combine(
+                        Updates.set("username", user.getUsername()),
+                        Updates.set("email",    user.getEmail()),
+                        Updates.set("phone",    user.getPhone()),
+                        Updates.set("address",  user.getAddress()),
+                        Updates.set("age",      user.getAge()),
+                        Updates.set("dob",      user.getDob())
+                )
+        );
+    }
+
+    /** Saves the chosen avatar ID for the user (null clears it). */
+    public void updateUserAvatar(String username, String avatarId) {
+        if (avatarId != null && !avatarId.isBlank()) {
+            users.updateOne(Filters.eq("username", username),
+                    Updates.set("avatarId", avatarId));
+        } else {
+            users.updateOne(Filters.eq("username", username),
+                    Updates.unset("avatarId"));
+        }
+    }
+
     /** Updates aggregated stats for the given user after a game. */
     public void updateUserStats(String username, double newWpm, double newAccuracy) {
         User existing = getUserByUsername(username);
@@ -320,6 +358,7 @@ public class MongoDBManager {
         u.setSubscriptionType(doc.getString("subscriptionType") != null ? doc.getString("subscriptionType") : "FREE");
         u.setBlocked(doc.getBoolean("blocked", false));
         u.setFirstLogin(doc.getBoolean("firstLogin", true));
+        u.setAvatarId(doc.getString("avatarId"));
         Date created = doc.getDate("createdAt");
         if (created != null) {
             u.setCreatedAt(created.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());

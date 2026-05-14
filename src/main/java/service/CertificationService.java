@@ -297,18 +297,18 @@ public class CertificationService {
     }
 
     /** Append a circle path (Bézier approximation) centred at (cx, cy) with radius r. */
-    private void appendCircle(StringBuilder c, int cx, int cy, int r) {
+    private void appendCircle(StringBuilder c, double cx, double cy, double r) {
         double k = 0.5523;
         double kr = k * r;
-        c.append(String.format("%.1f %.1f m\n", (double)(cx + r), (double)cy));
+        c.append(String.format("%.1f %.1f m\n", cx + r, cy));
         c.append(String.format("%.1f %.1f %.1f %.1f %.1f %.1f c\n",
-                cx+r, cy+kr, cx+kr, cy+r, (double)cx, cy+r));
+                cx+r, cy+kr, cx+kr, cy+r, cx, cy+r));
         c.append(String.format("%.1f %.1f %.1f %.1f %.1f %.1f c\n",
-                cx-kr, cy+r, cx-r, cy+kr, (double)(cx-r), (double)cy));
+                cx-kr, cy+r, cx-r, cy+kr, cx-r, cy));
         c.append(String.format("%.1f %.1f %.1f %.1f %.1f %.1f c\n",
-                cx-r, cy-kr, cx-kr, cy-r, (double)cx, cy-r));
+                cx-r, cy-kr, cx-kr, cy-r, cx, cy-r));
         c.append(String.format("%.1f %.1f %.1f %.1f %.1f %.1f c\n",
-                cx+kr, cy-r, cx+r, cy-kr, (double)(cx+r), (double)cy));
+                cx+kr, cy-r, cx+r, cy-kr, cx+r, cy));
         c.append("h\n");
     }
 

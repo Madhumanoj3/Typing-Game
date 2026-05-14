@@ -98,7 +98,7 @@ public class ResultScreen {
                 "-fx-background-color: rgba(245,158,11,0.15);" +
                 "-fx-background-radius: 12;" +
                 "-fx-padding: 10 24 10 24;");
-            Label coinIcon  = new Label("🪙");
+            Label coinIcon  = new Label("💰");
             coinIcon.setStyle("-fx-font-size: 18px;");
             Label coinLabel = new Label("+" + coinsGained + " coins earned!");
             coinLabel.setStyle(

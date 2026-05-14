@@ -17,6 +17,13 @@ import util.SessionManager;
  */
 public class ThemeStoreScreen {
 
+    private Runnable onRefresh;
+
+    public Node buildContent(Runnable onRefresh) {
+        this.onRefresh = onRefresh;
+        return buildContent(ThemeManager.getInstance().isPrintLightTheme());
+    }
+
     public javafx.scene.Scene buildScene() {
         boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
         String bgColor  = isLight ? "#f5f5f5" : "#0f0f1a";
@@ -85,7 +92,7 @@ public class ThemeStoreScreen {
 
         HBox coinsBadge = new HBox(6);
         coinsBadge.setAlignment(Pos.CENTER_LEFT);
-        Label coinIcon  = new Label("🪙");
+        Label coinIcon  = new Label("💰");
         coinIcon.setStyle("-fx-font-size: 16px;");
         Label coinCount = new Label(coins + " coins available");
         coinCount.setStyle("-fx-text-fill: " + textYellow + "; -fx-font-size: 13px; -fx-font-weight: bold;");
@@ -108,7 +115,7 @@ public class ThemeStoreScreen {
         root.getChildren().add(buildSep(isLight));
 
         // ── Coin-purchase section ─────────────────────────────────────────
-        Label coinHeader = new Label("🪙  Buy with Coins");
+        Label coinHeader = new Label("💰  Buy with Coins");
         coinHeader.setStyle("-fx-text-fill: " + sectionGold + "; -fx-font-size: 15px; -fx-font-weight: bold;");
         root.getChildren().add(coinHeader);
 
@@ -169,7 +176,7 @@ public class ThemeStoreScreen {
         // Status / action button
         String unlockInfo = "LEVEL".equals(t.unlockType())
                 ? "Level " + t.levelRequired()
-                : t.coinCost() + " 🪙";
+                : t.coinCost() + " 💰";
 
         Button actionBtn;
         if (active) {
@@ -185,10 +192,10 @@ public class ThemeStoreScreen {
                                "-fx-background-radius: 8; -fx-font-size: 11px; -fx-cursor: hand;");
             actionBtn.setOnAction(e -> {
                 StoreService.getInstance().equipTheme(username, t.id());
-                MainUI.showThemeStore();
+                if (onRefresh != null) onRefresh.run(); else MainUI.showThemeStore();
             });
         } else if (levelOk || canAfford) {
-            String btnLabel = "COINS".equals(t.unlockType()) ? "Buy " + t.coinCost() + " 🪙" : "Unlock";
+            String btnLabel = "COINS".equals(t.unlockType()) ? "Buy " + t.coinCost() + " 💰" : "Unlock";
             actionBtn = new Button(btnLabel);
             actionBtn.setStyle("-fx-background-color: #10b981; -fx-text-fill: #ffffff;" +
                                "-fx-background-radius: 8; -fx-font-size: 11px; -fx-cursor: hand;");
@@ -197,7 +204,7 @@ public class ThemeStoreScreen {
                 if (pr == PurchaseResult.SUCCESS) {
                     StoreService.getInstance().equipTheme(username, t.id());
                 }
-                MainUI.showThemeStore();
+                if (onRefresh != null) onRefresh.run(); else MainUI.showThemeStore();
             });
         } else {
             actionBtn = new Button("🔒 " + unlockInfo);

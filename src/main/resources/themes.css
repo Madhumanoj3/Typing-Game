@@ -716,6 +716,61 @@
 .theme-print_light .dialog-pane .header-panel .label {
     -fx-text-fill: #111827;
 }
+/* ── print_light colorful cards (restore light backgrounds) ─────────────── */
+.theme-print_light .card-blue {
+    -fx-background-color: #e0f2fe;
+    -fx-border-color: #0ea5e9;
+}
+.theme-print_light .card-blue:hover {
+    -fx-background-color: #cce9ff;
+    -fx-border-color: #0284c7;
+}
+
+.theme-print_light .card-pink {
+    -fx-background-color: #fce7f3;
+    -fx-border-color: #ec4899;
+}
+.theme-print_light .card-pink:hover {
+    -fx-background-color: #fbb6d9;
+    -fx-border-color: #be185d;
+}
+
+.theme-print_light .card-yellow {
+    -fx-background-color: #fef3c7;
+    -fx-border-color: #fbbf24;
+}
+.theme-print_light .card-yellow:hover {
+    -fx-background-color: #fde68a;
+    -fx-border-color: #d97706;
+}
+
+.theme-print_light .card-red {
+    -fx-background-color: #fee2e2;
+    -fx-border-color: #ef4444;
+}
+.theme-print_light .card-red:hover {
+    -fx-background-color: #fca5a5;
+    -fx-border-color: #dc2626;
+}
+
+.theme-print_light .card-green {
+    -fx-background-color: #dcfce7;
+    -fx-border-color: #10b981;
+}
+.theme-print_light .card-green:hover {
+    -fx-background-color: #b1e6d5;
+    -fx-border-color: #059669;
+}
+
+.theme-print_light .card-purple {
+    -fx-background-color: #f3e8ff;
+    -fx-border-color: #a855f7;
+}
+.theme-print_light .card-purple:hover {
+    -fx-background-color: #e9d5ff;
+    -fx-border-color: #7c3aed;
+}
+
 /* ── light_friendly (vibrant light theme with blue, red, yellow) ─────────── */
 .theme-light_friendly .login-blob {
     -fx-opacity: 0;

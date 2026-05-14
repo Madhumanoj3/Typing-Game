@@ -21,6 +21,7 @@ public class User {
     private String subscriptionType = "FREE";
     private boolean blocked = false;
     private boolean firstLogin = true;
+    private String avatarId;
 
     public User() {
         this.createdAt = LocalDateTime.now();
@@ -90,6 +91,9 @@ public class User {
 
     public boolean isFirstLogin()           { return firstLogin; }
     public void setFirstLogin(boolean v)    { this.firstLogin = v; }
+
+    public String getAvatarId()             { return avatarId; }
+    public void setAvatarId(String v)       { this.avatarId = v; }
 
     public String getPhoneNumber()         { return phone; }
     public String getDateOfBirth()         { return dob; }

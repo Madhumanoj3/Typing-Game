@@ -189,36 +189,57 @@ public class AdminAnalyticsPanel {
                 chart.getData().add(new PieChart.Data(mode + " (" + cnt + ")", cnt)));
         }
 
+        colorPieChart(chart);
         return chart;
     }
 
     private PieChart buildSubChart() {
         PieChart chart = new PieChart();
-        
+
         long totalUsers = MongoDBManager.getInstance().getAllUsers().size();
-        
+
         if (totalUsers == 0) {
             chart.getData().add(new PieChart.Data("No Users Yet", 1));
         } else {
             List<Subscription> subs = SubscriptionDAO.getInstance().getAllSubscriptions();
             Map<String, Integer> counts = new LinkedHashMap<>();
-            
+
             for (Subscription s : subs) {
                 String key = s.getPlan() + " · " + s.getStatus();
                 counts.merge(key, 1, Integer::sum);
             }
-            
+
             long subUsers = subs.stream().map(Subscription::getUsername).distinct().count();
             long freeUsers = totalUsers - subUsers;
             if (freeUsers > 0) {
                 counts.put("FREE (" + freeUsers + ")", (int) freeUsers);
             }
-            
+
             counts.forEach((key, cnt) ->
                 chart.getData().add(new PieChart.Data(key, cnt)));
         }
 
+        colorPieChart(chart);
         return chart;
+    }
+
+    private void colorPieChart(PieChart chart) {
+        Platform.runLater(() -> {
+            var data = chart.getData();
+            for (int i = 0; i < data.size(); i++) {
+                PieChart.Data slice = data.get(i);
+                final String color = CHART_COLORS[i % CHART_COLORS.length];
+                if (slice.getNode() != null) {
+                    slice.getNode().setStyle("-fx-pie-color: " + color + ";");
+                }
+            }
+            // Apply legend dot colors
+            var symbols = new java.util.ArrayList<>(chart.lookupAll(".chart-legend-item-symbol"));
+            for (int j = 0; j < symbols.size(); j++) {
+                symbols.get(j).setStyle(
+                    "-fx-background-color: " + CHART_COLORS[j % CHART_COLORS.length] + ";");
+            }
+        });
     }
 
     // ── Difficulty Bar Chart ──────────────────────────────────────────────────

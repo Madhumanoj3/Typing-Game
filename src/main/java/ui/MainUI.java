@@ -54,6 +54,11 @@ public class MainUI extends Application {
         setScene(dashboard.buildScene());
     }
 
+    public static void showDashboardAt(String page) {
+        DashboardScreen dashboard = new DashboardScreen(page);
+        setScene(dashboard.buildScene());
+    }
+
     public static void showGame(String mode, String difficulty, int timerSeconds) {
         GameScreen game = new GameScreen(mode, difficulty, timerSeconds);
         setScene(game.buildScene());

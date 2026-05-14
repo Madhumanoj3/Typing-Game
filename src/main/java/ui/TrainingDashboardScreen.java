@@ -1,5 +1,6 @@
 package ui;
 
+import game.ThemeManager;
 import javafx.geometry.*;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -504,10 +505,12 @@ public class TrainingDashboardScreen {
         // Top row: number badge + lock or check
         HBox topRow = new HBox(8);
         topRow.setAlignment(Pos.CENTER_LEFT);
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
+        String textColor = isLight ? "#1a1a1a" : "#e2e8f0";
         Label numBadge = new Label("#" + lesson.getLessonNumber());
         numBadge.setStyle(
             "-fx-background-color: rgba(59,130,246,0.2);" +
-            "-fx-text-fill: #1a1a1a;" +
+            "-fx-text-fill: " + textColor + ";" +
             "-fx-background-radius: 6;" +
             "-fx-padding: 2 8 2 8;" +
             "-fx-font-size: 12px;" +
@@ -534,7 +537,7 @@ public class TrainingDashboardScreen {
 
         // Title
         Label titleLabel = new Label(lesson.getTitle());
-        titleLabel.setStyle("-fx-text-fill: #1a1a1a; -fx-font-size: 15px; -fx-font-weight: bold;");
+        titleLabel.setStyle("-fx-text-fill: " + textColor + "; -fx-font-size: 15px; -fx-font-weight: bold;");
         titleLabel.setWrapText(true);
 
         // Level badge + target WPM
@@ -551,7 +554,7 @@ public class TrainingDashboardScreen {
         if (progress != null && progress.getAttempts() > 0) {
             Label best = new Label(String.format("Best: %.0f WPM  •  %.0f%% acc",
                     progress.getBestWpm(), progress.getBestAccuracy()));
-            best.setStyle("-fx-text-fill: #1a1a1a; -fx-font-size: 12px; -fx-font-weight: bold;");
+            best.setStyle("-fx-text-fill: " + textColor + "; -fx-font-size: 12px; -fx-font-weight: bold;");
             Label attempts = new Label(progress.getAttempts() + " attempt" +
                     (progress.getAttempts() == 1 ? "" : "s"));
             attempts.getStyleClass().add("label-muted");

@@ -3,6 +3,7 @@ package ui.admin;
 import db.MongoDBManager;
 import db.SubscriptionDAO;
 import db.TrainingCertificateDAO;
+import game.ThemeManager;
 import javafx.geometry.*;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -61,7 +62,7 @@ public class AdminDashboardScreen {
         brandBox.setStyle("-fx-padding: 24 18 18 18;");
 
         Label brand = new Label("⌨  TypeMaster");
-        brand.setStyle("-fx-text-fill: #a78bfa; -fx-font-size: 19px; -fx-font-weight: bold;");
+        brand.setStyle("-fx-text-fill: " + ThemeManager.accentLight() + "; -fx-font-size: 19px; -fx-font-weight: bold;");
 
         Label adminSub = new Label("⚙  Admin Control Panel");
         adminSub.setStyle("-fx-text-fill: #475569; -fx-font-size: 11px;");
@@ -206,13 +207,14 @@ public class AdminDashboardScreen {
         Label aIcon = new Label("👤");
         aIcon.setStyle("-fx-font-size: 13px;");
         Label aName = new Label(SessionManager.getInstance().getUsername());
-        aName.setStyle("-fx-text-fill: #a78bfa; -fx-font-size: 13px; -fx-font-weight: bold;");
+        aName.setStyle("-fx-text-fill: " + ThemeManager.accentLight() + "; -fx-font-size: 13px; -fx-font-weight: bold;");
         adminPill.getChildren().addAll(aIcon, aName);
 
-        // Header sign-out
+        // Theme toggle + sign-out
+        Button themeToggle  = buildThemeToggle();
         Button headerSignOut = signOutButton(false);
 
-        header.getChildren().addAll(breadcrumb, spacer, adminPill, headerSignOut);
+        header.getChildren().addAll(breadcrumb, spacer, themeToggle, adminPill, headerSignOut);
         return header;
     }
 
@@ -581,18 +583,37 @@ public class AdminDashboardScreen {
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
+    private Button buildThemeToggle() {
+        ThemeManager tm = ThemeManager.getInstance();
+        boolean isLight = tm.isPrintLightTheme();
+        Button btn = new Button(isLight ? "🌙  Dark" : "☀  Light");
+        String accent = ThemeManager.accentLight();
+        btn.setStyle(
+            "-fx-background-color: rgba(124,58,237,0.12);" +
+            "-fx-text-fill: " + accent + "; -fx-font-size: 12px; -fx-font-weight: bold;" +
+            "-fx-padding: 7 14 7 14; -fx-background-radius: 10;" +
+            "-fx-border-color: rgba(124,58,237,0.3); -fx-border-radius: 10; -fx-border-width: 1;" +
+            "-fx-cursor: hand;");
+        btn.setOnAction(e -> {
+            if (tm.isPrintLightTheme()) tm.restoreLastNonLightTheme();
+            else tm.setPrintLightTheme();
+            ui.MainUI.showAdminPanel();
+        });
+        return btn;
+    }
+
     private Button navBtn(String icon, String text, boolean active) {
         Button b = new Button(icon + "  " + text);
         b.setMaxWidth(Double.MAX_VALUE);
         b.setAlignment(Pos.CENTER_LEFT);
         b.setStyle(active ? activeNavStyle() : inactiveNavStyle());
         b.setOnMouseEntered(e -> {
-            if (!b.getStyle().contains("#a78bfa")) {
+            if (!b.getStyle().contains("linear-gradient")) {
                 b.setStyle(hoverNavStyle());
             }
         });
         b.setOnMouseExited(e -> {
-            if (!b.getStyle().contains("#a78bfa")) {
+            if (!b.getStyle().contains("linear-gradient")) {
                 b.setStyle(inactiveNavStyle());
             }
         });
@@ -608,7 +629,7 @@ public class AdminDashboardScreen {
 
     private String activeNavStyle() {
         return "-fx-background-color: linear-gradient(to right, rgba(124,58,237,0.35), rgba(124,58,237,0.08));" +
-               "-fx-text-fill: #a78bfa; -fx-font-size: 13px; -fx-font-weight: bold;" +
+               "-fx-text-fill: " + ThemeManager.accentLight() + "; -fx-font-size: 13px; -fx-font-weight: bold;" +
                "-fx-padding: 12 16 12 16; -fx-background-radius: 10;" +
                "-fx-border-color: rgba(124,58,237,0.5) transparent rgba(124,58,237,0.1) rgba(124,58,237,0.8);" +
                "-fx-border-radius: 10; -fx-border-width: 0 0 0 3; -fx-cursor: hand;";

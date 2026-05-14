@@ -19,6 +19,13 @@ import util.SessionManager;
  */
 public class FontStoreScreen {
 
+    private Runnable onRefresh;
+
+    public Node buildContent(Runnable onRefresh) {
+        this.onRefresh = onRefresh;
+        return buildContent();
+    }
+
     public Scene buildScene() {
         VBox layout = new VBox(0);
         layout.setStyle("-fx-background-color: #0f0f1a;");
@@ -71,7 +78,7 @@ public class FontStoreScreen {
 
         HBox coinsBadge = new HBox(6);
         coinsBadge.setAlignment(Pos.CENTER_LEFT);
-        Label coinIcon = new Label("🪙");
+        Label coinIcon = new Label("💰");
         coinIcon.setStyle("-fx-font-size: 16px;");
         Label coinCount = new Label(coins + " coins available");
         coinCount.setStyle("-fx-text-fill: #fbbf24; -fx-font-size: 13px; -fx-font-weight: bold;");
@@ -94,7 +101,7 @@ public class FontStoreScreen {
         root.getChildren().add(buildSep());
 
         // ── Coin-purchase section ─────────────────────────────────────────
-        Label coinHeader = new Label("🪙  Buy with Coins");
+        Label coinHeader = new Label("💰  Buy with Coins");
         coinHeader.setStyle("-fx-text-fill: #fbbf24; -fx-font-size: 15px; -fx-font-weight: bold;");
         root.getChildren().add(coinHeader);
 
@@ -138,7 +145,7 @@ public class FontStoreScreen {
 
         String unlockInfo = "LEVEL".equals(f.unlockType())
                 ? "Level " + f.levelRequired()
-                : f.coinCost() + " 🪙";
+                : f.coinCost() + " 💰";
 
         Button actionBtn;
         if (active) {
@@ -152,10 +159,10 @@ public class FontStoreScreen {
                                "-fx-background-radius: 8; -fx-font-size: 11px; -fx-cursor: hand;");
             actionBtn.setOnAction(e -> {
                 StoreService.getInstance().equipFont(username, f.id());
-                MainUI.showFontStore();
+                if (onRefresh != null) onRefresh.run(); else MainUI.showFontStore();
             });
         } else if (levelOk || canAfford) {
-            String btnLabel = "COINS".equals(f.unlockType()) ? "Buy " + f.coinCost() + " 🪙" : "Unlock";
+            String btnLabel = "COINS".equals(f.unlockType()) ? "Buy " + f.coinCost() + " 💰" : "Unlock";
             actionBtn = new Button(btnLabel);
             actionBtn.setStyle("-fx-background-color: #10b981; -fx-text-fill: white;" +
                                "-fx-background-radius: 8; -fx-font-size: 11px; -fx-cursor: hand;");
@@ -164,7 +171,7 @@ public class FontStoreScreen {
                 if (pr == PurchaseResult.SUCCESS) {
                     StoreService.getInstance().equipFont(username, f.id());
                 }
-                MainUI.showFontStore();
+                if (onRefresh != null) onRefresh.run(); else MainUI.showFontStore();
             });
         } else {
             actionBtn = new Button("🔒 " + unlockInfo);

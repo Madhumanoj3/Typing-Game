@@ -236,9 +236,9 @@
     -fx-font-weight: bold;
 }
 
-/* ── COLORFUL CARD VARIANTS ── */
+/* ── COLORFUL CARD VARIANTS (dark defaults; light overrides in themes.css for print_light) ── */
 .card-blue {
-    -fx-background-color: #e0f2fe;
+    -fx-background-color: #0e2a42;
     -fx-background-radius: 16;
     -fx-padding: 24;
     -fx-border-color: #0ea5e9;
@@ -247,13 +247,13 @@
     -fx-effect: dropshadow(gaussian, rgba(14,165,233,0.2), 12, 0, 0, 4);
 }
 .card-blue:hover {
-    -fx-background-color: #cce9ff;
+    -fx-background-color: #0a2038;
     -fx-border-color: #0284c7;
     -fx-effect: dropshadow(gaussian, rgba(14,165,233,0.35), 16, 0.05, 0, 6);
 }
 
 .card-pink {
-    -fx-background-color: #fce7f3;
+    -fx-background-color: #3e1e2e;
     -fx-background-radius: 16;
     -fx-padding: 24;
     -fx-border-color: #ec4899;
@@ -262,13 +262,13 @@
     -fx-effect: dropshadow(gaussian, rgba(236,72,153,0.2), 12, 0, 0, 4);
 }
 .card-pink:hover {
-    -fx-background-color: #fbb6d9;
+    -fx-background-color: #3a1a2a;
     -fx-border-color: #be185d;
     -fx-effect: dropshadow(gaussian, rgba(236,72,153,0.35), 16, 0.05, 0, 6);
 }
 
 .card-yellow {
-    -fx-background-color: #fef3c7;
+    -fx-background-color: #3d3a1a;
     -fx-background-radius: 16;
     -fx-padding: 24;
     -fx-border-color: #fbbf24;
@@ -277,13 +277,13 @@
     -fx-effect: dropshadow(gaussian, rgba(251,191,36,0.2), 12, 0, 0, 4);
 }
 .card-yellow:hover {
-    -fx-background-color: #fde68a;
+    -fx-background-color: #393617;
     -fx-border-color: #d97706;
     -fx-effect: dropshadow(gaussian, rgba(251,191,36,0.35), 16, 0.05, 0, 6);
 }
 
 .card-red {
-    -fx-background-color: #fee2e2;
+    -fx-background-color: #3a1e1e;
     -fx-background-radius: 16;
     -fx-padding: 24;
     -fx-border-color: #ef4444;
@@ -292,13 +292,13 @@
     -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.2), 12, 0, 0, 4);
 }
 .card-red:hover {
-    -fx-background-color: #fca5a5;
+    -fx-background-color: #351a1a;
     -fx-border-color: #dc2626;
     -fx-effect: dropshadow(gaussian, rgba(239,68,68,0.35), 16, 0.05, 0, 6);
 }
 
 .card-green {
-    -fx-background-color: #dcfce7;
+    -fx-background-color: #1e2a1f;
     -fx-background-radius: 16;
     -fx-padding: 24;
     -fx-border-color: #10b981;
@@ -307,13 +307,13 @@
     -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.2), 12, 0, 0, 4);
 }
 .card-green:hover {
-    -fx-background-color: #b1e6d5;
+    -fx-background-color: #1a261b;
     -fx-border-color: #059669;
     -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.35), 16, 0.05, 0, 6);
 }
 
 .card-purple {
-    -fx-background-color: #f3e8ff;
+    -fx-background-color: #2e1e3e;
     -fx-background-radius: 16;
     -fx-padding: 24;
     -fx-border-color: #a855f7;
@@ -322,7 +322,7 @@
     -fx-effect: dropshadow(gaussian, rgba(168,85,247,0.2), 12, 0, 0, 4);
 }
 .card-purple:hover {
-    -fx-background-color: #e9d5ff;
+    -fx-background-color: #2a1a3a;
     -fx-border-color: #7c3aed;
     -fx-effect: dropshadow(gaussian, rgba(168,85,247,0.35), 16, 0.05, 0, 6);
 }

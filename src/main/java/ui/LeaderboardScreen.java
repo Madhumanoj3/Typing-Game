@@ -11,7 +11,10 @@ import model.GameResult;
 import model.UserStats;
 import util.SessionManager;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Leaderboard screen — top 20 scores for Normal and Timer modes,
@@ -41,7 +44,7 @@ public class LeaderboardScreen {
         Label title = new Label("🏆  Global Leaderboard");
         title.getStyleClass().add("label-title");
 
-        Label sub = new Label("Top 20 results for Normal and Timer modes across all players");
+        Label sub = new Label("Best score per player — Normal and Timer modes across all users");
         sub.getStyleClass().add("label-muted");
 
         String me = SessionManager.getInstance().getUsername();
@@ -85,7 +88,14 @@ public class LeaderboardScreen {
         sep.setStyle("-fx-background-color: #1e293b;");
 
         VBox rankList = new VBox(6);
-        List<GameResult> top = MongoDBManager.getInstance().getLeaderboardByMode(20, mode);
+        // Fetch extra results then keep only each user's best (first = highest WPM after sort)
+        List<GameResult> raw = MongoDBManager.getInstance().getLeaderboardByMode(200, mode);
+        Map<String, GameResult> bestByUser = new LinkedHashMap<>();
+        for (GameResult r : raw) {
+            bestByUser.putIfAbsent(r.getUsername(), r);
+        }
+        List<GameResult> top = new ArrayList<>(bestByUser.values());
+        if (top.size() > 20) top = top.subList(0, 20);
 
         if (top.isEmpty()) {
             Label empty = new Label("No " + mode + " results yet. Play a game to appear here!");

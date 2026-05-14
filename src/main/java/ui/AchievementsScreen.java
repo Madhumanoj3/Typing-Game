@@ -1,5 +1,6 @@
 package ui;
 
+import game.ThemeManager;
 import javafx.geometry.*;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -96,6 +97,12 @@ public class AchievementsScreen {
         card.setMaxWidth(220);
         card.setAlignment(Pos.TOP_LEFT);
 
+        boolean isLight = ThemeManager.getInstance().isPrintLightTheme();
+        String textColor   = isLight ? "#1a1a1a" : "#e2e8f0";
+        String mutedColor  = isLight ? "#555555" : "#94a3b8";
+        String lockedBg    = isLight ? "#e8e8e8" : "#1e293b";
+        String lockedText  = isLight ? "#666666" : "#64748b";
+
         // Assign colorful card style for unlocked achievements
         if (unlocked) {
             String colorClass = CARD_COLORS[cardColorIndex % CARD_COLORS.length];
@@ -103,7 +110,7 @@ public class AchievementsScreen {
             cardColorIndex++;
         } else {
             card.setStyle(
-                "-fx-background-color: #e8e8e8; -fx-background-radius: 16; -fx-padding: 20;" +
+                "-fx-background-color: " + lockedBg + "; -fx-background-radius: 16; -fx-padding: 20;" +
                 "-fx-opacity: 0.6;");
         }
 
@@ -114,13 +121,13 @@ public class AchievementsScreen {
         // Title
         Label titleLbl = new Label(def.title());
         titleLbl.setStyle(unlocked
-            ? "-fx-text-fill: #1a1a1a; -fx-font-size: 13px; -fx-font-weight: bold;"
-            : "-fx-text-fill: #666666; -fx-font-size: 13px; -fx-font-weight: bold;");
+            ? "-fx-text-fill: " + textColor + "; -fx-font-size: 13px; -fx-font-weight: bold;"
+            : "-fx-text-fill: " + lockedText + "; -fx-font-size: 13px; -fx-font-weight: bold;");
         titleLbl.setWrapText(true);
 
         // Description
         Label desc = new Label(def.description());
-        desc.setStyle("-fx-text-fill: #555555; -fx-font-size: 11px;");
+        desc.setStyle("-fx-text-fill: " + mutedColor + "; -fx-font-size: 11px;");
         desc.setWrapText(true);
 
         card.getChildren().addAll(icon, titleLbl, desc);
@@ -130,7 +137,7 @@ public class AchievementsScreen {
             Label dateLbl = new Label("Earned " + earned.getEarnedAt().format(DATE_FMT));
             dateLbl.setStyle(
                 "-fx-background-color: rgba(59,130,246,0.15);" +
-                "-fx-text-fill: #1a1a1a;" +
+                "-fx-text-fill: " + textColor + ";" +
                 "-fx-background-radius: 8;" +
                 "-fx-padding: 3 8 3 8;" +
                 "-fx-font-size: 10px;" +
