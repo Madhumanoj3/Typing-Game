@@ -1,6 +1,7 @@
 package ui;
 
 import db.MongoDBManager;
+import db.plsql.AppTriggers;
 import game.ThemeManager;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -23,6 +24,7 @@ public class MainUI extends Application {
     @Override
     public void start(Stage stage) {
         primaryStage = stage;
+        AppTriggers.registerAll();
 
         stage.setTitle("TypeMaster");
         stage.setMinWidth(1100);
@@ -74,7 +76,12 @@ public class MainUI extends Application {
 
     public static void showResult(GameResult result, int xpGained, int coinsGained,
                                   List<Achievement> newAchievements) {
-        ResultScreen res = new ResultScreen(result, xpGained, coinsGained, newAchievements);
+        showResult(result, xpGained, coinsGained, false, newAchievements);
+    }
+
+    public static void showResult(GameResult result, int xpGained, int coinsGained,
+                                  boolean premiumBonus, List<Achievement> newAchievements) {
+        ResultScreen res = new ResultScreen(result, xpGained, coinsGained, premiumBonus, newAchievements);
         setScene(res.buildScene());
     }
 

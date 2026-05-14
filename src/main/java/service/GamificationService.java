@@ -1,6 +1,7 @@
 package service;
 
 import db.AchievementDAO;
+import db.SubscriptionDAO;
 import db.UserStatsDAO;
 import model.Achievement;
 import model.GameResult;
@@ -16,7 +17,7 @@ import java.util.List;
 public class GamificationService {
 
     // ── Result record returned after processing a game ────────────────────
-    public record GamificationResult(int xpGained, int coinsGained, List<Achievement> newAchievements, boolean leveledUp, int newLevel) {}
+    public record GamificationResult(int xpGained, int coinsGained, List<Achievement> newAchievements, boolean leveledUp, int newLevel, boolean premiumBonus) {}
 
     // ── Daily challenge progress snapshot ────────────────────────────────
     public record DailyChallengeProgress(int gamesPlayed, double maxWpm, int charsTyped) {
@@ -112,6 +113,7 @@ public class GamificationService {
 
         // Coin rewards: Normal/Timer modes only, accuracy > 80%
         int coinsGained = 0;
+        boolean premiumBonus = false;
         String gameMode = result.getGameMode();
         if (("Normal".equals(gameMode) || "Timer".equals(gameMode)) && result.getAccuracy() > 80) {
             coinsGained = switch (result.getDifficulty()) {
@@ -121,6 +123,11 @@ public class GamificationService {
                 default       -> 0;
             };
             if (result.getAccuracy() >= 100.0) coinsGained *= 2;
+            // Premium bonus: +5 coins for Normal/Timer games
+            if (SubscriptionDAO.getInstance().isPremium(username)) {
+                coinsGained += 5;
+                premiumBonus = true;
+            }
         }
         stats.setCoins(stats.getCoins() + coinsGained);
 
@@ -174,7 +181,7 @@ public class GamificationService {
             }
         }
 
-        return new GamificationResult(xpGained, coinsGained, newAchievements, leveledUp, newLevel);
+        return new GamificationResult(xpGained, coinsGained, newAchievements, leveledUp, newLevel, premiumBonus);
     }
 
     // ── Lesson achievements (called from LessonViewScreen) ───────────────

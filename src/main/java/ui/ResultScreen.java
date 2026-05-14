@@ -20,21 +20,28 @@ public class ResultScreen {
     private final GameResult        result;
     private final int               xpGained;
     private final int               coinsGained;
+    private final boolean           premiumBonus;
     private final List<Achievement> newAchievements;
 
     public ResultScreen(GameResult result) {
-        this(result, 0, 0, Collections.emptyList());
+        this(result, 0, 0, false, Collections.emptyList());
     }
 
     public ResultScreen(GameResult result, int xpGained, List<Achievement> newAchievements) {
-        this(result, xpGained, 0, newAchievements);
+        this(result, xpGained, 0, false, newAchievements);
     }
 
     public ResultScreen(GameResult result, int xpGained, int coinsGained,
                         List<Achievement> newAchievements) {
+        this(result, xpGained, coinsGained, false, newAchievements);
+    }
+
+    public ResultScreen(GameResult result, int xpGained, int coinsGained,
+                        boolean premiumBonus, List<Achievement> newAchievements) {
         this.result          = result;
         this.xpGained        = xpGained;
         this.coinsGained     = coinsGained;
+        this.premiumBonus    = premiumBonus;
         this.newAchievements = newAchievements != null ? newAchievements : Collections.emptyList();
     }
 
@@ -92,12 +99,15 @@ public class ResultScreen {
 
         // ── Coins earned banner ───────────────────────────────────────────
         if (coinsGained > 0) {
-            HBox coinsBanner = new HBox(10);
+            VBox coinsBanner = new VBox(4);
             coinsBanner.setAlignment(Pos.CENTER);
             coinsBanner.setStyle(
                 "-fx-background-color: rgba(245,158,11,0.15);" +
                 "-fx-background-radius: 12;" +
-                "-fx-padding: 10 24 10 24;");
+                "-fx-padding: 12 24 12 24;");
+
+            HBox mainRow = new HBox(10);
+            mainRow.setAlignment(Pos.CENTER);
             Label coinIcon  = new Label("💰");
             coinIcon.setStyle("-fx-font-size: 18px;");
             Label coinLabel = new Label("+" + coinsGained + " coins earned!");
@@ -105,7 +115,18 @@ public class ResultScreen {
                 "-fx-text-fill: #fbbf24;" +
                 "-fx-font-size: 15px;" +
                 "-fx-font-weight: bold;");
-            coinsBanner.getChildren().addAll(coinIcon, coinLabel);
+            mainRow.getChildren().addAll(coinIcon, coinLabel);
+            coinsBanner.getChildren().add(mainRow);
+
+            if (premiumBonus) {
+                Label bonusLabel = new Label("👑  Includes +5 Premium Bonus");
+                bonusLabel.setStyle(
+                    "-fx-text-fill: #fcd34d;" +
+                    "-fx-font-size: 12px;" +
+                    "-fx-font-style: italic;");
+                coinsBanner.getChildren().add(bonusLabel);
+            }
+
             card.getChildren().add(coinsBanner);
         }
 

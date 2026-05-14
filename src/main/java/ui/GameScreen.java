@@ -64,11 +64,11 @@ public class GameScreen {
     public Scene buildScene() {
         typing = new TypingEngine();
 
-        // Generate the passage for this mode
+        // Generate the passage — all modes now mix words and sentences randomly
         passage = switch (mode) {
-            case "Practice" -> WordBank.getRandomSentence() + " " + WordBank.buildPassage(difficulty, 30);
-            case "Timer"    -> WordBank.buildPassage(difficulty, 200);
-            default         -> WordBank.buildPassage(difficulty, 50);   // Normal
+            case "Practice" -> WordBank.buildMixedPassage(difficulty, 40);
+            case "Timer"    -> WordBank.buildMixedPassage(difficulty, 200);
+            default         -> WordBank.buildMixedPassage(difficulty, 60);  // Normal
         };
 
         typing.start(passage);
@@ -351,6 +351,7 @@ public class GameScreen {
         // Gamification applies only to Normal and Timer modes
         int xpGained    = 0;
         int coinsGained = 0;
+        boolean premiumBonus = false;
         List<Achievement> newAchievements = Collections.emptyList();
         boolean leveledUp = false;
         int newLevel = 0;
@@ -360,6 +361,7 @@ public class GameScreen {
                         .processGameResult(SessionManager.getInstance().getUsername(), result);
                 xpGained        = gr.xpGained();
                 coinsGained     = gr.coinsGained();
+                premiumBonus    = gr.premiumBonus();
                 newAchievements = gr.newAchievements();
                 leveledUp       = gr.leveledUp();
                 newLevel        = gr.newLevel();
@@ -375,8 +377,9 @@ public class GameScreen {
             }
         }
 
-        final int finalXp     = xpGained;
-        final int finalCoins  = coinsGained;
+        final int finalXp          = xpGained;
+        final int finalCoins       = coinsGained;
+        final boolean finalPremium = premiumBonus;
         final List<Achievement> finalAch = newAchievements;
         final boolean finalLevelUp = leveledUp;
         final int finalNewLevel = newLevel;
@@ -390,10 +393,10 @@ public class GameScreen {
                             .getStats(SessionManager.getInstance().getUsername());
                     MainUI.showLevelUp(finalNewLevel, stats);
                 } catch (Exception ex) {
-                    MainUI.showResult(result, finalXp, finalCoins, finalAch);
+                    MainUI.showResult(result, finalXp, finalCoins, finalPremium, finalAch);
                 }
             } else {
-                MainUI.showResult(result, finalXp, finalCoins, finalAch);
+                MainUI.showResult(result, finalXp, finalCoins, finalPremium, finalAch);
             }
         });
         pause.play();

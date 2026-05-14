@@ -728,7 +728,7 @@
 
 /* ── PIE CHART — VIBRANT ── */
 .chart-pie {
-    -fx-background-color: transparent;
+    /* No background-color here — individual slice colors set it below */
     -fx-stroke: #0e0e22;
     -fx-stroke-width: 2;
 }
@@ -745,17 +745,18 @@
     -fx-text-fill: #94a3b8;
     -fx-font-size: 11px;
 }
-/* Vibrant pie slice colors — slice 0…9 */
-.default-color0.chart-pie  { -fx-pie-color: #a78bfa; }
-.default-color1.chart-pie  { -fx-pie-color: #38bdf8; }
-.default-color2.chart-pie  { -fx-pie-color: #34d399; }
-.default-color3.chart-pie  { -fx-pie-color: #fbbf24; }
-.default-color4.chart-pie  { -fx-pie-color: #f472b6; }
-.default-color5.chart-pie  { -fx-pie-color: #fb923c; }
-.default-color6.chart-pie  { -fx-pie-color: #2dd4bf; }
-.default-color7.chart-pie  { -fx-pie-color: #c084fc; }
-.default-color8.chart-pie  { -fx-pie-color: #ef4444; }
-.default-color9.chart-pie  { -fx-pie-color: #84cc16; }
+/* Vibrant pie slice colors — both -fx-pie-color AND -fx-background-color
+   must be set; JavaFX uses background-color for the actual fill paint */
+.default-color0.chart-pie  { -fx-pie-color: #a78bfa; -fx-background-color: #a78bfa; }
+.default-color1.chart-pie  { -fx-pie-color: #38bdf8; -fx-background-color: #38bdf8; }
+.default-color2.chart-pie  { -fx-pie-color: #34d399; -fx-background-color: #34d399; }
+.default-color3.chart-pie  { -fx-pie-color: #fbbf24; -fx-background-color: #fbbf24; }
+.default-color4.chart-pie  { -fx-pie-color: #f472b6; -fx-background-color: #f472b6; }
+.default-color5.chart-pie  { -fx-pie-color: #fb923c; -fx-background-color: #fb923c; }
+.default-color6.chart-pie  { -fx-pie-color: #2dd4bf; -fx-background-color: #2dd4bf; }
+.default-color7.chart-pie  { -fx-pie-color: #c084fc; -fx-background-color: #c084fc; }
+.default-color8.chart-pie  { -fx-pie-color: #ef4444; -fx-background-color: #ef4444; }
+.default-color9.chart-pie  { -fx-pie-color: #84cc16; -fx-background-color: #84cc16; }
 /* Label connector lines */
 .default-color0.chart-pie-label-line { -fx-stroke: #a78bfa; -fx-stroke-width: 1.5; }
 .default-color1.chart-pie-label-line { -fx-stroke: #38bdf8; -fx-stroke-width: 1.5; }

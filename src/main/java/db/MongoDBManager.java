@@ -2,6 +2,7 @@ package db;
 
 import com.mongodb.client.*;
 import com.mongodb.client.model.*;
+import db.plsql.TriggerEngine;
 import model.GameResult;
 import model.User;
 import org.bson.Document;
@@ -75,6 +76,8 @@ public class MongoDBManager {
     /** Inserts a new user. Returns false if username/email is already taken. */
     public boolean registerUser(User user) {
         try {
+            // BEFORE INSERT trigger — validates email/username, sets defaults
+            TriggerEngine.getInstance().fire(TriggerEngine.Event.BEFORE_USER_INSERT, user);
             Document doc = new Document()
                     .append("phone",        user.getPhone())
                     .append("address",      user.getAddress())
@@ -92,6 +95,8 @@ public class MongoDBManager {
             users.insertOne(doc);
             user.setId(doc.getObjectId("_id"));
             return true;
+        } catch (TriggerEngine.TriggerException e) {
+            return false;   // BEFORE trigger raised validation error
         } catch (Exception e) {
             return false;   // duplicate key
         }
@@ -184,7 +189,7 @@ public class MongoDBManager {
 
     // ── GAME RESULT operations ────────────────────────────────────────────
 
-    /** Persists a completed game result. */
+    /** Persists a completed game result. Fires the AFTER_GAME_INSERT trigger. */
     public void saveResult(GameResult result) {
         Document doc = new Document()
                 .append("username",   result.getUsername())
@@ -198,6 +203,8 @@ public class MongoDBManager {
                 .append("playedAt",   new Date());
         results.insertOne(doc);
         result.setId(doc.getObjectId("_id"));
+        // AFTER INSERT trigger — writes audit log entry
+        TriggerEngine.getInstance().fire(TriggerEngine.Event.AFTER_GAME_INSERT, result);
     }
 
     /** Returns the last {@code limit} results for a given user, newest first. */
@@ -261,6 +268,10 @@ public class MongoDBManager {
                         Updates.set("firstLogin", user.isFirstLogin())
                 )
         );
+        // AFTER UPDATE OF blocked trigger — fires only when blocked = true
+        if (user.isBlocked()) {
+            TriggerEngine.getInstance().fire(TriggerEngine.Event.AFTER_USER_BLOCKED, user);
+        }
     }
 
     /** Marks firstLogin as false for the given user (after intro video plays). */

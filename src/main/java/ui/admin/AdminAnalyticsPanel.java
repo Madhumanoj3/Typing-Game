@@ -159,14 +159,17 @@ public class AdminAnalyticsPanel {
         Label h = new Label(heading);
         h.setStyle("-fx-text-fill: white; -fx-font-size: 15px; -fx-font-weight: bold;");
 
-        // Chart setup - simplified
         chart.setLabelsVisible(true);
         chart.setLegendVisible(true);
         chart.setLegendSide(javafx.geometry.Side.BOTTOM);
         chart.setMinHeight(300);
         chart.setPrefHeight(320);
         chart.setMaxHeight(360);
-        chart.setAnimated(true);
+        chart.setAnimated(false);
+        // Make chart area transparent so the dark card background shows through
+        chart.setStyle(
+            "-fx-background-color: transparent;" +
+            "-fx-padding: 0;");
 
         card.getChildren().addAll(h, chart);
         return card;
@@ -224,22 +227,41 @@ public class AdminAnalyticsPanel {
     }
 
     private void colorPieChart(PieChart chart) {
-        Platform.runLater(() -> {
-            var data = chart.getData();
-            for (int i = 0; i < data.size(); i++) {
-                PieChart.Data slice = data.get(i);
-                final String color = CHART_COLORS[i % CHART_COLORS.length];
-                if (slice.getNode() != null) {
-                    slice.getNode().setStyle("-fx-pie-color: " + color + ";");
-                }
+        var data = chart.getData();
+        for (int i = 0; i < data.size(); i++) {
+            final String color = CHART_COLORS[i % CHART_COLORS.length];
+            PieChart.Data slice = data.get(i);
+
+            // Apply immediately if the node already exists
+            if (slice.getNode() != null) {
+                applySliceColor(slice.getNode(), color);
             }
-            // Apply legend dot colors
+            // Listen for the node being created — JavaFX attaches slice nodes asynchronously
+            slice.nodeProperty().addListener((obs, oldNode, newNode) -> {
+                if (newNode != null) applySliceColor(newNode, color);
+            });
+        }
+
+        // Legend dot colors — need a runLater since the legend is built after data binding
+        Platform.runLater(() -> {
             var symbols = new java.util.ArrayList<>(chart.lookupAll(".chart-legend-item-symbol"));
             for (int j = 0; j < symbols.size(); j++) {
                 symbols.get(j).setStyle(
-                    "-fx-background-color: " + CHART_COLORS[j % CHART_COLORS.length] + ";");
+                    "-fx-background-color: " + CHART_COLORS[j % CHART_COLORS.length] + ";" +
+                    "-fx-background-radius: 5;");
+            }
+            // Also re-apply slice colors in case runLater fired before the listener did
+            for (int i = 0; i < data.size(); i++) {
+                if (data.get(i).getNode() != null)
+                    applySliceColor(data.get(i).getNode(), CHART_COLORS[i % CHART_COLORS.length]);
             }
         });
+    }
+
+    private void applySliceColor(javafx.scene.Node node, String color) {
+        node.setStyle(
+            "-fx-pie-color: " + color + ";" +
+            "-fx-background-color: " + color + ";");
     }
 
     // ── Difficulty Bar Chart ──────────────────────────────────────────────────
